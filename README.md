@@ -1,38 +1,45 @@
-Student Folder 
+Private Student Folder 
 =====================
 
-This file is part of the mod_publication plugin for Moodle - <http://moodle.org/>
+This file is part of the mod_privatestudentfolder plugin for Moodle - <http://moodle.org/>
+
+*Author:*     André Camacho, Benjamin Abraham
+*Copyright:*  [University of Geneva](https://www.unige.ch)
+*License:*    [GNU GPL v3 or later](https://www.gnu.org/copyleft/gpl.html)
+
+This plugin has started as a fork of the mod_publication plugin for Moodle
 
 *Author:*    Hannes Laimer, Philipp Hager, Andreas Windbichler, Simeon Naydenov
-
-*Copyright:* [Academic Moodle Cooperation](http://www.academic-moodle-cooperation.org)
-
-*License:*   [GNU GPL v3 or later](http://www.gnu.org/copyleft/gpl.html)
-
+*Copyright:* [Academic Moodle Cooperation](https://www.academic-moodle-cooperation.org)
+*License:*   [GNU GPL v3 or later](https://www.gnu.org/copyleft/gpl.html)
 
 Description
 -----------
 
-Online texts and files can be collected and published via the Student Folder activity and thus made available to everyone in a Moodle course. Submissions can be made directly by uploading or alternatively can be taken over by teachers from an assignment activity.
-
+This plugin is primarily designed to allow students to upload files for later access, for instance during an exam.
+Teachers have the ability to aprove documents manually, or documents can be automatically aproved.
+Teachers can choose if files can be shared between students. They can also chose if student sharing aproval is needed or automatic.
 
 Usage
 -------
 
 A possible teaching scenario could look like this: 
-* Seminar papers must be submitted as part of a course. The documents created should be uploaded by the students in the assignment activity. Teachers assess the submissions online and provide feedback. In order to make individual or all submitted documents accessible to all participants in the course, a student folder is then created by the teachers and linked to the assignment. Teachers can then decide which documents should be visible to participants. It is also possible to make the publication of documents dependent on the consent of the students who submitted them. 
-* Students present their group work as part of a seminar. The presentations and summaries created for this should be made available to all participants in the course. The teachers therefore create a student folder in which the files can be uploaded directly and published immediately. Students can then upload the documents themselves. Teachers can change the visibility of individual files at any time if necessary.
+
+* A teacher opens the Private Student Folder activity for submission. He chooses if submissions are aproved automatically. He also chooses if submissions are private (cannot be shared between students), can be shared between students (with student aproval) or are shared automatically.
+
+* Students submit documents during the submission period. They also choose wether if they want to share the documents with peers or not (if sharing and student approval are enabled).
+
+* Once submission period ends
+  * Teacher aproves documents (if needed).
+  * Students can access (download) uploaded documents.
 
 
 Installation
 ------------
 
-* Copy the module code directly to the mod/publication directory.
-
+* Copy the module code directly to the mod/privatestudentfolder directory.
 * Log into Moodle as administrator.
-
-* Open the administration area (http://your-moodle-site/admin) to start the installation
-  automatically.
+* Open the administration area (http://your-moodle-site/admin) to start the installation automatically.
 
 
 Privacy API
@@ -44,20 +51,18 @@ The plugin fully implements the Moodle Privacy API.
 Documentation
 -------------
 
-You can find a documentation for the plugin on the [AMC website](https://academic-moodle-cooperation.org/mod_publication/).
-
+You can find documentation for the plugin on :
+* [Github](https://github.com/acamacho-unige/moodle-mod_privatestudentfolder).
+* [Moodle Plugin Repository](https://moodle.org/plugins/privatestudentfolder)
 
 Bug Reports / Support
 ---------------------
 
 We try our best to deliver bug-free plugins, but we can not test the plugin for every platform,
 database, PHP and Moodle version. If you find any bug please report it on
-[GitHub](https://github.com/academic-moodle-cooperation/moodle-mod_publication/issues). Please
+[GitHub](https://github.com/acamacho-unige/moodle-mod_privatestudentfolder). Please
 provide a detailed bug description, including the plugin and Moodle version and, if applicable, a
 screenshot.
-
-You may also file a request for enhancement on GitHub. If we consider the request generally useful
-and if it can be implemented with reasonable effort we might implement it in a future version.
 
 You may also post general questions on the plugin on GitHub, but note that we do not have the
 resources to provide detailed support.
@@ -76,6 +81,3 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License with Moodle. If not, see
 <http://www.gnu.org/licenses/>.
-
-
-Good luck and have fun!

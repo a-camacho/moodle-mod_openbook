@@ -1,6 +1,44 @@
 CHANGELOG
 =========
 
+4.6 (2025-06-26)
+-------------------
+
+* Moodle 4.5+ compatible version
+* [FORK] Original plugin forked
+* [UPDATE] Code clean up
+* [FEATURE] #1 - Multiple changes to make the plugin work in a different way (files are private or can be shared, students can aprove sharing, teacher rejection means document is not avalaible to it's owner or anyone)
+
+ORIGINAL CHANGELOG
+=========
+
+4.5.3 (2025-03-05)
+-------------------
+* [BUG] #8249 - further fix for AMOS to be able to manage language strings of the current version
+
+4.5.2 (2025-02-21)
+-------------------
+* [BUG] #8237 - fix for AMOS to be able to manage language strings of the current version
+
+4.5.1 (2025-01-15)
+-------------------
+* [FEATURE] #8188 - implement new setting for availability restrictions for userlist - github #92 & github pull request #93 - melanietreitinger
+* [BUG] #8113 - fix sql query that fetches users to work under MSSQL - github #88
+* [BUG] #8212 - fix issues with backup and restore of publication - github #95
+
+4.5.0 (2024-10-18)
+-------------------
+* Moodle 4.5.0 compatible version
+* [UPDATE] #8012 - code clean up
+* [BUG] #8027 - import from assignment: change sort order of activites in the list
+* [BUG] #8087 - fix bug with students can bypass date restriction for upload by adapting the url of an activity
+* [FEATURE] #8028 - link some count values on the summary page to the corresponding filter on the submission page
+* [FEATURE] #7605 - implement general page for overrides and link it in the activity navigation
+
+4.4.1 (2024-08-07)
+-------------------
+* [BUG] #8034 - fix bug with undefined constant during upgrade - github #84 - thanks to Benjamin-unige &  github pull request #85 - lucaboesch
+
 4.4.0 (2024-08-02)
 -------------------
 * Moodle 4.4.0 compatible version
