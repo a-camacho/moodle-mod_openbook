@@ -462,8 +462,9 @@ class privatestudentfolder {
     /**
      * Get userids to fetch files for, when displaying all submitted files or downloading them as ZIP
      *
-     * @param int[] $users (optional) user ids for which the returned user ids have to filter
-     * @return int[] array of userids
+     * @param int[]     $users (optional) user ids for which the returned user ids have to filter
+     * @param bool      ignoreallfilespage
+     * @return int[]    array of userids
      */
     public function get_users($users = [], $ignoreallfilespage = false) {
         global $DB;
