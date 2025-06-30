@@ -24,8 +24,6 @@
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Class performing all restore structure steps for mod_privatestudentfolder
  *
@@ -95,7 +93,6 @@ class restore_privatestudentfolder_activity_structure_step extends restore_activ
         if ($data->approvaltodate != 0) {
             $data->approvaltodate = $this->apply_date_offset($data->approvaltodate);
         }
-
 
         // Delete importfrom after restore.
         $data->importfrom = -1;
