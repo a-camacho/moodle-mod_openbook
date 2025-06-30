@@ -237,7 +237,11 @@ class restore_privatestudentfolder_activity_structure_step extends restore_activ
         $rs->close();
 
         // And we correct the directories!
-        $rs = $DB->get_recordset('files', ['contextid' => $contextid, 'component' => 'mod_privatestudentfolder', 'filename' => '.']);
+        $rs = $DB->get_recordset('files', [
+                'contextid' => $contextid,
+                'component' => 'mod_privatestudentfolder',
+                'filename' => '.']
+        );
         foreach ($rs as $record) {
             $record->itemid = $this->get_mappingid('user', $record->itemid, $record->itemid); // We may need to update user ID!
             $DB->update_record('files', $record);
