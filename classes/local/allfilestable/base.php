@@ -20,7 +20,7 @@
  * @package       mod_privatestudentfolder
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @copyright     2025 University of Geneva {@link http://www.unige.ch}
+ * @author     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -93,6 +93,7 @@ class base extends \table_sql {
      * @param string $uniqueid a string identifying this table.Used as a key in session  vars.
      *                         It gets set automatically with the helper methods!
      * @param \privatestudentfolder $privatestudentfolder privatestudentfolder object
+     * @param $filter
      */
     public function __construct($uniqueid, \privatestudentfolder $privatestudentfolder, $filter) {
         global $CFG, $OUTPUT;

@@ -122,6 +122,7 @@ class group extends base {
      * @param string $uniqueid a string identifying this table.Used as a key in session  vars.
      *                         It gets set automatically with the helper methods!
      * @param \privatestudentfolder $privatestudentfolder privatestudentfolder object
+     * @param $filter
      */
     public function __construct($uniqueid, \privatestudentfolder $privatestudentfolder, $filter) {
         global $DB, $PAGE;
