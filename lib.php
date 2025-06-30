@@ -362,8 +362,8 @@ function mod_privatestudentfolder_pluginfile($course, $cm, context $context, $fi
 /**
  * Callback for block_myoverview which will decide whether it will be shown in the overview
  *
- * @param event
- * @param factory
+ * @param calendar_event $event
+ * @param \core_calendar\action_factory $factory
  */
 function mod_privatestudentfolder_core_calendar_provide_event_action(calendar_event $event, \core_calendar\action_factory $factory) {
     global $CFG, $USER, $DB;
