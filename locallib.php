@@ -276,6 +276,8 @@ class privatestudentfolder {
                 return get_string('edit_notcapable', 'privatestudentfolder');
             }
         }
+
+        return '';
     }
 
     /**
@@ -570,7 +572,7 @@ class privatestudentfolder {
     /**
      * Get table with all files
      *
-     * @param constant $filter
+     * @param string $filter
      * @param bool $ignoreallfilespage (optional)
      */
     public function get_allfilestable($filter, $ignoreallfilespage = false) {
@@ -772,7 +774,13 @@ class privatestudentfolder {
                 html_writer::end_tag('form');
 
         // Mini form for setting user preference.
-        $formaction = new moodle_url('/mod/privatestudentfolder/view.php', ['id' => $this->coursemodule->id, 'allfilespage' => $this->allfilespage]);
+        $formaction = new moodle_url(
+            '/mod/privatestudentfolder/view.php',
+            [
+                'id' => $this->coursemodule->id,
+                'allfilespage' => $this->allfilespage
+            ]
+        );
         $mform = new MoodleQuickForm('optionspref', 'post', $formaction, '', ['class' => 'optionspref']);
 
         $attributes = [];
@@ -796,18 +804,36 @@ class privatestudentfolder {
 
         if (has_capability('mod/privatestudentfolder:approve', $context) && $this->allfilespage) {
             $filteroptions = [
-                PRIVATESTUDENTFOLDER_FILTER_NOFILTER => get_string('filter:' . PRIVATESTUDENTFOLDER_FILTER_NOFILTER, 'privatestudentfolder'),
-                PRIVATESTUDENTFOLDER_FILTER_ALLFILES => get_string('filter:' . PRIVATESTUDENTFOLDER_FILTER_ALLFILES, 'privatestudentfolder'),
+                PRIVATESTUDENTFOLDER_FILTER_NOFILTER => get_string(
+                    'filter:' . PRIVATESTUDENTFOLDER_FILTER_NOFILTER,
+                    'privatestudentfolder'
+                ),
+                PRIVATESTUDENTFOLDER_FILTER_ALLFILES => get_string(
+                    'filter:' . PRIVATESTUDENTFOLDER_FILTER_ALLFILES,
+                    'privatestudentfolder'
+                ),
             ];
             if ($this->get_instance()->obtainteacherapproval || $this->get_instance()->obtainstudentapproval) {
                 $filteroptions += [
-                    PRIVATESTUDENTFOLDER_FILTER_APPROVED => get_string('filter:' . PRIVATESTUDENTFOLDER_FILTER_APPROVED, 'privatestudentfolder'),
-                    PRIVATESTUDENTFOLDER_FILTER_REJECTED => get_string('filter:' . PRIVATESTUDENTFOLDER_FILTER_REJECTED, 'privatestudentfolder'),
-                    PRIVATESTUDENTFOLDER_FILTER_APPROVALREQUIRED => get_string('filter:' . PRIVATESTUDENTFOLDER_FILTER_APPROVALREQUIRED, 'privatestudentfolder'),
+                    PRIVATESTUDENTFOLDER_FILTER_APPROVED => get_string(
+                        'filter:' . PRIVATESTUDENTFOLDER_FILTER_APPROVED,
+                        'privatestudentfolder'
+                    ),
+                    PRIVATESTUDENTFOLDER_FILTER_REJECTED => get_string(
+                        'filter:' . PRIVATESTUDENTFOLDER_FILTER_REJECTED,
+                        'privatestudentfolder'
+                    ),
+                    PRIVATESTUDENTFOLDER_FILTER_APPROVALREQUIRED => get_string(
+                        'filter:' . PRIVATESTUDENTFOLDER_FILTER_APPROVALREQUIRED,
+                        'privatestudentfolder'
+                    ),
                 ];
             }
             $filteroptions += [
-                PRIVATESTUDENTFOLDER_FILTER_NOFILES => get_string('filter:' . PRIVATESTUDENTFOLDER_FILTER_NOFILES, 'privatestudentfolder'),
+                PRIVATESTUDENTFOLDER_FILTER_NOFILES => get_string(
+                    'filter:' . PRIVATESTUDENTFOLDER_FILTER_NOFILES,
+                    'privatestudentfolder'
+                ),
             ];
             $mform->addElement('select', 'filter', get_string('filter', 'privatestudentfolder'), $filteroptions, $attributes);
             $mform->setDefault('filter', $filter);
@@ -863,7 +889,11 @@ class privatestudentfolder {
             $teacherapproval = $filepermissions->teacherapproval;
             $studentapproval = $filepermissions->studentapproval;
 
-            $haspermission = $haspermission || ((!$obtainteacherapproval || $teacherapproval == 1) && (!$obtainstudentapproval || $studentapproval == 1));
+            $haspermission = $haspermission ||
+                (
+                    (!$obtainteacherapproval || $teacherapproval == 1)
+                    && (!$obtainstudentapproval || $studentapproval == 1)
+                );
             /*
             if ($this->get_instance()->mode == PRIVATESTUDENTFOLDER_MODE_UPLOAD) {
                 // Mode upload.
@@ -939,7 +969,7 @@ class privatestudentfolder {
         // Calculate new cumulated studentapproval for caching in file table!
         // Get group members!
         $groupmembers = $this->get_submissionmembers($filerec->userid);
-        $stats = array();
+        $stats = [];
         $stats['approving'] = 0;
         $stats['needed'] = count($groupmembers);
         if (!empty($groupmembers)) {
@@ -976,7 +1006,7 @@ class privatestudentfolder {
                 }
             }
         } else {
-            // Group without members, so no one could approve! (Should never happen, never ever!)
+            // Group without members, so no one could approve! (Should never happen, never ever)!
             $approval = 2;
         }
 
@@ -1127,7 +1157,6 @@ class privatestudentfolder {
             $groupdata = [];
         }
 
-        // return [$studentapproval, $groupdata];
         return [$filerec->studentapproval, $groupdata];
     }
 
@@ -1187,7 +1216,7 @@ class privatestudentfolder {
                 $this->add_onlinetext_to_zipfiles($filesforzipping, $file, '', $filename, $fs);
                 if (count($filesforzipping) == 1) {
                     // We can send the file directly, if it has no resources!
-                    send_file($file, $filename, 'default', 0, false, true, $file->get_mimetype(), false);
+                    send_file($file, $filename, null, 0, false, true, $file->get_mimetype(), false);
                 } else {
                     $zipfile = tempnam($CFG->dataroot . '/temp/', 'privatestudentfolder_');
                     if ($zipper->archive_to_pathname($filesforzipping, $zipfile)) {
@@ -1195,18 +1224,18 @@ class privatestudentfolder {
                     }
                 }
             } else {
-                send_file($file, $file->get_filename(), 'default', 0, false, true, $file->get_mimetype(), false);
+                send_file($file, $file->get_filename(), null, 0, false, true, $file->get_mimetype(), false);
             }
             die();
         } else {
-            throw new \moodle_exception('You are not allowed to see this file', 'mod_privatestudentfolder'); // TODO get_string().
+            throw new \moodle_exception('You are not allowed to see this file', 'mod_privatestudentfolder');
         }
     }
 
     /**
      * Creates a zip of all uploaded files and sends a zip to the browser
      *
-     * @param unknown $uploaders false => empty zip, true all users, array files from uploaders (users/groups) in array
+     * @param array|bool $uploaders false => empty zip, true all users, array files from uploaders (users/groups) in array
      */
     public function download_zip($uploaders = []) {
         global $CFG, $DB, $USER;
@@ -1299,7 +1328,7 @@ class privatestudentfolder {
      * Pack files in ZIP
      *
      * @param object[] $filesforzipping Files for zipping
-     * @return object zipped files
+     * @return bool|string zipped files
      */
     private function pack_files($filesforzipping) {
         global $CFG;
@@ -1332,13 +1361,15 @@ class privatestudentfolder {
         }
 
         // First we get all ressources!
-        $resources = $fs->get_directory_files($this->get_context()->id,
-                'mod_privatestudentfolder',
-                'attachment',
-                $file->get_itemid(),
-                '/resources/',
-                true,
-                false);
+        $resources = $fs->get_directory_files(
+            $this->get_context()->id,
+            'mod_privatestudentfolder',
+            'attachment',
+            $file->get_itemid(),
+            '/resources/',
+            true,
+            false
+        );
         if (count($resources) > 0) {
             // If it's an online-Text with resources, we have to add altered content and all the ressources for it!
             $content = $file->get_content();
@@ -1375,7 +1406,7 @@ class privatestudentfolder {
         $select = ' privatestudentfolder=:pubid AND userid ' . $usersql;
         $records = $DB->get_records_select('privatestudentfolder_file', $select, $params);
         $files = [];
-        // $teacherapproval = $action == 'approveusers' ? '1' : ($action == 'rejectusers' ? '2' : null);
+
         foreach ($records as $record) {
             $files[$record->fileid] = $action;
         }
@@ -1394,7 +1425,11 @@ class privatestudentfolder {
         global $DB, $USER;
 
         foreach ($files as $fileid => $newfileaction) {
-            $x = $DB->get_record('privatestudentfolder_file', array('fileid' => $fileid), $fields = "fileid,userid,teacherapproval,id,studentapproval,filename");
+            $x = $DB->get_record(
+                'privatestudentfolder_file',
+                ['fileid' => $fileid],
+                $fields = "fileid,userid,teacherapproval,id,studentapproval,filename"
+            );
 
             $oldteacherapproval = $x->teacherapproval;
             $oldstudentapproval = $x->studentapproval;
@@ -1428,7 +1463,11 @@ class privatestudentfolder {
                     $newteacherapproval = 2;
                     break;
                 case 'resetstudentapproval':
-                    if ( $oldstudentapproval != 1 && $oldstudentapproval != 2 && $this->mode != PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION ) {
+                    if (
+                        $oldstudentapproval != 1 &&
+                        $oldstudentapproval != 2 &&
+                        $this->mode != PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION
+                    ) {
                         continue 2;
                     }
                     $resetstudentapproval = true;
@@ -1439,31 +1478,11 @@ class privatestudentfolder {
                     continue 2;
             }
 
-            // $newteacherapproval = trim($newteacherapproval);
-            // if ($newteacherapproval != $oldteacherapproval && !empty($newteacherapproval)) {
-            /*
-                $newstatus = ($this->instance->obtainteacherapproval && $newteacherapproval == 1 ||
-                $this->instance->obtainteacherapproval && $newteacherapproval != 2) ? '' : 'not';
-            */
-
             $user = $DB->get_record('user', array('id' => $x->userid));
             $group = false;
             if ($this->mode == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION) {
                 $group = $x->userid;
             }
-
-            /* $logstatus = '';
-            if ($newteacherapproval == 1) {
-                $newstatus = '';
-                $logstatus .= 'approved';
-            } else if ($newteacherapproval == 2) {
-                $newstatus = 'not';
-                $logstatus .= 'rejected';
-            } else {
-                $newstatus = 'revoke';
-                $logstatus .= 'revoked';
-            }
-            */
 
             $dataforlog = new stdClass();
             $dataforlog->privatestudentfolder = $this->instance->id;
@@ -1477,14 +1496,17 @@ class privatestudentfolder {
             $dataforlog->fileid = $fileid;
 
             try {
-                \mod_privatestudentfolder\event\privatestudentfolder_approval_changed::approval_changed($this->coursemodule, $dataforlog)->trigger();
+                \mod_privatestudentfolder\event\privatestudentfolder_approval_changed::approval_changed(
+                    $this->coursemodule,
+                    $dataforlog
+                )->trigger();
             } catch (coding_exception $e) {
                 throw new Exception("Coding exception while sending notification: " . $e->getMessage());
             }
 
             if ($teacherapprove || $teacherreject) {
                 $DB->set_field('privatestudentfolder_file', 'teacherapproval', $newteacherapproval, ['fileid' => $fileid]);
-            } else { // reset student approval
+            } else { // Reset student approval.
                 $DB->set_field('privatestudentfolder_file', 'studentapproval', 0, ['fileid' => $fileid]);
                 if ($this->mode == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION) {
                     $groupapprovals = $DB->get_records('privatestudentfolder_groupapproval', ['fileid' => $x->id]);
@@ -1593,7 +1615,10 @@ class privatestudentfolder {
                     $conditions['id'] = $oldpubfile->id;
                     $dataobject = $DB->get_record('privatestudentfolder_file', ['id' => $conditions['id']]);
                     $cm = $this->coursemodule;
-                    \mod_privatestudentfolder\event\privatestudentfolder_file_deleted::create_from_object($cm, $dataobject)->trigger();
+                    \mod_privatestudentfolder\event\privatestudentfolder_file_deleted::create_from_object(
+                        $cm,
+                        $dataobject
+                    )->trigger();
                     $DB->delete_records('privatestudentfolder_file', $conditions);
                 }
             }
@@ -1631,11 +1656,19 @@ class privatestudentfolder {
 
                     $dataobject->id = $DB->insert_record('privatestudentfolder_file', $dataobject);
                     $dataobject->typ = $importtype;
-                    \mod_privatestudentfolder\event\privatestudentfolder_file_imported::file_added($assigncm, $dataobject)->trigger();
+                    \mod_privatestudentfolder\event\privatestudentfolder_file_imported::file_added(
+                        $assigncm,
+                        $dataobject
+                    )->trigger();
 
                     if ($this->get_instance()->notifyfilechange != 0) {
-                        $cm = get_coursemodule_from_instance('privatestudentfolder', $this->get_instance()->id, 0, false, MUST_EXIST);
-                        // USER $user = $DB->get_record('user', ['id' => $submission->userid], '*', MUST_EXIST); Not needed!
+                        $cm = get_coursemodule_from_instance(
+                            'privatestudentfolder',
+                            $this->get_instance()->id,
+                            0,
+                            false,
+                            MUST_EXIST
+                        );
                         self::send_notification_filechange($cm, $dataobject);
                     }
 
@@ -1673,7 +1706,13 @@ class privatestudentfolder {
      * @param int $contextid Private Student Folder's context ID
      * @param int $submissionid (optional) If set, only process this submission, else process all submissions
      */
-    public static function update_assign_onlinetext($assigncm, $assigncontext, $privatestudentfolderid, $contextid, $submissionid = 0) {
+    public static function update_assign_onlinetext(
+        $assigncm,
+        $assigncontext,
+        $privatestudentfolderid,
+        $contextid,
+        $submissionid = 0
+    ) {
         global $USER, $DB, $CFG;
 
         $fs = get_file_storage();
@@ -1705,7 +1744,7 @@ class privatestudentfolder {
             $itemid = empty($teamsubmission) ? $submission->userid : $submission->groupid;
             $importtype = empty($teamsubmission) ? 'user' : 'group';
 
-            // First we fetch the resource files (embedded files in text!)
+            // First we fetch the resource files (embedded files in text!).
             $fsfiles = $fs->get_area_files($assigncontext->id,
                     'assignsubmission_onlinetext',
                     ASSIGNSUBMISSION_ONLINETEXT_FILEAREA,
@@ -1779,7 +1818,10 @@ class privatestudentfolder {
                 if (empty($formattedtext)) {
                     // The onlinetext was empty, delete the file!
                     if ($pubfile) {
-                        \mod_privatestudentfolder\event\privatestudentfolder_file_deleted::create_from_object($assigncm, $pubfile)->trigger();
+                        \mod_privatestudentfolder\event\privatestudentfolder_file_deleted::create_from_object(
+                            $assigncm,
+                            $pubfile
+                        )->trigger();
                         $DB->delete_records('privatestudentfolder_file', $conditions);
                     }
                     $file->delete();
@@ -1829,14 +1871,20 @@ class privatestudentfolder {
                     $dataobject->typ = $importtype;
                     $dataobject->itemid = $itemid;
                     $dataobject->update = true;
-                    \mod_privatestudentfolder\event\privatestudentfolder_file_imported::file_added($assigncm, $dataobject)->trigger();
+                    \mod_privatestudentfolder\event\privatestudentfolder_file_imported::file_added(
+                        $assigncm,
+                        $dataobject
+                    )->trigger();
                     $DB->update_record('privatestudentfolder_file', $pubfile);
                 } else {
                     $dataobject = $pubfile;
                     $dataobject->id = $DB->insert_record('privatestudentfolder_file', $pubfile);
                     $dataobject->typ = $importtype;
                     $dataobject->itemid = $itemid;
-                    \mod_privatestudentfolder\event\privatestudentfolder_file_imported::file_added($assigncm, $dataobject)->trigger();
+                    \mod_privatestudentfolder\event\privatestudentfolder_file_imported::file_added(
+                        $assigncm,
+                        $dataobject
+                    )->trigger();
                 }
 
                 if ($privatestudentfolder->get_instance()->notifyfilechange != 0) {
@@ -1850,7 +1898,10 @@ class privatestudentfolder {
             $resource = $fs->get_file_by_id($pubfile->fileid);
             if ($resource && $resource->get_itemid() == $pubfile->userid) {
                 $resource->delete();
-                \mod_privatestudentfolder\event\privatestudentfolder_file_deleted::create_from_object($assigncm, $pubfile)->trigger();
+                \mod_privatestudentfolder\event\privatestudentfolder_file_deleted::create_from_object(
+                    $assigncm,
+                    $pubfile
+                )->trigger();
                 $DB->delete_records('privatestudentfolder_file', ['id' => $pubfile->id]);
             }
         }
@@ -1864,7 +1915,7 @@ class privatestudentfolder {
      * @param string $newstatus whats the new status
      * @param object $pubfile the privatestudentfolder-file on which the status change took place
      * @param string $pubid id of the privatestudentfolder
-     * @param null|stdClass $privatestudentfolder the privatestudentfolder instance
+     * @param null|privatestudentfolder $privatestudentfolder the privatestudentfolder instance
      * @throws coding_exception
      */
     public static function send_notification_statuschange($cm, $userfrom, $newstatus, $pubfile,
@@ -1899,18 +1950,29 @@ class privatestudentfolder {
                 $info->url = $CFG->wwwroot . '/mod/privatestudentfolder/view.php?id=' . $pubid;
                 $info->id = $pubid;
                 $info->filename = $pubfile->filename;
-                $info->apstatus = $sm->get_string('status:approved' . $newstatus, 'mod_privatestudentfolder', null, $receiver->lang);
+                $info->apstatus = $sm->get_string(
+                    'status:approved' . $newstatus,
+                    'mod_privatestudentfolder',
+                    null,
+                    $receiver->lang
+                );
                 $info->dayupdated = userdate(time(), $sm->get_string('strftimedate', 'core_langconfig', null, $receiver->lang));
                 $info->timeupdated = userdate(time(), $sm->get_string('strftimetime24', 'core_langconfig', null, $receiver->lang));
 
                 if (!isset(self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE])) {
                     self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE] = [];
                 }
-                if (!isset(self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id])) {
+                if (
+                    !isset(
+                        self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id]
+                    )
+                ) {
                     self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id] = [];
                 }
 
-                $includeheader = !isset(self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id]);
+                $includeheader = !isset(
+                    self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id]
+                );
                 $postsubject = $strsubmitted . ': ' . $cm->name;
                 $posttext = $privatestudentfolder->email_statuschange_text($info, $receiver->lang, $includeheader);
                 $posthtml = $privatestudentfolder->email_statuschange_html($info, $receiver->lang, $includeheader);
@@ -1933,8 +1995,10 @@ class privatestudentfolder {
                     $message->contexturlname = $info->privatestudentfolder;
                     self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id] = $message;
                 }
-                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id]->fullmessage .= $posttext;
-                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id]->fullmessagehtml .= $posthtml;
+                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE]
+                    [$cm->id][$receiver->id]->fullmessage .= $posttext;
+                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE]
+                    [$cm->id][$receiver->id]->fullmessagehtml .= $posthtml;
 
             }
         }
@@ -1958,7 +2022,9 @@ class privatestudentfolder {
             $privatestudentfolder = new privatestudentfolder($cm);
         }
 
-        $stridentifier = $privatestudentfolder->get_instance()->mode == PRIVATESTUDENTFOLDER_MODE_UPLOAD ? 'filechange_upload' : 'filechange_import';
+        $stridentifier = $privatestudentfolder->get_instance()->mode == PRIVATESTUDENTFOLDER_MODE_UPLOAD
+            ? 'filechange_upload'
+            : 'filechange_import';
         $assignname = null;
         if ($privatestudentfolder->get_instance()->mode != PRIVATESTUDENTFOLDER_MODE_UPLOAD) {
             $assign = $DB->get_record('assign', ['id' => $privatestudentfolder->get_instance()->importfrom]);
@@ -1983,7 +2049,12 @@ class privatestudentfolder {
         }
         if (!empty($receivers)) {
             foreach ($receivers as $receiver) {
-                $strsubmitted = $sm->get_string('email:' . $stridentifier . ':subject', 'privatestudentfolder', null, $receiver->lang);
+                $strsubmitted = $sm->get_string(
+                    'email:' . $stridentifier . ':subject',
+                    'privatestudentfolder',
+                    null,
+                    $receiver->lang
+                );
                 $info = new stdClass();
                 $info->username = fullname($user);
                 $info->privatestudentfolder = format_string($privatestudentfolder->get_instance()->name, true);
@@ -2001,7 +2072,9 @@ class privatestudentfolder {
                     self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE][$cm->id] = [];
                 }
 
-                $includeheader = !isset(self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE][$cm->id][$receiver->id]);
+                $includeheader = !isset(
+                    self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE][$cm->id][$receiver->id]
+                );
                 $postsubject = $strsubmitted . ': ' . $info->privatestudentfolder;
                 $posttext = $privatestudentfolder->email_filechange_text($info, $receiver->lang, $stridentifier, $includeheader);
                 $posthtml = $privatestudentfolder->email_filechange_html($info, $receiver->lang, $stridentifier, $includeheader);
@@ -2025,8 +2098,10 @@ class privatestudentfolder {
                     $message->contexturlname = $info->privatestudentfolder;
                     self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE][$cm->id][$receiver->id] = $message;
                 }
-                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE][$cm->id][$receiver->id]->fullmessage .= $posttext;
-                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE][$cm->id][$receiver->id]->fullmessagehtml .= $posthtml;
+                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE]
+                    [$cm->id][$receiver->id]->fullmessage .= $posttext;
+                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE]
+                    [$cm->id][$receiver->id]->fullmessagehtml .= $posthtml;
 
                 // message_send($message);
             }
@@ -2042,8 +2117,19 @@ class privatestudentfolder {
             foreach ($cms as $cmid => $users) {
                 foreach ($users as $userid => $message) {
                     if ($type == PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE) {
-                        $message->fullmessage .= PHP_EOL . strip_tags($sm->get_string('email:filechange:footer', 'privatestudentfolder', null, $message->userto->lang));
-                        $message->fullmessagehtml .= $sm->get_string('email:filechange:footer', 'privatestudentfolder', null, $message->userto->lang);
+                        $footertext = $sm->get_string(
+                            'email:filechange:footer',
+                            'privatestudentfolder',
+                            null,
+                            $message->userto->lang
+                        );
+                        $message->fullmessage .= PHP_EOL . strip_tags($footertext);
+                        $message->fullmessagehtml .= $sm->get_string(
+                            'email:filechange:footer',
+                            'privatestudentfolder',
+                            null,
+                            $message->userto->lang
+                        );
                     } else {
                         $message->fullmessage .= '';
                         $message->fullmessagehtml .= '</ul>';
@@ -2196,8 +2282,8 @@ class privatestudentfolder {
                     0,
                     'u.*',
                     null,
-                    null,
-                    null,
+                    0,
+                    0,
                     true);
         $graders = [];
         if (groups_get_activity_groupmode($this->coursemodule) == SEPARATEGROUPS) {
@@ -2252,10 +2338,17 @@ class privatestudentfolder {
             $posttext .= format_string($this->course->shortname) . ' -> ' .
                 $sm->get_string('modulenameplural', 'privatestudentfolder', null, $lang) . ' -> ' .
                 format_string($info->privatestudentfolder) . "\n";
-            $posttext .= strip_tags($sm->get_string('email:' . $stridentifier . ':header', 'privatestudentfolder', $info, $lang))."\n";
+            $posttext .= strip_tags(
+                $sm->get_string(
+                    'email:' . $stridentifier . ':header',
+                    'privatestudentfolder',
+                    $info,
+                    $lang
+                )
+            ) . "\n";
         }
         $posttext .= $info->filename . "\n";
-        // $posttext .= $sm->get_string('email:' . $stridentifier . ':plaintext', 'privatestudentfolder', $info, $lang)."\n";
+
         return $posttext;
     }
 
@@ -2284,9 +2377,7 @@ class privatestudentfolder {
 
         }
         $posthtml .= '<li>' . $info->filename . '</li>';
-        /*$posthtml .= '<span style="font-family: sans-serif; ">';
-        $posthtml .= ''.$sm->get_string('email:' . $stridentifier . ':plaintext', 'privatestudentfolder', $info, $lang).'';
-        $posthtml .= '</span>';*/
+
         return $posthtml;
     }
 
@@ -2335,8 +2426,7 @@ class privatestudentfolder {
             $posthtml .= ''.$sm->get_string('email:statuschange:header', 'privatestudentfolder', $info, $lang);
         }
         $posthtml .= $sm->get_string('email:statuschange:filename', 'privatestudentfolder', $info, $lang);
-        /* $posthtml .= '<hr /><span style="font-family: sans-serif; ">';
-        $posthtml .= '</span>';*/
+
         return $posthtml;
     }
 
@@ -2350,11 +2440,11 @@ class privatestudentfolder {
 
         $instance = $this->get_instance();
 
-        // Check whether the privatestudentfolder already has a event
+        // Check whether the privatestudentfolder already has a event.
         $result = $DB->get_record('event', ['modulename' => 'privatestudentfolder', 'instance' => $instance->id]);
 
         if ($result) {
-            // Check whether the privatestudentfolder still has a due date, if not delete the event
+            // Check whether the privatestudentfolder still has a due date, if not delete the event.
             if ($instance->duedate == null || $instance->duedate == 0) {
                 $DB->delete_records('event', ['modulename' => 'privatestudentfolder', 'instance' => $instance->id]);
             } else {
@@ -2367,7 +2457,7 @@ class privatestudentfolder {
         } else if ($instance->duedate != null && $instance->duedate != 0) {
             $event = new stdClass();
             $event->eventtype = PRIVATESTUDENTFOLDER_EVENT_TYPE_DUE;
-            $event->type = CALENDAR_EVENT_TYPE_ACTION; // Necessary to enable this event in block_myoverview
+            $event->type = CALENDAR_EVENT_TYPE_ACTION; // Necessary to enable this event in block_myoverview.
             $event->name = $instance->name;
             $event->description = "";
             $event->courseid = $instance->course;
@@ -2377,7 +2467,7 @@ class privatestudentfolder {
             $event->instance = $instance->id;
             $event->visible = instance_is_visible('privatestudentfolder', $this->instance);
             $event->timestart = $instance->duedate;
-            $event->timesort = $instance->duedate; // Necessary for block_myoverview
+            $event->timesort = $instance->duedate; // Necessary for block_myoverview.
             $event->timeduration = 0;
 
             calendar_event::create($event);
@@ -2439,7 +2529,10 @@ class privatestudentfolder {
     public function override_export_for_template_single($override) {
         $override->submissionoverride = null;
         $override->approvaloverride = null;
-        if ($this->mode == PRIVATESTUDENTFOLDER_MODE_FILEUPLOAD && ($override->allowsubmissionsfromdate > 0 || $override->duedate > 0)) {
+        if (
+            $this->mode == PRIVATESTUDENTFOLDER_MODE_FILEUPLOAD &&
+            ($override->allowsubmissionsfromdate > 0 || $override->duedate > 0)
+        ) {
             $fromto = (object)[
                 'from' => userdate($override->allowsubmissionsfromdate),
                 'to' => userdate($override->duedate),
@@ -2452,7 +2545,10 @@ class privatestudentfolder {
                 $override->submissionoverride = get_string('override:submission:to', 'mod_privatestudentfolder', $fromto);
             }
         }
-        if ($this->instance->obtainstudentapproval == 1 && ($override->approvalfromdate > 0 || $override->approvaltodate > 0)) {
+        if (
+            $this->instance->obtainstudentapproval == 1 &&
+            ($override->approvalfromdate > 0 || $override->approvaltodate > 0)
+        ) {
             $fromto = (object)[
                 'from' => userdate($override->approvalfromdate),
                 'to' => userdate($override->approvaltodate),
@@ -2485,7 +2581,13 @@ class privatestudentfolder {
             return null;
         }
         if ($formdata->overrideid != -1) {
-            $override = $DB->get_record('privatestudentfolder_overrides', ['id' => $formdata->overrideid, 'privatestudentfolder' => $this->instance->id]);
+            $override = $DB->get_record(
+                'privatestudentfolder_overrides',
+                [
+                    'id' => $formdata->overrideid,
+                    'privatestudentfolder' => $this->instance->id
+                ]
+            );
             unset($formdata->id);
             unset($formdata->overrideid);
             if (!$override) {
@@ -2527,7 +2629,13 @@ class privatestudentfolder {
      */
     public function override_get($overrideid) {
         global $DB;
-        $override = $DB->get_record('privatestudentfolder_overrides', ['id' => $overrideid, 'privatestudentfolder' => $this->instance->id]);
+        $override = $DB->get_record(
+            'privatestudentfolder_overrides',
+            [
+                'id' => $overrideid,
+                'privatestudentfolder' => $this->instance->id
+            ]
+        );
         if ($override) {
             return $this->override_export_for_template_single($override);
         }
@@ -2541,7 +2649,13 @@ class privatestudentfolder {
      */
     public function override_delete($overrideid) {
         global $DB;
-        $override = $DB->get_record('privatestudentfolder_overrides', ['id' => $overrideid, 'privatestudentfolder' => $this->instance->id]);
+        $override = $DB->get_record(
+            'privatestudentfolder_overrides',
+            [
+                'id' => $overrideid,
+                'privatestudentfolder' => $this->instance->id
+            ]
+        );
         if ($override) {
             $DB->delete_records('privatestudentfolder_overrides', ['id' => $overrideid]);
             return true;
@@ -2562,7 +2676,13 @@ class privatestudentfolder {
             $formdata->id = $this->coursemodule->id;
             return $formdata;
         }
-        $override = $DB->get_record('privatestudentfolder_overrides', ['id' => $overrideid, 'privatestudentfolder' => $this->instance->id]);
+        $override = $DB->get_record(
+            'privatestudentfolder_overrides',
+            [
+                'id' => $overrideid,
+                'privatestudentfolder' => $this->instance->id
+            ]
+        );
         if ($override) {
             $override->overrideid = $override->id;
             $override->id = $this->coursemodule->id;
@@ -2582,10 +2702,22 @@ class privatestudentfolder {
             $groups = groups_get_all_groups($this->course->id, $USER->id);
             if (!empty($groups)) {
                 $group = reset($groups);
-                $override = $DB->get_record('privatestudentfolder_overrides', ['privatestudentfolder' => $this->instance->id, 'groupid' => $group->id]);
+                $override = $DB->get_record(
+                    'privatestudentfolder_overrides',
+                    [
+                        'privatestudentfolder' => $this->instance->id,
+                        'groupid' => $group->id
+                    ]
+                );
             }
         } else {
-                $override = $DB->get_record('privatestudentfolder_overrides', ['privatestudentfolder' => $this->instance->id, 'userid' => $USER->id]);
+            $override = $DB->get_record(
+                'privatestudentfolder_overrides',
+                [
+                    'privatestudentfolder' => $this->instance->id,
+                    'userid' => $USER->id
+                ]
+            );
         }
         if ($override) {
             return $this->override_export_for_template_single($override);

@@ -103,7 +103,11 @@ if ($savevisibility) {
 
         echo $OUTPUT->header();
         echo $OUTPUT->heading(format_string($privatestudentfolder->get_instance()->name), 1);
-        echo $OUTPUT->confirm($message, 'view.php?id=' . $id . '&action=import&confirm=1&sesskey=' . sesskey(), 'view.php?id=' . $id);
+        echo $OUTPUT->confirm(
+            $message,
+            'view.php?id=' . $id . '&action=import&confirm=1&sesskey=' . sesskey(),
+            'view.php?id=' . $id
+        );
         echo $OUTPUT->footer();
         exit;
     }
@@ -158,7 +162,11 @@ if ($data = $filesform->get_data()) {
         $conditions['privatestudentfolder'] = $privatestudentfolder->get_instance()->id;
         $conditions['userid'] = $USER->id;
 
-        $pubfileids = $DB->get_records_menu('privatestudentfolder_file', ['privatestudentfolder' => $privatestudentfolder->get_instance()->id],
+        $pubfileids = $DB->get_records_menu(
+            'privatestudentfolder_file',
+            [
+                'privatestudentfolder' => $privatestudentfolder->get_instance()->id
+            ],
             'id ASC', 'fileid, id');
 
         // Update records.
@@ -169,7 +177,9 @@ if ($data = $filesform->get_data()) {
                 continue;
             }
             $dataforlog = new stdClass();
-            $dataforlog->approval = $approval == 1 ? 'approved' : 'rejected';
+            $dataforlog->approval = $approval == 1
+                ? get_string('approved', 'privatestudentfolder')
+                : get_string('rejected', 'privatestudentfolder');
             $stats = null;
 
             if ($privatestudentfolder->get_mode() == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION) {
@@ -180,7 +190,11 @@ if ($data = $filesform->get_data()) {
                 $DB->set_field('privatestudentfolder_file', 'studentapproval', $approval, $conditions);
             }
             if (is_array($stats)) {
-                $dataforlog->approval = '(Students ' . $stats['approving'] . ' out of ' . $stats['needed'] . ') ' . $dataforlog->approval;
+                $dataforlog->approval = get_string('datalogapprovalstudent', 'privatestudentfolder', [
+                    'approving' => $stats['approving'],
+                    'needed' => $stats['needed'],
+                    'approval' => $dataforlog->approval
+                ]);
             }
             $dataforlog->privatestudentfolder = $conditions['privatestudentfolder'];
             $dataforlog->userid = $USER->id;
@@ -191,7 +205,14 @@ if ($data = $filesform->get_data()) {
             if ($privatestudentfolder->get_instance()->notifystatuschange != 0) {
                 $pubfile = $DB->get_record('privatestudentfolder_file', ['id' => $pubfileids[$idx]]);
                 $newstatus = $approval == 2 ? 'not' : ''; // Used for string identifier..
-                privatestudentfolder::send_notification_statuschange($cm, $USER, $newstatus, $pubfile, $cm->id, $privatestudentfolder);
+                privatestudentfolder::send_notification_statuschange(
+                    $cm,
+                    $USER,
+                    $newstatus,
+                    $pubfile,
+                    $cm->id,
+                    $privatestudentfolder
+                );
             }
         }
         privatestudentfolder::send_all_pending_notifications();
@@ -218,12 +239,15 @@ $privatestudentfolderinstance = $privatestudentfolder->get_instance();
 $privatestudentfoldermode = $privatestudentfolder->get_mode();
 $templatecontext = new stdClass;
 $templatecontext->obtainstudentapprovaltitle = get_string('obtainstudentapproval', 'privatestudentfolder');
-$templatecontext->obtainteacherapproval = $privatestudentfolderinstance->obtainteacherapproval == 1 ?
-    get_string('obtainteacherapproval_yes', 'privatestudentfolder') : get_string('obtainteacherapproval_no', 'privatestudentfolder');
+$templatecontext->obtainteacherapproval = $privatestudentfolderinstance->obtainteacherapproval == 1
+    ? get_string('obtainteacherapproval_yes', 'privatestudentfolder')
+    : get_string('obtainteacherapproval_no', 'privatestudentfolder');
+
 if ($privatestudentfoldermode == PRIVATESTUDENTFOLDER_MODE_FILEUPLOAD) {
     $templatecontext->mode = get_string('modeupload', 'privatestudentfolder');
-    $templatecontext->obtainstudentapproval = $privatestudentfolderinstance->obtainstudentapproval == 1 ?
-        get_string('obtainstudentapproval_yes', 'privatestudentfolder') : get_string('obtainstudentapproval_no', 'privatestudentfolder');
+    $templatecontext->obtainstudentapproval = $privatestudentfolderinstance->obtainstudentapproval == 1
+        ? get_string('obtainstudentapproval_yes', 'privatestudentfolder')
+        : get_string('obtainstudentapproval_no', 'privatestudentfolder');
 } else {
     $templatecontext->mode = get_string('modeimport', 'privatestudentfolder');
     if ($privatestudentfoldermode == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION) {
@@ -231,12 +255,15 @@ if ($privatestudentfoldermode == PRIVATESTUDENTFOLDER_MODE_FILEUPLOAD) {
         if ($privatestudentfolderinstance->obtainstudentapproval == 0) {
             $templatecontext->obtainstudentapproval = get_string('obtainstudentapproval_no', 'privatestudentfolder');
         } else {
-            $templatecontext->obtainstudentapproval = $privatestudentfolderinstance->groupapproval == PRIVATESTUDENTFOLDER_APPROVAL_ALL ?
-                get_string('obtaingroupapproval_all', 'privatestudentfolder') : get_string('obtaingroupapproval_single', 'privatestudentfolder');
+            $templatecontext->obtainstudentapproval =
+                $privatestudentfolderinstance->groupapproval == PRIVATESTUDENTFOLDER_APPROVAL_ALL
+                    ? get_string('obtaingroupapproval_all', 'privatestudentfolder')
+                    : get_string('obtaingroupapproval_single', 'privatestudentfolder');
         }
     } else {
-        $templatecontext->obtainstudentapproval = $privatestudentfolderinstance->obtainstudentapproval == 1 ?
-            get_string('obtainstudentapproval_yes', 'privatestudentfolder') : get_string('obtainstudentapproval_no', 'privatestudentfolder');
+        $templatecontext->obtainstudentapproval = $privatestudentfolderinstance->obtainstudentapproval == 1
+            ? get_string('obtainstudentapproval_yes', 'privatestudentfolder')
+            : get_string('obtainstudentapproval_no', 'privatestudentfolder');
     }
 }
 

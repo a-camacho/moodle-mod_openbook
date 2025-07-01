@@ -211,6 +211,7 @@ $string['nofiles'] = 'No files available';
 $string['nothing_to_show_users'] = 'Nothing to display - no students available';
 $string['nothing_to_show_groups'] = 'Nothing to display - no groups available';
 $string['notice'] = '<strong>Notice: </strong>';
+$string['datalogapprovalstudent'] = '(Students {$a->approving} out of {$a->needed}) {$a->approval}';
 
 $string['notice_upload_filesarepersonal_teacherrequired'] = 'All files you upload here will be personal and visible to you only <strong>after the approval of teachers.</strong> Teachers reserve the right to reject the publication of your files at any time.';
 $string['notice_upload_filesarepersonal_teachernotrequired'] = 'All files you upload here will be personal and visible to you <strong>automatically.</strong>';
