@@ -115,18 +115,31 @@ class privatestudentfolder_overrides_form extends moodleform {
             $mform->addElement('header', 'approvalsettings', get_string('approvalsettings', 'privatestudentfolder'));
             $mform->setExpanded('approvalsettings', true);
 
-            $mform->addElement('date_time_selector', 'approvalfromdate', get_string('approvalfromdate', 'privatestudentfolder'), ['optional' => true]);
+            $mform->addElement(
+                'date_time_selector',
+                'approvalfromdate',
+                get_string('approvalfromdate', 'privatestudentfolder'),
+                ['optional' => true]
+            );
             $mform->addHelpButton('approvalfromdate', 'approvalfromdate', 'privatestudentfolder');
             $mform->setDefault('approvalfromdate', time());
 
-            $mform->addElement('date_time_selector', 'approvaltodate', get_string('approvaltodate', 'privatestudentfolder'), ['optional' => true]);
+            $mform->addElement(
+                'date_time_selector',
+                'approvaltodate',
+                get_string('approvaltodate', 'privatestudentfolder'),
+                ['optional' => true]
+            );
             $mform->addHelpButton('approvaltodate', 'approvaltodate', 'privatestudentfolder');
             $mform->setDefault('approvaltodate', time() + 7 * 24 * 3600);
             $itemsadded = true;
         }
 
         if (!$itemsadded) {
-            $mform->addElement('html', '<div class="alert alert-info">' . get_string('override:nothingtochange', 'mod_privatestudentfolder') . '</div>');
+            $mform->addElement(
+                'html',
+                '<div class="alert alert-info">' . get_string('override:nothingtochange', 'mod_privatestudentfolder') . '</div>'
+            );
         }
         $this->add_action_buttons(true);
     }

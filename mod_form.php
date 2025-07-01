@@ -100,7 +100,13 @@ class mod_privatestudentfolder_mod_form extends moodleform_mod {
         $choices[-1] = get_string('choose', 'privatestudentfolder');
         $assigninstances = $DB->get_records('assign', ['course' => $COURSE->id], 'name ASC');
         $module = $DB->get_record('modules', ['name' => 'assign']);
-        $select = $mform->createElement('select', 'importfrom', get_string('assignment', 'privatestudentfolder'), $choices, $disabled);
+        $select = $mform->createElement(
+            'select',
+            'importfrom',
+            get_string('assignment', 'privatestudentfolder'),
+            $choices,
+            $disabled
+        );
         $notteamassigns = [-1];
         $teamassigns = [];
         foreach ($assigninstances as $assigninstance) {
@@ -165,7 +171,7 @@ class mod_privatestudentfolder_mod_form extends moodleform_mod {
         $mform->addElement('header', 'approvalsettings', get_string('approvalsettings', 'privatestudentfolder'));
         $mform->setExpanded('approvalsettings', true);
 
-        // Files are personal
+        // Files are personal.
         $attributes = [];
         $options = [
             '0' => get_string('filesarepersonal_no', 'privatestudentfolder'),
@@ -196,10 +202,15 @@ class mod_privatestudentfolder_mod_form extends moodleform_mod {
             '1' => get_string('obtainapproval_required', 'privatestudentfolder'),
         ];
 
-        $mform->addElement('select', 'obtainstudentapproval', get_string('obtainstudentapproval', 'privatestudentfolder'), $options, $attributes);
+        $mform->addElement(
+            'select',
+            'obtainstudentapproval',
+            get_string('obtainstudentapproval', 'privatestudentfolder'),
+            $options,
+            $attributes
+        );
         $mform->setDefault('obtainstudentapproval', get_config('privatestudentfolder', 'obtainstudentapproval'));
         $mform->addHelpButton('obtainstudentapproval', 'obtainstudentapproval', 'privatestudentfolder');
-        // $mform->hideIf('obtainstudentapproval', 'importfrom', 'in', $teamassigns);
 
         // Group approval.
         $attributes = [];
@@ -209,62 +220,31 @@ class mod_privatestudentfolder_mod_form extends moodleform_mod {
             PRIVATESTUDENTFOLDER_APPROVAL_ALL => get_string('obtaingroupapproval_all', 'privatestudentfolder'),
         ];
 
-        $mform->addElement('select', 'obtaingroupapproval', get_string('obtaingroupapproval', 'privatestudentfolder'), $options, $attributes);
+        $mform->addElement(
+            'select',
+            'obtaingroupapproval',
+            get_string('obtaingroupapproval', 'privatestudentfolder'),
+            $options,
+            $attributes
+        );
         $mform->setDefault('obtaingroupapproval',  get_config('privatestudentfolder', 'obtaingroupapproval'));
         $mform->addHelpButton('obtaingroupapproval', 'obtaingroupapproval', 'privatestudentfolder');
-        // $mform->hideIf('obtaingroupapproval', 'importfrom', 'in', $notteamassigns);
 
-        /*foreach ($notteamassigns as $cur) {
-            $mform->hideIf('obtaingroupapproval', 'importfrom', 'eq', $cur);
-        }*/
-
-        // $mform->hideIf('obtainstudentapproval', 'mode', 'neq', PRIVATESTUDENTFOLDER_MODE_IMPORT);
-
-        /* $radioarray = [];
-        $radioarray[] = $mform->createElement('radio', 'groupapproval', '', get_string('obtaingroupapproval_all', 'privatestudentfolder'),
-            PRIVATESTUDENTFOLDER_APPROVAL_ALL, $attributes);
-        $radioarray[] = $mform->createElement('radio', 'groupapproval', '', get_string('obtaingroupapproval_single', 'privatestudentfolder'),
-            PRIVATESTUDENTFOLDER_APPROVAL_SINGLE, $attributes);
-        $mform->addGroup($radioarray, 'groupapprovalarray', get_string('obtaingroupapproval', 'privatestudentfolder'),
-            [html_writer::empty_tag('br')], false);
-        $mform->addHelpButton('groupapprovalarray', 'obtaingroupapproval', 'privatestudentfolder');
-        $mform->setDefault('groupapproval', PRIVATESTUDENTFOLDER_APPROVAL_ALL);
-        $mform->hideIf('groupapprovalarray', 'mode', 'neq', PRIVATESTUDENTFOLDER_MODE_IMPORT);
-        $mform->hideIf('groupapprovalarray', 'obtainstudentapproval', 'eq', 0);
-        foreach ($notteamassigns as $cur) {
-            $mform->hideIf('groupapprovalarray', 'importfrom', 'eq', $cur);
-        }
-
-        //  $mform->hideIf('obtainteacherapproval', 'mode', 'neq', PRIVATESTUDENTFOLDER_MODE_UPLOAD);
-
-        /*   $infostrings = [
-            'notice_obtainapproval_import_both',
-            'notice_obtainapproval_import_studentonly',
-            'notice_obtainapproval_upload_teacher',
-            'notice_obtainapproval_upload_automatic',
-        ];
-        foreach ($infostrings as $infostring) {
-            $infohtml = html_writer::start_tag('div', ['class' => 'alert alert-info']);
-            $infohtml .= get_string($infostring, 'privatestudentfolder');
-            $infohtml .= html_writer::end_tag('div');
-            $infogroupimport =& $mform->createElement('static', $infostring, '', $infohtml);
-            $mform->addGroup([$infogroupimport], $infostring . '_group', '', ' ', false);
-        }
-        $mform->hideIf('notice_obtainapproval_import_both_group', 'mode', 'neq', PRIVATESTUDENTFOLDER_MODE_IMPORT);
-        $mform->hideIf('notice_obtainapproval_import_both_group', 'obtainstudentapproval', 'neq', '1');
-        $mform->hideIf('notice_obtainapproval_import_studentonly_group', 'mode', 'neq', PRIVATESTUDENTFOLDER_MODE_IMPORT);
-        $mform->hideIf('notice_obtainapproval_import_studentonly_group', 'obtainstudentapproval', 'neq', '0');
-
-        $mform->hideIf('notice_obtainapproval_upload_teacher_group', 'obtainteacherapproval', 'neq', '0');
-        $mform->hideIf('notice_obtainapproval_upload_teacher_group', 'mode', 'neq', PRIVATESTUDENTFOLDER_MODE_UPLOAD);
-        $mform->hideIf('notice_obtainapproval_upload_automatic_group', 'obtainteacherapproval', 'neq', '1');
-        $mform->hideIf('notice_obtainapproval_upload_automatic_group', 'mode', 'neq', PRIVATESTUDENTFOLDER_MODE_UPLOAD);*/
-
-        $mform->addElement('date_time_selector', 'approvalfromdate', get_string('approvalfromdate', 'privatestudentfolder'), ['optional' => true]);
+        $mform->addElement(
+            'date_time_selector',
+            'approvalfromdate',
+            get_string('approvalfromdate', 'privatestudentfolder'),
+            ['optional' => true]
+        );
         $mform->addHelpButton('approvalfromdate', 'approvalfromdate', 'privatestudentfolder');
         $mform->setDefault('approvalfromdate', time());
 
-        $mform->addElement('date_time_selector', 'approvaltodate', get_string('approvaltodate', 'privatestudentfolder'), ['optional' => true]);
+        $mform->addElement(
+            'date_time_selector',
+            'approvaltodate',
+            get_string('approvaltodate', 'privatestudentfolder'),
+            ['optional' => true]
+        );
         $mform->addHelpButton('approvaltodate', 'approvaltodate', 'privatestudentfolder');
         $mform->setDefault('approvaltodate', time() + 7 * 24 * 3600);
         // Approval code end.
@@ -295,16 +275,6 @@ class mod_privatestudentfolder_mod_form extends moodleform_mod {
         $mform->addHelpButton('notifystatuschange', 'notify:statuschange', 'privatestudentfolder');
         $mform->setDefault('notifystatuschange', get_config('privatestudentfolder', 'notifystatuschange'));
 
-        /*
-        $name = get_string('notifyteacher', 'privatestudentfolder');
-        $mform->addElement('selectyesno', 'notifyteacher', $name);
-        $mform->addHelpButton('notifyteacher', 'notifyteacher', 'privatestudentfolder');
-        $mform->setDefault('notifyteacher', 0);
-
-        $name = get_string('notifystudents', 'privatestudentfolder');
-        $mform->addElement('selectyesno', 'notifystudents', $name);
-        $mform->addHelpButton('notifystudents', 'notifystudents', 'privatestudentfolder');
-        $mform->setDefault('notifystudents', 0);*/
         // Standard coursemodule elements.
         $this->standard_coursemodule_elements();
 
@@ -383,7 +353,7 @@ class mod_privatestudentfolder_mod_form extends moodleform_mod {
      */
     public function data_preprocessing(&$defaultvalues) {
         global $DB;
-        parent::data_preprocessing($defaultvalues); // TODO: Change the autogenerated stub
+        parent::data_preprocessing($defaultvalues); // TODO: Change the autogenerated stub.
 
         if (isset($defaultvalues['mode']) && $defaultvalues['mode'] == PRIVATESTUDENTFOLDER_MODE_IMPORT) {
             $assign = $DB->get_record('assign', ['id' => $defaultvalues['importfrom']]);
