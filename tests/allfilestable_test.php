@@ -112,8 +112,7 @@ class allfilestable_testcase extends base {
      * @throws coding_exception
      */
     public function test_allfilestable_group() {
-        // Setup fixture!
-        /** @var \mod_assign_generator $generator */
+        // TODO : Setup fixture!
 
         $this->resetAfterTest();
         $this->setAdminUser();
@@ -144,7 +143,6 @@ class allfilestable_testcase extends base {
             $groups[$groupname] = $group;
         }
 
-
         $params = [
             'course' => $course,
             'assignsubmission_file_enabled' => 1,
@@ -153,7 +151,7 @@ class allfilestable_testcase extends base {
             'teamsubmission' => 1,
             'preventsubmissionnotingroup' => false,
             'requireallteammemberssubmit' => false,
-            'groupmode' => 1
+            'groupmode' => 1,
         ];
 
         $assign = $this->getDataGenerator()->create_module('assign', $params);
@@ -161,7 +159,7 @@ class allfilestable_testcase extends base {
         $context = \context_module::instance($cm->id);
         $files = [
             "mod/assign/tests/fixtures/submissionsample01.txt",
-            "mod/assign/tests/fixtures/submissionsample02.txt"
+            "mod/assign/tests/fixtures/submissionsample02.txt",
         ];
         $generator = self::getDataGenerator()->get_plugin_generator('mod_assign');
 
@@ -174,7 +172,6 @@ class allfilestable_testcase extends base {
             ]);
         }
 
-
         $this->setAdminUser();
         $privatestudentfolder = $this->create_instance([
             'mode' => PRIVATESTUDENTFOLDER_MODE_IMPORT,
@@ -185,7 +182,6 @@ class allfilestable_testcase extends base {
             'duedate' => 0,
             'groupmode' => NOGROUPS,
         ]);
-
 
         $privatestudentfolder->importfiles();
         $privatestudentfolder->set_allfilespage(true);

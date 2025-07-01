@@ -268,10 +268,14 @@ if (has_capability('mod/privatestudentfolder:approve', $context)) {
 }
 
 /* Set mode for "filesarepersonal" */
-$templatecontext->filesarepersonal = $privatestudentfolderinstance->filesarepersonal == 1 ? get_string('filesarepersonal_yes', 'privatestudentfolder') : get_string('filesarepersonal_no', 'privatestudentfolder');
+$templatecontext->filesarepersonal = $privatestudentfolderinstance->filesarepersonal == 1
+                                        ? get_string('filesarepersonal_yes', 'privatestudentfolder')
+                                        : get_string('filesarepersonal_no', 'privatestudentfolder');
 
 $mode = $privatestudentfolder->get_mode();
-$templatecontext->myfilestitle = $mode == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION ? get_string('mygroupfiles', 'privatestudentfolder') : get_string('myfiles', 'privatestudentfolder');
+$templatecontext->myfilestitle = $mode == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION
+                                        ? get_string('mygroupfiles', 'privatestudentfolder')
+                                        : get_string('myfiles', 'privatestudentfolder');
 
 /* Get restricted files table (only documents that have been aproved) */
 $filestable = $privatestudentfolder->get_filestable();

@@ -43,7 +43,7 @@ class group extends base {
 
     /**
      * Returns a string with file approval status
-     * 
+     *
      * @param \stored_file $file Stored file instance
      * @return string
      */

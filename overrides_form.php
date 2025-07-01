@@ -28,9 +28,17 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/formslib.php');
 
+/**
+ * Class for Private Student Folder overrides
+ */
 class privatestudentfolder_overrides_form extends moodleform {
+
+    /** @var object $_privatestudentfolder */
     private $_privatestudentfolder;
 
+    /**
+     * Defines the override form
+     */
     public function definition() {
         global $DB;
         $mform = $this->_form;

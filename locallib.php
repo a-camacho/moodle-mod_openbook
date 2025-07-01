@@ -301,7 +301,7 @@ class privatestudentfolder {
 
     /**
      * Allfilespage setter
-     * 
+     *
      * @param bool $allfilespage
      */
     public function set_allfilespage($allfilespage) {
@@ -475,7 +475,7 @@ class privatestudentfolder {
      *
      * @param int[] $users (optional) user ids for which the returned user ids have to filter
      * @param boolean $ignoreallfilespage (optional)
-     * 
+     *
      * @return int[] array of userids
      */
     public function get_users($users = [], $ignoreallfilespage = false) {
@@ -569,7 +569,7 @@ class privatestudentfolder {
 
     /**
      * Get table with all files
-     * 
+     *
      * @param constant $filter
      * @param bool $ignoreallfilespage (optional)
      */
@@ -1363,7 +1363,7 @@ class privatestudentfolder {
 
     /**
      * Update teacher approval for specified userids or groupids
-     * 
+     *
      * @param array $userorgroupids
      * @param string $action
      */
@@ -2433,7 +2433,7 @@ class privatestudentfolder {
 
     /**
      * Export overrides for single template
-     * 
+     *
      * @param stdClass $override
      */
     public function override_export_for_template_single($override) {
@@ -2470,7 +2470,7 @@ class privatestudentfolder {
 
     /**
      * Save override
-     * 
+     *
      * @param object $formdata
      */
     public function override_save($formdata) {
@@ -2522,7 +2522,7 @@ class privatestudentfolder {
 
     /**
      * Get override
-     * 
+     *
      * @param int $overrideid
      */
     public function override_get($overrideid) {
@@ -2536,7 +2536,7 @@ class privatestudentfolder {
 
     /**
      * Delete override
-     * 
+     *
      * @param int $overrideid
      */
     public function override_delete($overrideid) {
@@ -2551,7 +2551,7 @@ class privatestudentfolder {
 
     /**
      * Get form_data for override
-     * 
+     *
      * @param int $overrideid
      */
     public function override_getformdata($overrideid) {

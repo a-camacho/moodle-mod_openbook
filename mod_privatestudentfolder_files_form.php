@@ -73,7 +73,7 @@ class mod_privatestudentfolder_files_form extends moodleform {
             } else {
                 $noticeteacherid = 'teachernotrequired';
             }
-            
+
             $noticestudentstringid = 'filesarepersonal';
 
         } else {
@@ -178,7 +178,9 @@ class mod_privatestudentfolder_files_form extends moodleform {
             'approvaltodate' => $approvaltodate,
             'extensionduedate' => $extensionduedate,
             'assign' => $privatestudentfolder->get_importlink(),
-            'myfilestitle' => $mode == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION ? get_string('mygroupfiles', 'privatestudentfolder') : get_string('myfiles', 'privatestudentfolder'),
+            'myfilestitle' => $mode == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION
+                                ? get_string('mygroupfiles', 'privatestudentfolder')
+                                : get_string('myfiles', 'privatestudentfolder'),
         ];
         $myfilestable = $OUTPUT->render_from_template('mod_privatestudentfolder/myfiles', $tablecontext);
         $myfilestable = '<table class="table table-striped w-100">' . $myfilestable . '</table>';

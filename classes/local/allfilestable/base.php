@@ -321,7 +321,7 @@ FROM
     /**
      * Set the sql to query the db. Query will be : SELECT $fields FROM $from WHERE $where
      * Of course you can use sub-queries, JOINS etc. by putting them in the appropriate clause of the query.
-     * 
+     *
      * @param string $fields
      * @param string $from
      * @param string $where
@@ -679,7 +679,7 @@ FROM
 
     /**
      * This function is called for generating HTML table with files
-     * 
+     *
      * @param mixed $values
      */
     public function col_files($values) {
@@ -817,7 +817,7 @@ FROM
 
     /**
      * This function is used for generating an HTML table with files
-     * 
+     *
      * @param mixed $values
      */
     public function col_privatestudentfolderstatus($values) {
@@ -935,7 +935,7 @@ FROM
 
     /**
      * Gets a table uniqueid
-     * 
+     *
      * @param string $instanceid
      */
     public static function get_table_uniqueid($instanceid) {

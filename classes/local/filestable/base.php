@@ -121,7 +121,7 @@ class base extends \html_table {
 
     /**
      * Returns a boolean with file approve status
-     * 
+     *
      * @param \stored_file $file Stored file instance
      * @return string
      */
@@ -154,7 +154,7 @@ class base extends \html_table {
 
     /**
      * Returns a string with file approval status
-     * 
+     *
      * @param \stored_file $file Stored file instance
      * @return string
      */

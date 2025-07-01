@@ -37,7 +37,7 @@ if ($ADMIN->fulltree) {
 
     $options = [
         '1' => get_string('filesarepersonal_yes', 'privatestudentfolder'),
-        '0' => get_string('filesarepersonal_no', 'privatestudentfolder')
+        '0' => get_string('filesarepersonal_no', 'privatestudentfolder'),
     ];
 
     $settings->add(new admin_setting_configselect('privatestudentfolder/filesarepersonal', get_string('filesarepersonal_admin', 'privatestudentfolder'),

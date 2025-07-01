@@ -26,8 +26,6 @@
 
 namespace mod_privatestudentfolder\event;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * The mod_privatestudentfolder group override created event class.
  *
@@ -70,8 +68,10 @@ class group_override_created extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The user with id '$this->userid' created the override with id '$this->objectid' for the privatestudentfolder with " .
-            "course module id '$this->contextinstanceid' for the group with id '{$this->other['groupid']}'.";
+        return "The user with id '$this->userid' created the override with
+                id '$this->objectid' for the privatestudentfolder with " .
+                "course module id '$this->contextinstanceid' for the group
+                with id '{$this->other['groupid']}'.";
     }
 
     /**
@@ -80,7 +80,7 @@ class group_override_created extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/privatestudentfolder/overrideedit.php', array('id' => $this->objectid));
+        return new \moodle_url('/mod/privatestudentfolder/overrideedit.php', ['id' => $this->objectid]);
     }
 
     /**
@@ -105,16 +105,16 @@ class group_override_created extends \core\event\base {
      * Get objectid mapping
      */
     public static function get_objectid_mapping() {
-        return array('db' => 'privatestudentfolder_overrides', 'restore' => 'privatestudentfolder_override');
+        return ['db' => 'privatestudentfolder_overrides', 'restore' => 'privatestudentfolder_override'];
     }
 
     /**
      * Get other mapping
      */
     public static function get_other_mapping() {
-        $othermapped = array();
-        $othermapped['privatestudentfolder'] = array('db' => 'privatestudentfolder', 'restore' => 'privatestudentfolder');
-        $othermapped['groupid'] = array('db' => 'groups', 'restore' => 'group');
+        $othermapped = [];
+        $othermapped['privatestudentfolder'] = ['db' => 'privatestudentfolder', 'restore' => 'privatestudentfolder'];
+        $othermapped['groupid'] = ['db' => 'groups', 'restore' => 'group'];
 
         return $othermapped;
     }

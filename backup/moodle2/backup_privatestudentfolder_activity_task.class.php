@@ -52,7 +52,10 @@ class backup_privatestudentfolder_activity_task extends backup_activity_task {
      * Define (add) particular steps this activity can have
      */
     protected function define_my_steps() {
-        $this->add_step(new backup_privatestudentfolder_activity_structure_step('privatestudentfolder_structure', 'privatestudentfolder.xml'));
+        $this->add_step(new backup_privatestudentfolder_activity_structure_step(
+                            'privatestudentfolder_structure',
+                            'privatestudentfolder.xml'
+                        ));
     }
 
     /**
