@@ -43,6 +43,9 @@ class group extends base {
 
     /**
      * Returns a string with file approval status
+     *
+     * @param \stored_file $file Stored file instance
+     * @return string
      */
     public function get_approval_status_for_file($file) {
         global $OUTPUT, $DB, $USER;

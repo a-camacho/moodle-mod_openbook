@@ -301,6 +301,8 @@ class privatestudentfolder {
 
     /**
      * Allfilespage setter
+     *
+     * @param bool $allfilespage
      */
     public function set_allfilespage($allfilespage) {
         $this->allfilespage = $allfilespage;
@@ -472,7 +474,8 @@ class privatestudentfolder {
      * Get userids to fetch files for, when displaying all submitted files or downloading them as ZIP
      *
      * @param int[] $users (optional) user ids for which the returned user ids have to filter
-     * @param boolean ignoreallfilespage (optional)
+     * @param boolean $ignoreallfilespage (optional)
+     *
      * @return int[] array of userids
      */
     public function get_users($users = [], $ignoreallfilespage = false) {
@@ -566,6 +569,9 @@ class privatestudentfolder {
 
     /**
      * Get table with all files
+     *
+     * @param constant $filter
+     * @param bool $ignoreallfilespage (optional)
      */
     public function get_allfilestable($filter, $ignoreallfilespage = false) {
         global $DB;
@@ -1357,6 +1363,9 @@ class privatestudentfolder {
 
     /**
      * Update teacher approval for specified userids or groupids
+     *
+     * @param array $userorgroupids
+     * @param string $action
      */
     public function update_users_or_groups_teacherapproval($userorgroupids, $action) {
         global $DB;
@@ -1376,7 +1385,7 @@ class privatestudentfolder {
     /**
      * Changes teacher approval for the specified files
      *
-     * @param $files array of fileids and new approval status, fileid => teacher approval status
+     * @param array $files array of fileids and new approval status, fileid => teacher approval status
      * @return void
      * @throws coding_exception
      * @throws dml_exception
@@ -1851,7 +1860,6 @@ class privatestudentfolder {
     /**
      * Send a notification about the change of the approval status to a student
      * @param stdClass $cm coursemodule
-     * @param object $user the where the notification should go
      * @param object $userfrom who cahnged the approval status
      * @param string $newstatus whats the new status
      * @param object $pubfile the privatestudentfolder-file on which the status change took place
@@ -1860,7 +1868,7 @@ class privatestudentfolder {
      * @throws coding_exception
      */
     public static function send_notification_statuschange($cm, $userfrom, $newstatus, $pubfile,
-                                                          $pubid, $privatestudentfolder=null) {
+                                                          $pubid, $privatestudentfolder = null) {
         global $CFG, $DB;
         $sm = get_string_manager();
 
@@ -2232,6 +2240,9 @@ class privatestudentfolder {
      * Creates the text content for emails to teachers
      *
      * @param object $info The info used by the 'emailteachermail' language string
+     * @param string $lang
+     * @param string $stridentifier
+     * @param bool $includeheader (optional)
      * @return string Plain-Text snippet to use in messages
      */
     public function email_filechange_text($info, $lang, $stridentifier, $includeheader = true) {
@@ -2252,6 +2263,9 @@ class privatestudentfolder {
      * Creates the html content for emails to teachers
      *
      * @param object $info The info used by the 'emailteachermailhtml' language string
+     * @param string $lang
+     * @param string $stridentifier
+     * @param bool $includeheader (optional)
      * @return string HTML snippet to use in messages
      */
     public function email_filechange_html($info, $lang, $stridentifier, $includeheader = true) {
@@ -2280,6 +2294,8 @@ class privatestudentfolder {
      * Creates the text content for emails to students
      *
      * @param object $info The info used by the 'emailteachermail' language string
+     * @param string $lang
+     * @param bool $includeheader (optional)
      * @return string Plain-Text snippet to use in messages
      */
     public function email_statuschange_text($info, $lang, $includeheader = true) {
@@ -2300,6 +2316,8 @@ class privatestudentfolder {
      * Creates the html content for emails to students
      *
      * @param object $info The info used by the 'emailstudentsmailhtml' language string
+     * @param string $lang
+     * @param bool $includeheader (optional)
      * @return string HTML snippet to use in messages
      */
     public function email_statuschange_html($info, $lang, $includeheader = true) {
@@ -2415,6 +2433,8 @@ class privatestudentfolder {
 
     /**
      * Export overrides for single template
+     *
+     * @param stdClass $override
      */
     public function override_export_for_template_single($override) {
         $override->submissionoverride = null;
@@ -2450,6 +2470,8 @@ class privatestudentfolder {
 
     /**
      * Save override
+     *
+     * @param object $formdata
      */
     public function override_save($formdata) {
         global $DB;
@@ -2500,6 +2522,8 @@ class privatestudentfolder {
 
     /**
      * Get override
+     *
+     * @param int $overrideid
      */
     public function override_get($overrideid) {
         global $DB;
@@ -2512,6 +2536,8 @@ class privatestudentfolder {
 
     /**
      * Delete override
+     *
+     * @param int $overrideid
      */
     public function override_delete($overrideid) {
         global $DB;
@@ -2525,6 +2551,8 @@ class privatestudentfolder {
 
     /**
      * Get form_data for override
+     *
+     * @param int $overrideid
      */
     public function override_getformdata($overrideid) {
         global $DB;

@@ -25,7 +25,6 @@
  */
 
 namespace mod_privatestudentfolder\event;
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * All instances in the course have been viewed in this event

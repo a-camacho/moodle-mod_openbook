@@ -40,6 +40,8 @@ class observer {
 
     /**
      * Event triggered when a course module is created
+     *
+     * @param \core\event\base $event
      */
     public static function course_module_created(\core\event\base $event) {
         global $DB;

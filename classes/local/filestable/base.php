@@ -121,6 +121,9 @@ class base extends \html_table {
 
     /**
      * Returns a boolean with file approve status
+     *
+     * @param \stored_file $file Stored file instance
+     * @return string
      */
     public function is_file_approved($file) {
         global $OUTPUT;
@@ -151,6 +154,9 @@ class base extends \html_table {
 
     /**
      * Returns a string with file approval status
+     *
+     * @param \stored_file $file Stored file instance
+     * @return string
      */
     public function get_approval_status_for_file($file) {
         global $OUTPUT;

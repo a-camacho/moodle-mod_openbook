@@ -58,8 +58,8 @@ if ($confirm) {
     $eventparams = [
         'context' => $context,
         'other' => [
-            'privatestudentfolder' => $privatestudentfolder->get_instance()->id
-        ]
+            'privatestudentfolder' => $privatestudentfolder->get_instance()->id,
+        ],
     ];
     $eventparams['objectid'] = $override->id;
     if ($privatestudentfolder->get_mode() == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION) {
@@ -84,7 +84,7 @@ $activityheader = $PAGE->activityheader;
 $activityheader->set_attrs([
     'description' => '',
     'hidecompletion' => true,
-    'title' => $activityheader->is_title_allowed() ? format_string($privatestudentfolder->get_instance()->name, true, ['context' => $context]) : ""
+    'title' => $activityheader->is_title_allowed() ? format_string($privatestudentfolder->get_instance()->name, true, ['context' => $context]) : "",
 ]);
 
 echo $OUTPUT->header();

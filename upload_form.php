@@ -42,7 +42,9 @@ class mod_privatestudentfolder_upload_form extends moodleform {
 
         $currententry = $this->_customdata['current'];
         $privatestudentfolder = $this->_customdata['privatestudentfolder'];
+
         $attachmentoptions = $this->_customdata['attachmentoptions'];
+        $attachmentoptions['subdirs'] = true;
 
         if ($privatestudentfolder->get_instance()->obtainteacherapproval) {
             $text = get_string('published_aftercheck', 'privatestudentfolder');

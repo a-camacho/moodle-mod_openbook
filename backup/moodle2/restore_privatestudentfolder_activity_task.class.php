@@ -53,7 +53,10 @@ class restore_privatestudentfolder_activity_task extends restore_activity_task {
      */
     protected function define_my_steps() {
         // Assignment only has one structure step.
-        $this->add_step(new restore_privatestudentfolder_activity_structure_step('privatestudentfolder_structure', 'privatestudentfolder.xml'));
+        $this->add_step(new restore_privatestudentfolder_activity_structure_step(
+                            'privatestudentfolder_structure',
+                            'privatestudentfolder.xml')
+                        );
     }
 
     /**

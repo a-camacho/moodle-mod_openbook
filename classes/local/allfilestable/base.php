@@ -38,7 +38,8 @@ require_once($CFG->libdir . '/tablelib.php');
  * Base class for tables showing all (public) files (upload or import)
  *
  * @package       mod_privatestudentfolder
- * @author        University of Geneva, E-Learning Team * @copyright     2025 University of Geneva {@link http://www.unige.ch}
+ * @author        University of Geneva, E-Learning Team *
+ * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class base extends \table_sql {
@@ -95,10 +96,10 @@ class base extends \table_sql {
     /**
      * constructor
      *
-     * @param string $uniqueid a string identifying this table.Used as a key in session  vars.
+     * @param string $uniqueid a string identifying this table.Used as a key in session vars.
      *                         It gets set automatically with the helper methods!
      * @param \privatestudentfolder $privatestudentfolder privatestudentfolder object
-     * @param $filter
+     * @param string $filter
      */
     public function __construct($uniqueid, \privatestudentfolder $privatestudentfolder, $filter) {
         global $CFG, $OUTPUT;
@@ -318,18 +319,16 @@ FROM
     }
 
     /**
-     * Set the sql to query the db. Query will be :
-     *      SELECT $fields FROM $from WHERE $where
-     * Of course you can use sub-queries, JOINS etc. by putting them in the
-     * appropriate clause of the query.
+     * Set the sql to query the db. Query will be : SELECT $fields FROM $from WHERE $where
+     * Of course you can use sub-queries, JOINS etc. by putting them in the appropriate clause of the query.
      *
-     * @param string $fields fields to fetch (SQL snippet)
-     * @param string $from from where to fetch (SQL snippet)
-     * @param string $where where conditions for SQL query (SQL snippet)
-     * @param array $params (optional) params for query
-     * @param string $groupby (optional) groupby clause (SQL snippet)
+     * @param string $fields
+     * @param string $from
+     * @param string $where
+     * @param array $params (optional)
+     * @param string $groupby (optional)
      */
-    public function set_sql($fields, $from, $where, ?array $params = null, $groupby = '') {
+    public function set_sql($fields, $from, $where, array $params = null, $groupby = '') {
         parent::set_sql($fields, $from, $where, $params);
         $this->sql->groupby = $groupby;
     }
@@ -680,6 +679,8 @@ FROM
 
     /**
      * This function is called for generating HTML table with files
+     *
+     * @param mixed $values
      */
     public function col_files($values) {
         list(, $files, ) = $this->get_files($values->id);
@@ -816,6 +817,8 @@ FROM
 
     /**
      * This function is used for generating an HTML table with files
+     *
+     * @param mixed $values
      */
     public function col_privatestudentfolderstatus($values) {
 
@@ -932,8 +935,11 @@ FROM
 
     /**
      * Gets a table uniqueid
+     *
+     * @param string $instanceid
      */
     public static function get_table_uniqueid($instanceid) {
         return 'mod-privatestudentfolder-allfiles-' . $instanceid;
     }
+
 }
