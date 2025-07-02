@@ -46,7 +46,7 @@ class mod_privatestudentfolder_generator extends testing_module_generator {
      * @param array $options (optional) general options for course module. Can be merged into $record
      * @return stdClass record from module-defined table with additional field cmid (corresponding id in course_modules table)
      */
-    public function create_instance($record = null, array $options = null) {
+    public function create_instance($record = null, ?array $options = null) {
         $record = (object)(array)$record;
 
         $timecreated = time();
