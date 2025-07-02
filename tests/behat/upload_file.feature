@@ -24,6 +24,6 @@ Feature: Upload file in privatestudentfolder
   Scenario: Upload file in privatestudentfolder instance in course1
     Given I am on the "PVS1" "privatestudentfolder activity" page logged in as student1
     And I click on "gotoupload" "button"
-    And I upload "tests/fixtures/empty.txt" file to "attachment_filemanager" filemanager
+    And I upload "tests/fixtures/empty.txt" file to "filemanager" filemanager
     And I press "Save changes"
     Then I should see "empty.txt"
