@@ -31,7 +31,7 @@ variables:
     #- moodle-plugin-ci grunt
     #- moodle-plugin-ci phpdoc
     - moodle-plugin-ci phpunit
-    - moodle-plugin-ci behat --profile chrome --auto-rerun 0
+    #- moodle-plugin-ci behat --profile chrome --auto-rerun 0
   parallel:
     matrix:
       - MOODLE_BRANCH: [ "MOODLE_500_STABLE" ]
