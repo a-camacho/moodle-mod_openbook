@@ -44,7 +44,7 @@ require_once($CFG->dirroot . '/mod/privatestudentfolder/locallib.php');
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class privacy_testcase extends base {
+class privacy_test extends base {
     /** @var stdClass */
     private $course1;
     /** @var stdClass */

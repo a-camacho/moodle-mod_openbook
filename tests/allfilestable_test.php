@@ -45,7 +45,7 @@ require_once($CFG->dirroot . '/mod/privatestudentfolder/locallib.php'); // Inclu
  * @copyright 2017 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class allfilestable_testcase extends base {
+class allfilestable_test extends base {
     /*
      * The base test class already contains a setUp-method setting up a course including users and groups.
      */
