@@ -22,45 +22,43 @@
     The purpose of this template is to the contents of the myfiles.
 }}
 {{#assign}}
-{{{.}}}
+    {{{.}}}
 {{/assign}}
 {{#timeremaining}}
-    <tr>
-        <th>{{#str}}timeremaining,assign{{/str}}</th><td>{{.}}</td>
-    </tr>
+    <tr><th>{{#str}}timeremaining,assign{{/str}}</th><td>{{.}}</td></tr>
 {{/timeremaining}}
 {{#approvalfromdate}}
-<tr>
-<th>{{#str}}approvalfromdate,privatestudentfolder{{/str}}</th><td>{{.}}</td>
-</tr>
+    <tr>
+        <th>{{#str}}approvalfromdate,privatestudentfolder{{/str}}</th><td>{{.}}</td>
+    </tr>
 {{/approvalfromdate}}
 {{#approvaltodate}}
-<tr>
-<th>{{#str}}approvaltodate,privatestudentfolder{{/str}}</th><td>{{.}}</td>
-</tr>
+    <tr>
+        <th>{{#str}}approvaltodate,privatestudentfolder{{/str}}</th><td>{{.}}</td>
+    </tr>
 {{/approvaltodate}}
 {{#extensionduedate}}
-<tr>
-<th>{{#str}}extensionto,privatestudentfolder{{/str}}</th>
-<td>{{.}}</td>
-</tr>
+    <tr>
+        <th>{{#str}}extensionto,privatestudentfolder{{/str}}</th>
+        <td>{{.}}</td>
+    </tr>
 {{/extensionduedate}}
 {{#hasmyfiles}}
-<tr>
-<th>{{#str}}lastmodified{{/str}}</th>
-<td>{{lastmodified}}</td>
-</tr>
+    <tr>
+        <th>{{#str}}lastmodified{{/str}}</th>
+        <td>{{lastmodified}}</td>
+    </tr>
 {{/hasmyfiles}}
 <tr>
-<th>{{myfilestitle}}</th>
-<td>{{#hasmyfiles}}
-<table id="myfilestable">{{#myfiles}}
-<tr>{{#.}}<td>{{{.}}}</td>{{/.}}</tr>
-{{/myfiles}}
-</table>
-{{/hasmyfiles}}
-{{^hasmyfiles}}
-{{#str}}nofiles,privatestudentfolder{{/str}}
-{{/hasmyfiles}}
-</td>
+    <th>{{myfilestitle}}</th>
+    <td>{{#hasmyfiles}}
+            <table id="myfilestable">{{#myfiles}}
+                    <tr>{{#.}}<td>{{{.}}}</td>{{/.}}</tr>
+                {{/myfiles}}
+            </table>
+        {{/hasmyfiles}}
+        {{^hasmyfiles}}
+            {{#str}}nofiles,privatestudentfolder{{/str}}
+        {{/hasmyfiles}}
+    </td>
 </tr>
