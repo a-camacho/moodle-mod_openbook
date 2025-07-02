@@ -24,13 +24,13 @@
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['availabilityrestriction'] = 'Appliquer des restrictions de disponibilité à la liste des utilisateurs';
-$string['availabilityrestriction_admin'] = 'Paramètre par défaut pour les restrictions de disponibilité sur la liste des utilisateurs';
-$string['availabilityrestriction_help'] = 'Les utilisateurs qui ne peuvent pas accéder à l\'activité en raison de restrictions de disponibilité seront retirés de la liste.<br> Cela inclut uniquement les conditions marquées comme appliquées aux listes d\'utilisateurs. Par exemple, les conditions de groupe sont incluses, mais les conditions de date ne le sont pas.';
-$string['availabilityrestriction_admin_desc'] = 'Les utilisateurs qui ne peuvent pas accéder à l\'activité en raison de restrictions de disponibilité seront retirés de la liste.<br> Cela inclut uniquement les conditions marquées comme appliquées aux listes d\'utilisateurs. Par exemple, les conditions de groupe sont incluses, mais les conditions de date ne le sont pas.';
+$string['availabilityrestriction'] = 'Apply availability restrictions to user list';
+$string['availabilityrestriction_admin'] = 'Default setting for availability restrictions to user list';
+$string['availabilityrestriction_help'] = 'Users who cannot access the activity due to availability restrictions will be removed from the list.<br>This only includes conditions which are marked as being applied to user lists. For example, group conditions are included but date conditions are not included.';
+$string['availabilityrestriction_admin_desc'] = 'Users who cannot access the activity due to availability restrictions will be removed from the list.<br>This only includes conditions which are marked as being applied to user lists. For example, group conditions are included but date conditions are not included.';
 $string['modulename'] = 'Private Student Folder';
 $string['pluginname'] = 'Private Student Folder';
-$string['modulename_help'] = 'Le Private Student Folder offre les fonctionnalités suivantes :<br><ul><li>Les étudiants peuvent téléverser des fichiers.</li><li>Les fichiers seront disponibles pour l\'étudiant lui-même (ou également pour les autres étudiants, si le partage est autorisé) automatiquement ou après approbation des enseignants.</li><li>Les étudiants et/ou les enseignants recevront une notification lorsque des fichiers sont téléversés ou modifiés par les étudiants ou lorsqu\'un fichier est importé ou mis à jour depuis une activité de devoir. De plus, les étudiants et/ou les enseignants recevront une notification concernant tout changement de statut du Private Student Folder.</li></ul>';
+$string['modulename_help'] = 'The student folder offers the following features:<br><ul><li>Students can upload files or import them from an assignment activity.</li><li>The files will be published (will be made visible to everyone) automatically or after students and/ or teachers approval for publishing.</li><li>Students and/or teachers will receive a notification when students upload or change a file or when a file is imported or updated from an assignment activity. Furthermore students and/ or teachers will receive a notification about any changes of the privatestudentfolder status.</li></ul>';
 
 $string['eventprivatestudentfolderfiledeleted'] = 'Private Student Folder file delete';
 $string['eventprivatestudentfolderfileuploaded'] = 'Private Student Folder file upload';
