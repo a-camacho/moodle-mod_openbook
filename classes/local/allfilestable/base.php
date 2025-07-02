@@ -328,7 +328,7 @@ FROM
      * @param array $params (optional)
      * @param string $groupby (optional)
      */
-    public function set_sql($fields, $from, $where, array $params = null, $groupby = '') {
+    public function set_sql($fields, $from, $where, ?array $params = null, $groupby = '') {
         parent::set_sql($fields, $from, $where, $params);
         $this->sql->groupby = $groupby;
     }
