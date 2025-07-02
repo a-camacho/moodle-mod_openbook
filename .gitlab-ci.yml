@@ -34,13 +34,15 @@ variables:
     #- moodle-plugin-ci behat --profile chrome
   parallel:
     matrix:
-      - MOODLE_BRANCH: [ "MOODLE_405_STABLE" ]
+      - MOODLE_BRANCH: [ "MOODLE_500_STABLE" ]
         PHP_VERSION: [ "8.1", "8.2" ]
+      # - MOODLE_BRANCH: [ "MOODLE_405_STABLE" ]
+      #   PHP_VERSION: [ "8.4" ]
 
 test:mariadb:
   <<: *job_configuration
   services:
-    - mariadb:10.6
+    - mariadb:10.11
     - docker:dind
   variables:
     DB: "mariadb"
