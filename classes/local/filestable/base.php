@@ -62,6 +62,8 @@ class base extends \html_table {
     protected $questionmark = '';
     /** @var string invalid icon string */
     protected $invalid = '';
+    /** @var string share icon string */
+    protected $share = '';
     /** @var int timestamp with modification time */
     public $lastmodified = 0;
 
@@ -82,6 +84,7 @@ class base extends \html_table {
         $this->valid = \mod_privatestudentfolder\local\allfilestable\base::approval_icon('check', 'text-success', false);
         $this->questionmark = \mod_privatestudentfolder\local\allfilestable\base::approval_icon('question', 'text-warning', false);
         $this->invalid = \mod_privatestudentfolder\local\allfilestable\base::approval_icon('times', 'text-danger', false);
+        $this->share = \mod_privatestudentfolder\local\allfilestable\base::approval_icon('share-from-square', 'text-success', false);
     }
 
     /**
@@ -214,13 +217,18 @@ class base extends \html_table {
             $hint .= get_string('teacher_approved_automatically', 'privatestudentfolder');
         }
 
-        if ($studentapproved && $teacherapproved) {
-            $templatecontext->icon = $this->valid;
-        } else if ($studentdenied || $teacherdenied) {
+        if ($teacherpending) {
+            $templatecontext->icon = $this->questionmark;
+        } else if (!$teacherapproved) {
             $templatecontext->icon = $this->invalid;
         } else {
-            $templatecontext->icon = $this->questionmark;
+            if ($studentapproved) {
+                $templatecontext->icon = $this->share;
+            } else {
+                $templatecontext->icon = $this->valid;
+            }
         }
+
         $templatecontext->hint = $hint;
         return $OUTPUT->render_from_template('mod_privatestudentfolder/approval_icon', $templatecontext);
 
