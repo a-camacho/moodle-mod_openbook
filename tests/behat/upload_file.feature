@@ -16,9 +16,9 @@ Feature: Upload file in privatestudentfolder
         | teacher1 | C2 | editingteacher |
         | student1 | C1 | student        |
     And the following "activities" exist:
-        | activity              | course | name    |
-        | folder                | C1     | F1    |
-        | privatestudentfolder  | C1     | PVS1    |
+        | activity              | course | name     |
+        | folder                | C1     | F1       |
+        | privatestudentfolder  | C1     | PVS1     |
 
   @javascript
   Scenario: Upload file in privatestudentfolder instance in course1
