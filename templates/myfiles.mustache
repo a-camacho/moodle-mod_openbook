@@ -35,11 +35,17 @@
     <th>{{myfilestitle}}</th>
     <td>
         {{#hasmyfiles}}
-            {{#myfiles}}
-                {{#.}}
-                    {{{.}}}
-                {{/.}} <br />
-            {{/myfiles}}
+            <table id="myfilestable">
+                {{#myfiles}}
+                    <tr>
+                        {{#.}}
+                            <td>
+                                {{{.}}}
+                            </td>
+                        {{/.}}
+                    </tr>
+                {{/myfiles}}
+            </table>
         {{/hasmyfiles}}
         {{^hasmyfiles}}
             {{#str}}nofiles,privatestudentfolder{{/str}}

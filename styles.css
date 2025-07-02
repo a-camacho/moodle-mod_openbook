@@ -60,6 +60,10 @@
     margin-left: 8px;
 }
 
+#page-mod-privatestudentfolder-view fieldset#id_myfiles table#myfilestable td {
+    padding: 5px;
+}
+
 /* scroll table if page is too small */
 #page-mod-privatestudentfolder-view div#id_allfiles {
     border: 1px solid #d0d3ca;
@@ -253,3 +257,4 @@
 #page-mod-privatestudentfolder-view.allfilespage .activity-header {
     display: none;
 }
+
