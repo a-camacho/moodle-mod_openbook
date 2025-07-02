@@ -17,7 +17,6 @@
  * JS showing detailed infos about user's approval status for group approvals in a modal window
  *
  * @module        mod_privatestudentfolder/onlinetextpreview
- * @package       mod_privatestudentfolder
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}

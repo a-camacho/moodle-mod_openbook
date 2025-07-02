@@ -778,7 +778,7 @@ class privatestudentfolder {
             '/mod/privatestudentfolder/view.php',
             [
                 'id' => $this->coursemodule->id,
-                'allfilespage' => $this->allfilespage
+                'allfilespage' => $this->allfilespage,
             ]
         );
         $mform = new MoodleQuickForm('optionspref', 'post', $formaction, '', ['class' => 'optionspref']);
@@ -1995,10 +1995,9 @@ class privatestudentfolder {
                     $message->contexturlname = $info->privatestudentfolder;
                     self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id] = $message;
                 }
-                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE]
-                    [$cm->id][$receiver->id]->fullmessage .= $posttext;
-                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE]
-                    [$cm->id][$receiver->id]->fullmessagehtml .= $posthtml;
+
+                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id]->fullmessage .= $posttext;
+                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id]->fullmessagehtml .= $posthtml;
 
             }
         }
@@ -2098,10 +2097,8 @@ class privatestudentfolder {
                     $message->contexturlname = $info->privatestudentfolder;
                     self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE][$cm->id][$receiver->id] = $message;
                 }
-                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE]
-                    [$cm->id][$receiver->id]->fullmessage .= $posttext;
-                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE]
-                    [$cm->id][$receiver->id]->fullmessagehtml .= $posthtml;
+                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE][$cm->id][$receiver->id]->fullmessage .= $posttext;
+                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE][$cm->id][$receiver->id]->fullmessagehtml .= $posthtml;
 
                 // message_send($message);
             }
@@ -2585,7 +2582,7 @@ class privatestudentfolder {
                 'privatestudentfolder_overrides',
                 [
                     'id' => $formdata->overrideid,
-                    'privatestudentfolder' => $this->instance->id
+                    'privatestudentfolder' => $this->instance->id,
                 ]
             );
             unset($formdata->id);
@@ -2633,7 +2630,7 @@ class privatestudentfolder {
             'privatestudentfolder_overrides',
             [
                 'id' => $overrideid,
-                'privatestudentfolder' => $this->instance->id
+                'privatestudentfolder' => $this->instance->id,
             ]
         );
         if ($override) {
@@ -2653,7 +2650,7 @@ class privatestudentfolder {
             'privatestudentfolder_overrides',
             [
                 'id' => $overrideid,
-                'privatestudentfolder' => $this->instance->id
+                'privatestudentfolder' => $this->instance->id,
             ]
         );
         if ($override) {
@@ -2680,7 +2677,7 @@ class privatestudentfolder {
             'privatestudentfolder_overrides',
             [
                 'id' => $overrideid,
-                'privatestudentfolder' => $this->instance->id
+                'privatestudentfolder' => $this->instance->id,
             ]
         );
         if ($override) {
@@ -2706,7 +2703,7 @@ class privatestudentfolder {
                     'privatestudentfolder_overrides',
                     [
                         'privatestudentfolder' => $this->instance->id,
-                        'groupid' => $group->id
+                        'groupid' => $group->id,
                     ]
                 );
             }
@@ -2715,7 +2712,7 @@ class privatestudentfolder {
                 'privatestudentfolder_overrides',
                 [
                     'privatestudentfolder' => $this->instance->id,
-                    'userid' => $USER->id
+                    'userid' => $USER->id,
                 ]
             );
         }

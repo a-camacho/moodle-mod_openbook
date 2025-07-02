@@ -17,7 +17,6 @@
  * Javascript to align rows
  *
  * @module        mod_privatestudentfolder/alignrows
- * @package       mod_privatestudentfolder
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}

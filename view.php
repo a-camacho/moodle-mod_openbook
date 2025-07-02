@@ -165,7 +165,7 @@ if ($data = $filesform->get_data()) {
         $pubfileids = $DB->get_records_menu(
             'privatestudentfolder_file',
             [
-                'privatestudentfolder' => $privatestudentfolder->get_instance()->id
+                'privatestudentfolder' => $privatestudentfolder->get_instance()->id,
             ],
             'id ASC', 'fileid, id');
 
@@ -193,7 +193,7 @@ if ($data = $filesform->get_data()) {
                 $dataforlog->approval = get_string('datalogapprovalstudent', 'privatestudentfolder', [
                     'approving' => $stats['approving'],
                     'needed' => $stats['needed'],
-                    'approval' => $dataforlog->approval
+                    'approval' => $dataforlog->approval,
                 ]);
             }
             $dataforlog->privatestudentfolder = $conditions['privatestudentfolder'];
