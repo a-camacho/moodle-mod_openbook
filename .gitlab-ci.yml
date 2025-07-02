@@ -43,9 +43,7 @@ test:mariadb:
   <<: *job_configuration
   services:
     - name: mariadb:10.11
-    - name: docker:dind
-      entrypoint: ["env", "-u", "DOCKER_HOST"]
-      command: ["dockerd-entrypoint.sh"]
+    - name: selenium/standalone-chrome
 
   variables:
     DB: "mariadb"
