@@ -22,16 +22,16 @@ variables:
     - moodle-plugin-ci install --moodle="moodle-upstream-core" --db-host=$DB_HOST --db-port=$DB_PORT
   script:
     - moodle-plugin-ci phplint
-    #- moodle-plugin-ci phpcpd
+    - moodle-plugin-ci phpcpd
     - moodle-plugin-ci phpmd
-    #- moodle-plugin-ci codechecker
+    - moodle-plugin-ci codechecker
     - moodle-plugin-ci validate
     - moodle-plugin-ci savepoints
-    #- moodle-plugin-ci mustache
-    #- moodle-plugin-ci grunt
-    #- moodle-plugin-ci phpdoc
+    - moodle-plugin-ci mustache
+    - moodle-plugin-ci grunt
+    - moodle-plugin-ci phpdoc
     - moodle-plugin-ci phpunit
-    - moodle-plugin-ci behat --profile chrome --auto-rerun 0
+    #- moodle-plugin-ci behat --profile chrome --auto-rerun 0
   parallel:
     matrix:
       - MOODLE_BRANCH: [ "MOODLE_500_STABLE" ]
@@ -43,7 +43,7 @@ test:mariadb:
   <<: *job_configuration
   services:
     - name: mariadb:10.11
-    - name: selenium/standalone-chrome
+    - name: docker:dind
 
   variables:
     DB: "mariadb"
