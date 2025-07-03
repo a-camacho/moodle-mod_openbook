@@ -258,6 +258,7 @@ $string['rejected'] = 'Rejected';
 $string['visible'] = 'Published';
 $string['hidden'] = 'Not published';
 $string['status:approved'] = 'Approved';
+$string['status:approvedautomatic'] = 'Automatic';
 $string['status:approvednot'] = 'Rejected';
 $string['status:approvedrevoke'] = 'Revoked';
 $string['giveapproval'] = 'Give approval';

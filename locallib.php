@@ -2728,4 +2728,59 @@ class privatestudentfolder {
     public function get_filesarepersonal_status() {
         return $this->instance->filesarepersonal;
     }
+
+    /**
+     * Reset all studentapproval values to 0 for all files in this privatestudentfolder instance.
+     *
+     * @return bool Number of records updated.
+     */
+    public function reset_all_studentapproval() {
+        global $DB, $USER;
+
+        $sql = "SELECT fileid, userid, teacherapproval, id, studentapproval, filename
+                FROM {privatestudentfolder_file}
+                WHERE privatestudentfolder = :privatestudentfolder
+                AND studentapproval != 1";
+        $params = ['privatestudentfolder' => $this->instance->id];
+        $files = $DB->get_records_sql($sql, $params);
+
+        foreach ($files as $file) {
+            $user = $DB->get_record('user', array('id' => $file->userid));
+
+            $dataforlog = new stdClass();
+            $dataforlog->privatestudentfolder = $this->instance->id;
+            $dataforlog->approval = PRIVATESTUDENTFOLDER_APPROVAL_ALL;
+            $dataforlog->userid = $USER->id;
+            if ($user && !empty($user->id)) {
+                $dataforlog->reluser = $user->id;
+            } else {
+                $dataforlog->reluser = 0;
+            }
+            $dataforlog->fileid = $file->fileid;
+
+            try {
+                \mod_privatestudentfolder\event\privatestudentfolder_approval_changed::approval_changed(
+                    $this->coursemodule,
+                    $dataforlog
+                )->trigger();
+            } catch (coding_exception $e) {
+                throw new Exception("Coding exception while sending notification: " . $e->getMessage());
+            }
+
+            $DB->set_field(
+                'privatestudentfolder_file',
+                'studentapproval',
+                0,
+                ['id' => $file->id]
+            );
+
+            if ($this->instance->notifystatuschange != 0) {
+                $cm = $this->coursemodule;
+                $cmid = $this->coursemodule->id;
+                self::send_notification_statuschange($cm, $USER, 'automatic', $file, $cmid, $this);
+            }
+        }
+
+        return true;
+    }
 }

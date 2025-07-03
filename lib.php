@@ -123,9 +123,15 @@ function privatestudentfolder_update_instance($privatestudentfolder) {
     $context = context_module::instance($cm->id);
     $instance = new privatestudentfolder($cm, $course, $context);
 
+    $approvalreseted = false;
+    // If the files are personal, reset the student approval.
+    if ($privatestudentfolder->filesarepersonal == 1) {
+        $approvalreseted = $instance->reset_all_studentapproval();
+    }
+
     $instance->update_calendar_event();
 
-    if ($instance->get_instance()->mode == PRIVATESTUDENTFOLDER_MODE_IMPORT) {
+    if ($instance->get_instance()->mode == PRIVATESTUDENTFOLDER_MODE_IMPORT || $approvalreseted) {
         // Fetch all files right now!
         $instance->importfiles();
         privatestudentfolder::send_all_pending_notifications();
