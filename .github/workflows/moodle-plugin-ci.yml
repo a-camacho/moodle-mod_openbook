@@ -108,22 +108,22 @@ jobs:
         continue-on-error: true # This step will show errors but will not fail
         if: ${{ always() }}
         run: moodle-plugin-ci phpmd
-
-      # - name: Moodle Code Checker
-      #   if: ${{ always() }}
-      #   run: moodle-plugin-ci codechecker --max-warnings 0
-
-      # - name: Moodle PHPDoc Checker
-      #   if: ${{ always() }}
-      #   run: moodle-plugin-ci phpdoc
-
+        
       - name: Validating
         if: ${{ always() }}
         run: moodle-plugin-ci validate
-
+      
       - name: Check upgrade savepoints
         if: ${{ always() }}
         run: moodle-plugin-ci savepoints
+
+      - name: Moodle Code Checker
+        if: ${{ always() }}
+        run: moodle-plugin-ci codechecker --max-warnings 0
+
+      - name: Moodle PHPDoc Checker
+        if: ${{ always() }}
+        run: moodle-plugin-ci phpdoc
 
       - name: Mustache Lint
         if: ${{ always() }}
