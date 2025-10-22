@@ -22,7 +22,7 @@ Feature: Upload file in privatestudentfolder
 
   @javascript
   Scenario: Upload file in privatestudentfolder instance in course1
-    Given I am on the "PVS1" "privatestudentfolder activity" page logged in as student1
+    Given I am on the "PVS1" "privatestudentfolder activity" page logged in as teacher1
     And I click on "Edit/upload files" "button"
     And I upload "tests/fixtures/empty.txt" file to "File" filemanager
     And I press "Save changes"
