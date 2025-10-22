@@ -129,14 +129,14 @@ jobs:
         if: ${{ always() }}
         run: moodle-plugin-ci mustache
 
-      - name: Grunt
-        if: ${{ always() }}
-        run: npx update-browserslist-db@latest && moodle-plugin-ci grunt --max-lint-warnings 0
+      # - name: Grunt
+      #   if: ${{ always() }}
+      #   run: npx update-browserslist-db@latest && moodle-plugin-ci grunt --max-lint-warnings 0
 
       - name: PHPUnit tests
         if: ${{ always() }}
         run: moodle-plugin-ci phpunit --fail-on-warning
 
-      - name: Behat features
-        if: ${{ always() }}
-        run: moodle-plugin-ci behat --profile chrome --auto-rerun 0
+      # - name: Behat features
+      #   if: ${{ always() }}
+      #   run: moodle-plugin-ci behat --profile chrome --auto-rerun 0

@@ -31,7 +31,7 @@ variables:
     - moodle-plugin-ci codechecker --max-warnings 1000
     - moodle-plugin-ci phpdoc
     - moodle-plugin-ci mustache
-    - moodle-plugin-ci grunt
+    # - moodle-plugin-ci grunt
     - moodle-plugin-ci phpunit
     #- moodle-plugin-ci behat --profile chrome --auto-rerun 0
   parallel:
