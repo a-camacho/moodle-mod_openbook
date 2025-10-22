@@ -184,7 +184,7 @@ class mod_privatestudentfolder_files_form extends moodleform {
         ];
         /* TODO : Add PDF.js link to myfiles table */
         $myfilestable = $OUTPUT->render_from_template('mod_privatestudentfolder/myfiles', $tablecontext);
-        $myfilestable = '<table class="table table-striped w-100">' . $myfilestable . '</table>';
+        $myfilestable = $myfilestable;
         $mform->addElement('html', $myfilestable);
 
         // Display submit buttons if necessary.
