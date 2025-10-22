@@ -2844,18 +2844,6 @@ class privatestudentfolder {
         return true;
     }
 
-    /**
-    * Serve the files from the myplugin file areas.
-    *
-    * @param stdClass $course the course object
-    * @param stdClass $cm the course module object
-    * @param stdClass $context the context
-    * @param string $filearea the name of the file area
-    * @param array $args extra arguments (itemid, path)
-    * @param bool $forcedownload whether or not force download
-    * @param array $options additional options affecting the file serving
-    * @return bool false if the file not found, just send the file otherwise and do not return anything
-    */
     // phpcs:ignore Squiz.Scope.MethodScope.Missing
     function mod_privatestudentfolder_pluginfile(
         $course,
@@ -2866,6 +2854,19 @@ class privatestudentfolder {
         bool $forcedownload,
         array $options = []
     ): bool {
+        /**
+         * Serve the files from the myplugin file areas.
+         *
+         * @param stdClass $course the course object
+         * @param stdClass $cm the course module object
+         * @param stdClass $context the context
+         * @param string $filearea the name of the file area
+         * @param array $args extra arguments (itemid, path)
+         * @param bool $forcedownload whether or not force download
+         * @param array $options additional options affecting the file serving
+         * @return bool false if the file not found, just send the file otherwise and do not return anything
+         */
+
         global $DB;
 
         // Check the contextlevel is as expected - if your plugin is a block, this becomes CONTEXT_BLOCK, etc.
