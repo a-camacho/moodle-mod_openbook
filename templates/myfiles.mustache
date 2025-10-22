@@ -20,6 +20,23 @@
     Private Student Folder's myfiles template.
 
     The purpose of this template is to the contents of the myfiles.
+    
+    Example context (json):
+    {
+        "assign": "<tr><th>Assignment</th><td><a href='https://example.com/mod/assign/view.php?id=10'>Assignment 1</a></td></tr>",
+        "timeremaining": "3 days 5 hours",
+        "approvalfromdate": "Monday, 20 October 2025, 08:00",
+        "approvaltodate": "Friday, 24 October 2025, 17:00",
+        "extensionduedate": "Sunday, 26 October 2025, 23:55",
+        "hasmyfiles": true,
+        "lastmodified": "Wednesday, 22 October 2025, 09:32",
+        "myfilestitle": "My uploaded files",
+        "myfiles": [
+            ["<a href='https://example.com/pluginfile.php/123/mod_privatestudentfolder/file1.pdf'>file1.pdf</a>"],
+            ["<a href='https://example.com/pluginfile.php/124/mod_privatestudentfolder/file2.docx'>file2.docx</a>"],
+            ["<a href='https://example.com/pluginfile.php/125/mod_privatestudentfolder/image.png'>image.png</a>"]
+        ]
+    }
 }}
 <table class="table table-striped w-100">
 {{#assign}}

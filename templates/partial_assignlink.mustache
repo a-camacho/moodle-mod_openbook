@@ -1,6 +1,5 @@
 {{!
     @template mod_privatestudentfolder/partial_assignlink
-    @phpcs:disable moodle.Mustache.HTMLFormat
 
     Template partial for displaying the assignment link in a table row.
 
@@ -14,16 +13,17 @@
         }
     }
 }}
-<tr>
-    <th>{{#str}}assignment,privatestudentfolder{{/str}}</th>
-
-        {{#notset}}
-            <td class="alert-warning">{{#str}}assignment_notset,privatestudentfolder{{/str}}</td>
-        {{/notset}}
-        {{#notfound}}
-            <td class="alert-warning">{{#str}}assignment_notfound,privatestudentfolder{{/str}}</td>
-        {{/notfound}}
-        {{#assign}}
-            <td><a href="{{url}}">{{name}}</a></td>
-        {{/assign}}
-</tr>
+<table>
+    <tr>
+        <th>{{#str}}assignment,privatestudentfolder{{/str}}</th>
+            {{#notset}}
+                <td class="alert-warning">{{#str}}assignment_notset,privatestudentfolder{{/str}}</td>
+            {{/notset}}
+            {{#notfound}}
+                <td class="alert-warning">{{#str}}assignment_notfound,privatestudentfolder{{/str}}</td>
+            {{/notfound}}
+            {{#assign}}
+                <td><a href="{{url}}">{{name}}</a></td>
+            {{/assign}}
+    </tr>
+</table>
