@@ -139,7 +139,7 @@ class group extends base {
         $params = new \stdClass();
         $params->id = $uniqueid;
         switch ($privatestudentfolder->get_instance()->groupapproval) {
-            case PRIVATESTUDENTFOLDER_APPROVAL_ALL;
+            case PRIVATESTUDENTFOLDER_APPROVAL_ALL:
                 $params->mode = get_string('obtaingroupapproval_all', 'mod_privatestudentfolder');
                 break;
             case PRIVATESTUDENTFOLDER_APPROVAL_SINGLE:
