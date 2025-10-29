@@ -176,7 +176,7 @@ class group extends base {
 
         $this->print_initials_bar();
 
-        echo $OUTPUT->box(get_string('nofilestodisplay', 'privatestudentfolder'), 'font-italic');
+        echo $OUTPUT->box(get_string('nofilestodisplay', 'privatestudentfolder'), 'fst-italic');
     }
 
     /**
