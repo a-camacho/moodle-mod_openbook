@@ -23,7 +23,6 @@
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Handles all the upgrade steps for mod_privatestudentfolder
@@ -234,7 +233,16 @@ function xmldb_privatestudentfolder_upgrade($oldversion) {
     if ($oldversion < 2023081000) {
         // Define field completionupload to be added to privatestudentfolder.
         $table = new xmldb_table('privatestudentfolder');
-        $field = new xmldb_field('completionupload', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'allowsubmissionsfromdate');
+        $field = new xmldb_field(
+            'completionupload',
+            XMLDB_TYPE_INTEGER,
+            '2',
+            null,
+            XMLDB_NOTNULL,
+            null,
+            '0',
+            'allowsubmissionsfromdate',
+        );
 
         // Conditionally launch add field completionupload.
         if (!$dbman->field_exists($table, $field)) {

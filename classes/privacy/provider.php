@@ -75,9 +75,17 @@ class provider implements core_userlist_provider, metadataprovider, pluginprovid
                 'timemodified' => 'privacy:metadata:timemodified',
         ];
 
-        $collection->add_database_table('privatestudentfolder_extduedates', $privatestudentfolderextduedates, 'privacy:metadata:extduedates');
+        $collection->add_database_table(
+            'privatestudentfolder_extduedates',
+            $privatestudentfolderextduedates,
+            'privacy:metadata:extduedates',
+        );
         $collection->add_database_table('privatestudentfolder_file', $privatestudentfolderfile, 'privacy:metadata:files');
-        $collection->add_database_table('privatestudentfolder_groupapproval', $privatestudentfoldergroupapproval, 'privacy:metadata:groupapproval');
+        $collection->add_database_table(
+            'privatestudentfolder_groupapproval',
+            $privatestudentfoldergroupapproval,
+            'privacy:metadata:groupapproval',
+        );
 
         $collection->add_user_preference('privatestudentfolder_perpage', 'privacy:metadata:privatestudentfolderperpage');
 
@@ -202,6 +210,7 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
                  WHERE ctx.id = :contextid AND ctx.contextlevel = :contextlevel AND p.mode = :import
                        AND (p.importfrom > 0 AND a.teamsubmission = 0)";
         $userlist->add_from_sql('userid', $sql, $params);
+        // phpcs:disable moodle.Commenting.TodoComment
         // TODO: std-Group-Members may be missing here!
 
         // Get all who got an extension!
@@ -729,7 +738,8 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
 
                 $usergroups = groups_get_all_groups($pub->course, $user->id);
                 foreach (array_keys($usergroups) as $grpid) {
-                    $files = $files + $DB->get_records('privatestudentfolder_file', ['privatestudentfolder' => $pub->id, 'userid' => $grpid]);
+                    $files = $files + $DB->get_records('privatestudentfolder_file', ['privatestudentfolder' => $pub->id,
+                            'userid' => $grpid]);
                 }
             }
 

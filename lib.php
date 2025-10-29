@@ -340,7 +340,15 @@ function privatestudentfolder_extend_settings_navigation(settings_navigation $se
  * @param array $options additional options affecting the file serving
  * @return bool false if file not found, does not return if found - just send the file
  */
-function mod_privatestudentfolder_pluginfile($course, $cm, context $context, $filearea, $args, $forcedownload, array $options = []) {
+function mod_privatestudentfolder_pluginfile(
+    $course,
+    $cm,
+    context $context,
+    $filearea,
+    $args,
+    $forcedownload,
+    array $options = []
+) {
     if ($context->contextlevel != CONTEXT_MODULE) {
         return false;
     }
@@ -378,7 +386,10 @@ function mod_privatestudentfolder_pluginfile($course, $cm, context $context, $fi
  * @param calendar_event $event
  * @param \core_calendar\action_factory $factory
  */
-function mod_privatestudentfolder_core_calendar_provide_event_action(calendar_event $event, \core_calendar\action_factory $factory) {
+function mod_privatestudentfolder_core_calendar_provide_event_action(
+    calendar_event $event,
+    \core_calendar\action_factory $factory
+) {
     global $CFG, $USER, $DB;
     require_once($CFG->dirroot . '/mod/privatestudentfolder/locallib.php');
 
@@ -386,20 +397,24 @@ function mod_privatestudentfolder_core_calendar_provide_event_action(calendar_ev
     $courseinstance = get_fast_modinfo($event->courseid)->instances['privatestudentfolder'][$event->instance];
     $instance = new privatestudentfolder($courseinstance);
 
-    // Only show this instance if it's open
+    // Only show this instance if it's open.
     if ($instance->is_open()) {
-        // Also don't show this instance when the user already uploaded one or more files
-        $files = $DB->count_records('privatestudentfolder_file', ['privatestudentfolder' => $event->instance, 'userid' => $USER->id]);
+        // Also don't show this instance when the user already uploaded one or more files.
+        $files = $DB->count_records('privatestudentfolder_file', ['privatestudentfolder' => $event->instance,
+            'userid' => $USER->id]);
 
         if ($files >= 1) {
             return null;
         }
 
         return $factory->create_instance(
-            get_string('add_uploads', 'privatestudentfolder'), // Name of the action button
-            new \moodle_url('/mod/privatestudentfolder/view.php', ['id' => $courseinstance->id]), // URL of the instance
-            1, // Count of necessary actions
-            true // Whether the user can take action on this folder.
+            get_string('add_uploads', 'privatestudentfolder'), // Name of the action button.
+            new \moodle_url(
+                '/mod/privatestudentfolder/view.php',
+                ['id' => $courseinstance->id],
+            ), // URL of the instance.
+            1, // Count of necessary actions.
+            true, // Whether the user can take action on this folder.
         );
     }
 }

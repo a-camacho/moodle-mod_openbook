@@ -54,16 +54,19 @@ class upload extends base {
             // Teacher has to approve: show all status.
             if (is_null($teacherapproval) || $teacherapproval == 0) {
                 $templatecontext->icon = $this->questionmark;
-                $templatecontext->hint = get_string('hidden', 'privatestudentfolder') . ' (' . get_string('teacher_pending', 'privatestudentfolder') . ')';
+                $templatecontext->hint = get_string('hidden', 'privatestudentfolder') .
+                    ' (' . get_string('teacher_pending', 'privatestudentfolder') . ')';
             } else if ($teacherapproval == 1) {
                 $templatecontext->icon = $this->valid;
                 $templatecontext->hint = get_string('visible', 'privatestudentfolder');
             } else if ($teacherapproval == 3) {
                 $templatecontext->icon = $this->questionmark;
-                $templatecontext->hint = get_string('hidden', 'privatestudentfolder') . ' (' . get_string('teacher_pending', 'privatestudentfolder') . ')';
+                $templatecontext->hint = get_string('hidden', 'privatestudentfolder') .
+                    ' (' . get_string('teacher_pending', 'privatestudentfolder') . ')';
             } else {
                 $templatecontext->icon = $this->invalid;
-                $templatecontext->hint = get_string('hidden', 'privatestudentfolder') . ' (' . get_string('teacher_rejected', 'privatestudentfolder') . ')';
+                $templatecontext->hint = get_string('hidden', 'privatestudentfolder') .
+                    ' (' . get_string('teacher_rejected', 'privatestudentfolder') . ')';
             }
         } else {
             // Teacher doenst have to approve: only show when rejected.
@@ -75,7 +78,8 @@ class upload extends base {
                 $templatecontext->hint = get_string('visible', 'privatestudentfolder');
             } else {
                 $templatecontext->icon = $this->invalid;
-                $templatecontext->hint = get_string('hidden', 'privatestudentfolder') . ' (' . get_string('teacher_rejected', 'privatestudentfolder') . ')';
+                $templatecontext->hint = get_string('hidden', 'privatestudentfolder') . ' (' .
+                    get_string('teacher_rejected', 'privatestudentfolder') . ')';
             }
         }
         $data[] = $OUTPUT->render_from_template('mod_privatestudentfolder/approval_icon', $templatecontext);

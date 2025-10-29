@@ -28,13 +28,10 @@ namespace mod_privatestudentfolder\local\tests;
 
 use advanced_testcase;
 use stdClass;
-use mod_assign_testable_assign;
 use context_module;
 use mod_assign_test_generator;
 
-if (!defined('MOODLE_INTERNAL')) {
-    die('Direct access to this script is forbidden.'); // It must be included from a Moodle page!
-}
+defined('MOODLE_INTERNAL') || die();
 
 // Make sure the code being tested is accessible.
 global $CFG;

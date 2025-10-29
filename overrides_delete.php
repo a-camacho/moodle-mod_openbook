@@ -84,7 +84,11 @@ $activityheader = $PAGE->activityheader;
 $activityheader->set_attrs([
     'description' => '',
     'hidecompletion' => true,
-    'title' => $activityheader->is_title_allowed() ? format_string($privatestudentfolder->get_instance()->name, true, ['context' => $context]) : "",
+    'title' => $activityheader->is_title_allowed() ? format_string(
+        $privatestudentfolder->get_instance()->name,
+        true,
+        ['context' => $context],
+    ) : "",
 ]);
 
 echo $OUTPUT->header();

@@ -32,8 +32,8 @@ require_once($CFG->libdir . '/formslib.php');
  * Class for Private Student Folder overrides
  */
 class privatestudentfolder_overrides_form extends moodleform {
-    /** @var object $_privatestudentfolder */
-    private $_privatestudentfolder;
+    /** @var object $privatestudentfolder */
+    private $privatestudentfolder;
 
     /**
      * Defines the override form
@@ -47,10 +47,10 @@ class privatestudentfolder_overrides_form extends moodleform {
         $mform->addElement('hidden', 'overrideid');
         $mform->setType('overrideid', PARAM_INT);
 
-        $this->_privatestudentfolder = $this->_customdata['privatestudentfolder'];
-        $mode = $this->_privatestudentfolder->get_mode();
+        $this->privatestudentfolder = $this->_customdata['privatestudentfolder'];
+        $mode = $this->privatestudentfolder->get_mode();
         if ($mode == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION) {
-            $groupids = $this->_privatestudentfolder->get_groups();
+            $groupids = $this->privatestudentfolder->get_groups();
             $groups = $DB->get_records_list('groups', 'id', $groupids);
 
             $mform->addElement('hidden', 'userid');
@@ -68,7 +68,7 @@ class privatestudentfolder_overrides_form extends moodleform {
             $mform->addElement('autocomplete', 'groupid', get_string('group'), $groupsclean, $options);
             $mform->addRule('groupid', null, 'required', null, 'client');
         } else {
-            $userids = $this->_privatestudentfolder->get_users([], true);
+            $userids = $this->privatestudentfolder->get_users([], true);
             $users = $DB->get_records_list('user', 'id', $userids);
 
             $mform->addElement('hidden', 'groupid');
@@ -110,7 +110,7 @@ class privatestudentfolder_overrides_form extends moodleform {
             $itemsadded = true;
         }
 
-        if ($this->_privatestudentfolder->get_instance()->obtainstudentapproval == 1) {
+        if ($this->privatestudentfolder->get_instance()->obtainstudentapproval == 1) {
             $mform->addElement('header', 'approvalsettings', get_string('approvalsettings', 'privatestudentfolder'));
             $mform->setExpanded('approvalsettings', true);
 

@@ -66,7 +66,6 @@ require_once($CFG->dirroot . '/mod/privatestudentfolder/mod_privatestudentfolder
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class privatestudentfolder {
-    // TODO replace $instance with proper properties + PHPDoc comments?!?
     /** @var object instance */
     protected $instance;
     /** @var object context */
@@ -112,6 +111,8 @@ class privatestudentfolder {
 
         $this->instance = $DB->get_record("privatestudentfolder", ["id" => $cm->instance]);
 
+        // phpcs:disable Squiz.PHP.CommentedOutCode
+        // phpcs:disable moodle.Commenting.InlineComment
         // $this->instance->obtainteacherapproval = !$this->instance->obtainteacherapproval;
 
         if ($this->instance->mode == PRIVATESTUDENTFOLDER_MODE_IMPORT) {
@@ -547,6 +548,7 @@ class privatestudentfolder {
             /*if ($this->get_instance()->mode == PRIVATESTUDENTFOLDER_MODE_UPLOAD) {
                 // Mode upload.
             } else {
+                // phpcs:disable moodle.Commenting.TodoComment
                 // TODO group mode!
                 // Mode import.
             }*/
@@ -2041,8 +2043,10 @@ class privatestudentfolder {
                     self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id] = $message;
                 }
 
-                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id]->fullmessage .= $posttext;
-                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id]->fullmessagehtml .= $posthtml;
+                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id]->fullmessage .=
+                    $posttext;
+                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id]->fullmessagehtml .=
+                    $posthtml;
             }
         }
     }
@@ -2141,8 +2145,10 @@ class privatestudentfolder {
                     $message->contexturlname = $info->privatestudentfolder;
                     self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE][$cm->id][$receiver->id] = $message;
                 }
-                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE][$cm->id][$receiver->id]->fullmessage .= $posttext;
-                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE][$cm->id][$receiver->id]->fullmessagehtml .= $posthtml;
+                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE][$cm->id][$receiver->id]->fullmessage .=
+                    $posttext;
+                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE][$cm->id][$receiver->id]->fullmessagehtml .=
+                    $posthtml;
 
                 // message_send($message);
             }
@@ -2878,7 +2884,8 @@ class privatestudentfolder {
             return false;
         }
 
-        // Make sure the user is logged in and has access to the module (plugins that are not course modules should leave out the 'cm' part).
+        // Make sure the user is logged in and has access to the module (plugins that are not course modules should leave out
+        // the 'cm' part).
         require_login($course, true, $cm);
 
         // Check the relevant capabilities - these may vary depending on the filearea being accessed.
@@ -2899,6 +2906,8 @@ class privatestudentfolder {
                 return false;
             }
 
+            // phpcs:disable Squiz.PHP.CommentedOutCode
+
             // You may want to perform additional checks here, for example:
             // - ensure that if the record relates to a grouped activity, that this
             // user has access to it
@@ -2913,13 +2922,15 @@ class privatestudentfolder {
         // For a plugin which does not specify the itemid, you may want to use the following to keep your code consistent:
         // $itemid = null;
 
+        // phpcs:enable Squiz.PHP.CommentedOutCode
+
         // Extract the filename / filepath from the $args array.
         $filename = array_pop($args); // The last item in the $args array.
         if (empty($args)) {
-            // $args is empty => the path is '/'.
+            // Variable $args is empty => the path is '/'.
             $filepath = '/';
         } else {
-            // $args contains the remaining elements of the filepath.
+            // Variable $args contains the remaining elements of the filepath.
             $filepath = '/' . implode('/', $args) . '/';
         }
 

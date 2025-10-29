@@ -45,15 +45,6 @@ class upload extends base {
         [$columns, $headers, $helpicons] = parent::get_columns();
 
         if (has_capability('mod/privatestudentfolder:approve', $this->context) && $this->allfilespage) {
-            /*
-            $columns[] = 'teacherapproval';
-            $headers[] = get_string('teacherapproval', 'privatestudentfolder');
-            $helpicons[] = new \help_icon('teacherapproval', 'privatestudentfolder');
-
-            $columns[] = 'visibleforstudents';
-            $headers[] = get_string('visibleforstudents', 'privatestudentfolder');
-            $helpicons[] = null;*/
-
             if ($this->obtainstudentapproval) {
                 $columns[] = 'studentapproval';
                 $headers[] = get_string('studentapproval', 'privatestudentfolder');

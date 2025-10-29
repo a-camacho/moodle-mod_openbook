@@ -70,8 +70,8 @@ class privatestudentfolder_file_uploaded extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The user with id '" . $this->data['other']['userid'] . "' uploaded a new file with id '" . $this->data['other']['id'] .
-            "' to privatestudentfolder with id '" . $this->data['other']['privatestudentfolder'] . "'";
+        return "The user with id '" . $this->data['other']['userid'] . "' uploaded a new file with id '" .
+            $this->data['other']['id'] . "' to privatestudentfolder with id '" . $this->data['other']['privatestudentfolder'] . "'";
     }
 
     /**

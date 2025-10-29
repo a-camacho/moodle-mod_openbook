@@ -31,8 +31,6 @@ use mod_assign\event\base;
 use privatestudentfolder;
 use stdClass;
 
-defined('MOODLE_INTERNAL') || die;
-
 /**
  * mod_grouptool\observer handles events due to changes in moodle core which affect grouptool
  */
@@ -45,7 +43,11 @@ class observer {
     public static function course_module_created(\core\event\base $event) {
         global $DB;
         $eventdata = $event->get_data();
-        if (isset($eventdata['other']) && isset($eventdata['other']['modulename']) && $eventdata['other']['modulename'] == 'privatestudentfolder') {
+        if (
+            isset($eventdata['other']) &&
+            isset($eventdata['other']['modulename']) &&
+            $eventdata['other']['modulename'] == 'privatestudentfolder'
+        ) {
             $cm = get_coursemodule_from_instance('privatestudentfolder', $eventdata['other']['instanceid'], 0, false, MUST_EXIST);
             $privatestudentfolder = new privatestudentfolder($cm);
             if ($privatestudentfolder->get_instance()->mode == PRIVATESTUDENTFOLDER_MODE_IMPORT) {
@@ -104,125 +106,6 @@ class observer {
         }
 
         privatestudentfolder::send_all_pending_notifications();
-        /*
-        $subfilerecords = $DB->get_records('assignsubmission_file', [
-                'assignment' => $assignid,
-                'submission' => $submission->id,
-        ]);
-        $fs = get_file_storage();
-
-        $allassignfileids = [];
-        $allassignfiles = [];
-        $itemid = empty($assign->get_instance()->teamsubmission) ? $submission->userid : $submission->groupid;
-        $importtype = empty($assign->get_instance()->teamsubmission) ? 'user' : 'group';
-
-        foreach ($subfilerecords as $record) {
-            $files = $fs->get_area_files($assigncontext->id,
-                "assignsubmission_file",
-                "submission_files",
-                $record->submission,
-                "id",
-                false);
-
-            foreach ($files as $file) {
-                $allassignfiles[$file->get_id()] = $file;
-                $allassignfileids[$file->get_id()] = $file->get_id();
-            }
-        }
-
-        foreach ($privatestudentfolders as $curpub) {
-            $cm = get_coursemodule_from_instance('privatestudentfolder', $curpub->id, 0, false, MUST_EXIST);
-            $context = \context_module::instance($cm->id);
-
-            $conditions = [];
-            $conditions['privatestudentfolder'] = $curpub->id;
-            $conditions['userid'] = $itemid;
-            // We look for regular imported files here!
-            $conditions['type'] = PRIVATESTUDENTFOLDER_MODE_IMPORT;
-
-            $oldpubfiles = $DB->get_records('privatestudentfolder_file', $conditions);
-
-            $assignfileids = $allassignfileids;
-            $assignfiles = $allassignfiles;
-
-            foreach ($oldpubfiles as $oldpubfile) {
-
-                if (in_array($oldpubfile->filesourceid, $assignfileids)) {
-                    // File was in assign and is still there.
-                    unset($assignfileids[$oldpubfile->filesourceid]);
-
-                } else {
-                    // File has been removed from assign.
-                    // Remove from privatestudentfolder (file and db entry).
-                    if ($file = $fs->get_file_by_id($oldpubfile->fileid)) {
-                        $file->delete();
-                    }
-
-                    $conditions['id'] = $oldpubfile->id;
-                    $dataobject = $DB->get_record('privatestudentfolder_file', ['id' => $conditions['id']]);
-                    $dataobject->typ = $importtype;
-                    $dataobject->itemid = $itemid;
-                    \mod_privatestudentfolder\event\privatestudentfolder_file_deleted::create_from_object($cm, $dataobject)->trigger();
-                    $DB->delete_records('privatestudentfolder_file', $conditions);
-                }
-            }
-
-            // Add new files to privatestudentfolder.
-            foreach ($assignfileids as $assignfileid) {
-                $newfilerecord = new \stdClass();
-                $newfilerecord->contextid = $context->id;
-                $newfilerecord->component = 'mod_privatestudentfolder';
-                $newfilerecord->filearea = 'attachment';
-                $newfilerecord->itemid = $itemid;
-
-                try {
-                    if ($fs->file_exists($newfilerecord->contextid,
-                            $newfilerecord->component,
-                            $newfilerecord->filearea,
-                            $newfilerecord->itemid,
-                            $assignfiles[$assignfileid]->get_filepath(),
-                            $assignfiles[$assignfileid]->get_filename())) {
-                        notification::info($OUTPUT->box('File existed, skipped creation!', 'generalbox'));
-                        $newfile = $fs->get_file($newfilerecord->contextid,
-                                $newfilerecord->component,
-                                $newfilerecord->filearea,
-                                $newfilerecord->itemid,
-                                $assignfiles[$assignfileid]->get_filepath(),
-                                $assignfiles[$assignfileid]->get_filename());
-                    } else {
-                        $newfile = $fs->create_file_from_storedfile($newfilerecord, $assignfiles[$assignfileid]);
-                    }
-
-                    $dataobject = new \stdClass();
-                    $dataobject->privatestudentfolder = $curpub->id;
-                    $dataobject->userid = $itemid;
-                    $dataobject->timecreated = time();
-                    $dataobject->fileid = $newfile->get_id();
-                    $dataobject->filesourceid = $assignfileid;
-                    $dataobject->filename = $newfile->get_filename();
-                    $dataobject->contenthash = "666";
-                    $dataobject->type = \PRIVATESTUDENTFOLDER_MODE_IMPORT;
-                    $DB->insert_record('privatestudentfolder_file', $dataobject);
-                    $dataobject->typ = $importtype;
-                    $dataobject->itemid = $itemid;
-                    \mod_privatestudentfolder\event\privatestudentfolder_file_imported::file_added($cm, $dataobject)->trigger();
-
-                    $privatestudentfolder = new privatestudentfolder($cm);
-                    if ($privatestudentfolder->get_instance()->notifyfilechange != 0) {
-                        privatestudentfolder::send_notification_filechange($cm, $dataobject, null, $privatestudentfolder);
-                    }
-
-                } catch (\Exception $ex) {
-                    // File could not be copied, maybe it does allready exist.
-                    // Should not happen.
-                    notification::error($OUTPUT->box($ex->getMessage(), 'generalbox'));
-                }
-
-            }
-
-            // And now the same for online texts!
-            \privatestudentfolder::update_assign_onlinetext($assigncm, $assigncontext, $curpub->id, $context->id, $submission->id);
-        }*/
         return true;
     }
 }

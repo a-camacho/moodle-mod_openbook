@@ -165,12 +165,32 @@ class base extends \table_sql {
         // Save status of table(s) persistent as user preference!
         $this->is_persistent(true);
 
-        $this->valid = self::approval_icon('check', 'text-success', get_string('student_approved', 'privatestudentfolder'));
-        $this->questionmark = self::approval_icon('question', 'text-warning', get_string('student_pending', 'privatestudentfolder'));
-        $this->invalid = self::approval_icon('times', 'text-danger', get_string('student_rejected', 'privatestudentfolder'));
+        $this->valid = self::approval_icon(
+            'check',
+            'text-success',
+            get_string('student_approved', 'privatestudentfolder')
+        );
+        $this->questionmark = self::approval_icon(
+            'question',
+            'text-warning',
+            get_string('student_pending', 'privatestudentfolder')
+        );
+        $this->invalid = self::approval_icon(
+            'times',
+            'text-danger',
+            get_string('student_rejected', 'privatestudentfolder')
+        );
 
-        $this->studvisibleyes = self::approval_icon('check', 'text-success', get_string('visibleforstudents_yes', 'privatestudentfolder'));
-        $this->studvisibleno = self::approval_icon('times', 'text-danger', get_string('visibleforstudents_no', 'privatestudentfolder'));
+        $this->studvisibleyes = self::approval_icon(
+            'check',
+            'text-success',
+            get_string('visibleforstudents_yes', 'privatestudentfolder')
+        );
+        $this->studvisibleno = self::approval_icon(
+            'times',
+            'text-danger',
+            get_string('visibleforstudents_no', 'privatestudentfolder')
+        );
 
         $this->options = [];
         $this->options[1] = get_string('teacher_approve', 'privatestudentfolder');
@@ -272,13 +292,16 @@ class base extends \table_sql {
         $having = '';
         if ($this->filter == PRIVATESTUDENTFOLDER_FILTER_NOFILTER) {
             $from = '{user} u ' .
-                'LEFT JOIN {privatestudentfolder_file} files ON u.id = files.userid AND files.privatestudentfolder = :privatestudentfolder ';
+                'LEFT JOIN {privatestudentfolder_file} files ON u.id = files.userid AND ' .
+                'files.privatestudentfolder = :privatestudentfolder ';
         } else if ($this->filter == PRIVATESTUDENTFOLDER_FILTER_ALLFILES) {
             $from = '{user} u ' .
-                'JOIN {privatestudentfolder_file} files ON u.id = files.userid AND files.privatestudentfolder = :privatestudentfolder ';
+                'JOIN {privatestudentfolder_file} files ON u.id = files.userid AND ' .
+                'files.privatestudentfolder = :privatestudentfolder ';
         } else if ($this->filter == PRIVATESTUDENTFOLDER_FILTER_APPROVED) {
             $from = '{user} u ' .
-                'JOIN {privatestudentfolder_file} files ON u.id = files.userid AND files.privatestudentfolder = :privatestudentfolder ';
+                'JOIN {privatestudentfolder_file} files ON u.id = files.userid AND ' .
+                'files.privatestudentfolder = :privatestudentfolder ';
             if ($this->obtainteacherapproval == 1) {
                 $from .= ' AND files.teacherapproval = 1 ';
             }
@@ -287,15 +310,18 @@ class base extends \table_sql {
             }
         } else if ($this->filter == PRIVATESTUDENTFOLDER_FILTER_REJECTED) {
             $from = '{user} u ' .
-                'JOIN {privatestudentfolder_file} files ON u.id = files.userid AND files.privatestudentfolder = :privatestudentfolder ' .
+                'JOIN {privatestudentfolder_file} files ON u.id = files.userid AND ' .
+                'files.privatestudentfolder = :privatestudentfolder ' .
                 'AND files.teacherapproval = 2 ';
         } else if ($this->filter == PRIVATESTUDENTFOLDER_FILTER_APPROVALREQUIRED) {
             $from = '{user} u ' .
-                'JOIN {privatestudentfolder_file} files ON u.id = files.userid AND files.privatestudentfolder = :privatestudentfolder ' .
+                'JOIN {privatestudentfolder_file} files ON u.id = files.userid AND ' .
+                'files.privatestudentfolder = :privatestudentfolder ' .
                 'AND (files.teacherapproval = 3 OR files.teacherapproval IS NULL OR files.teacherapproval = 0) ';
         } else if ($this->filter == PRIVATESTUDENTFOLDER_FILTER_NOFILES) {
             $from = '{user} u ' .
-                'LEFT JOIN {privatestudentfolder_file} files ON u.id = files.userid AND files.privatestudentfolder = :privatestudentfolder ';
+                'LEFT JOIN {privatestudentfolder_file} files ON u.id = files.userid AND ' .
+                'files.privatestudentfolder = :privatestudentfolder ';
             $having = ' HAVING timemodified IS NULL ';
         }
 
@@ -310,7 +336,8 @@ class base extends \table_sql {
                 "SELECT
     COUNT(a.uid)
 FROM
-    (SELECT u.id AS uid, MAX(files.timecreated) AS timemodified FROM $from WHERE $where GROUP BY u.id) a WHERE a.timemodified IS NULL",
+    (SELECT u.id AS uid, MAX(files.timecreated) AS timemodified FROM $from WHERE " .
+                "$where GROUP BY u.id) a WHERE a.timemodified IS NULL",
                 $params
             );
         }
@@ -346,7 +373,11 @@ FROM
                 $this->countparams = $this->sql->params;
             }
             $grandtotal = $DB->count_records_sql($this->countsql, $this->countparams);
-            if ($useinitialsbar && !$this->is_downloading() && empty($this->get_initial_first()) && empty($this->get_initial_last())) {
+            if (
+                $useinitialsbar && !$this->is_downloading() &&
+                empty($this->get_initial_first()) &&
+                empty($this->get_initial_last())
+            ) {
                 $this->initialbars($grandtotal > $pagesize);
             }
 
@@ -413,7 +444,12 @@ FROM
 
         $files = $this->fs->get_area_files($contextid, 'mod_privatestudentfolder', $filearea, $this->itemid, 'timemodified', false);
 
-        $dbfiles = $DB->get_records('privatestudentfolder_file', ['userid' => $itemid], '', 'fileid, teacherapproval, studentapproval');
+        $dbfiles = $DB->get_records(
+            'privatestudentfolder_file',
+            ['userid' => $itemid],
+            '',
+            'fileid, teacherapproval, studentapproval'
+        );
         foreach ($files as $file) {
             if (isset($dbfiles[intval($file->get_id())])) {
                 $dbfile = $dbfiles[intval($file->get_id())];
@@ -663,7 +699,10 @@ FROM
                 $filerow = [];
                 $filerow[] = $OUTPUT->pix_icon(file_file_icon($file), get_mimetype_description($file));
 
-                $url = new \moodle_url('/mod/privatestudentfolder/view.php', ['id' => $this->cm->id, 'download' => $file->get_id()]);
+                $url = new \moodle_url(
+                    '/mod/privatestudentfolder/view.php',
+                    ['id' => $this->cm->id, 'download' => $file->get_id()],
+                );
                 $filerow[] = \html_writer::link($url, $file->get_filename()) .
                         $this->add_onlinetext_preview($values->id, $file->get_id());
 
@@ -679,6 +718,7 @@ FROM
             $lastmodified = \html_writer::span(userdate($values->timemodified), "timemodified");
         }
 
+        // phpcs:disable moodle.Commenting.TodoComment
         // TODO: download without tags?
         return $lastmodified;
     }
@@ -723,7 +763,10 @@ FROM
                     false
                 );
 
-                if ($this->privatestudentfolder->get_openpdffilesinpdfjs_status() == "1" && $file->get_mimetype() == "application/pdf") {
+                if (
+                    $this->privatestudentfolder->get_openpdffilesinpdfjs_status() == "1" &&
+                    $file->get_mimetype() == "application/pdf"
+                ) {
                     $pdfjsurl = new \moodle_url('/mod/privatestudentfolder/pdfjs-5.4.296-dist/web/viewer.html', [
                         'file' => $pluginurl->out(),
                     ]);
@@ -815,6 +858,7 @@ FROM
             ) {
                 $checked = $this->privatestudentfolder->teacher_approval($file);
                 // Null if none found, DB-entry otherwise!
+                // phpcs:disable moodle.Commenting.TodoComment
                 // TODO change that conversions and queue the real values! Everywhere!
                 $checked = ($checked === false || $checked === null) ? "" : $checked;
 
@@ -851,6 +895,7 @@ FROM
             }
         }
 
+        // phpcs:disable moodle.Commenting.TodoComment
         // TODO: download without tags?
         if (count($table->data) > 0) {
             return \html_writer::table($table);
@@ -873,7 +918,10 @@ FROM
 
         foreach ($files as $file) {
             $row = [];
-            // studentapproval!
+
+            // Student approval!
+
+            // phpcs:disable Squiz.PHP.CommentedOutCode
             /*
             if (!($this instanceof \mod_privatestudentfolder\local\allfilestable\upload)) {
                 if (has_capability('mod/privatestudentfolder:approve', $this->context)
@@ -895,7 +943,7 @@ FROM
             }
             */
 
-            // teacherapproval!
+            // Teacher approval!
 
             if (
                 $this->obtainteacherapproval && ($this->privatestudentfolder->has_filepermission($file->get_id())
@@ -903,13 +951,15 @@ FROM
             ) {
                 $checked = $this->privatestudentfolder->teacher_approval($file);
                 // Null if none found, DB-entry otherwise!
+                // phpcs:disable moodle.Commenting.TodoComment
                 // TODO change that conversions and queue the real values! Everywhere!
                 $checked = ($checked === false || $checked === null) ? "" : $checked;
 
                 $sel = \html_writer::select($this->options, 'files[' . $file->get_id() . ']', (string)$checked);
                 $row[] = $sel;
             }
-            // visibleforstudents
+
+            // Visible for students.
 
             if ($this->privatestudentfolder->has_filepermission($file->get_id())) {
                 $row[] = $this->studvisibleyes;
@@ -919,6 +969,7 @@ FROM
             $table->data[] = $row;
         }
 
+        // phpcs:disable moodle.Commenting.TodoComment
         // TODO: download without tags?
         if (count($table->data) > 0) {
             return \html_writer::table($table);
