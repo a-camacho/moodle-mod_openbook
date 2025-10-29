@@ -732,12 +732,16 @@ class privatestudentfolder {
 
         if (count($options) > 0 && !$norowsfound && !$nofilesfound) {
             $output .= html_writer::start_div('form-row');
+            $marginstartclass = "ml-1";
+            if ($CFG->version >= 2024041400) {
+                $marginstartclass = "ms-1";
+            }
             if (has_capability('mod/privatestudentfolder:approve', $context) && $this->allfilespage) {
                 $buttons = html_writer::empty_tag('input', [
                         'type' => 'reset',
                         'name' => 'resetvisibility',
                         'value' => get_string('reset', 'privatestudentfolder'),
-                        'class' => 'visibilitysaver btn btn-secondary ml-1',
+                        'class' => 'visibilitysaver btn btn-secondary ' . $marginstartclass,
                 ]);
 
                 if (

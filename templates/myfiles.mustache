@@ -20,7 +20,7 @@
     Private Student Folder's myfiles template.
 
     The purpose of this template is to the contents of the myfiles.
-    
+
     Example context (json):
     {
         "assign": "<tr><th>Assignment</th><td><a href='https://example.com/mod/assign/view.php?id=10'>Assignment 1</a></td></tr>",
@@ -70,7 +70,7 @@
 <tr>
     <th>{{myfilestitle}}</th>
     <td>{{#hasmyfiles}}
-            <table id="myfilestable">{{#myfiles}}
+            <table id="myfilestable" class="table-reboot">{{#myfiles}}
                     <tr>{{#.}}<td>{{{.}}}</td>{{/.}}</tr>
                 {{/myfiles}}
             </table>

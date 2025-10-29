@@ -208,7 +208,7 @@ class base extends \table_sql {
 
         $this->print_initials_bar();
 
-        echo $OUTPUT->box(get_string('nofilestodisplay', 'privatestudentfolder'), 'font-italic');
+        echo $OUTPUT->box(get_string('nofilestodisplay', 'privatestudentfolder'), 'fst-italic');
     }
 
     /**
@@ -689,7 +689,7 @@ FROM
         [, $files, ] = $this->get_files($values->id);
 
         $filetable = new \html_table();
-        $filetable->attributes = ['class' => 'filetable'];
+        $filetable->attributes = ['class' => 'filetable table-reboot'];
 
         foreach ($files as $file) {
             if (
@@ -732,7 +732,7 @@ FROM
         [, $files, ] = $this->get_files($values->id);
         global $OUTPUT;
         $filetable = new \html_table();
-        $filetable->attributes = ['class' => 'filetable'];
+        $filetable->attributes = ['class' => 'filetable table-reboot'];
 
         foreach ($files as $file) {
             if (
@@ -808,7 +808,7 @@ FROM
         [, $files, ] = $this->get_files($values->id);
 
         $table = new \html_table();
-        $table->attributes = ['class' => 'statustable'];
+        $table->attributes = ['class' => 'statustable table-reboot'];
 
         foreach ($files as $file) {
             if (
@@ -885,7 +885,7 @@ FROM
         [, $files, ] = $this->get_files($values->id);
 
         $table = new \html_table();
-        $table->attributes = ['class' => 'statustable'];
+        $table->attributes = ['class' => 'statustable table-reboot'];
 
         foreach ($files as $file) {
             if ($this->privatestudentfolder->has_filepermission($file->get_id())) {
@@ -914,7 +914,7 @@ FROM
         [, $files, ] = $this->get_files($values->id);
 
         $table = new \html_table();
-        $table->attributes = ['class' => 'statustable'];
+        $table->attributes = ['class' => 'statustable table-reboot'];
 
         foreach ($files as $file) {
             $row = [];
