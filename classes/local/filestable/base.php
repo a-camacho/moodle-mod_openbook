@@ -86,7 +86,11 @@ class base extends \html_table {
         $this->valid = \mod_privatestudentfolder\local\allfilestable\base::approval_icon('check', 'text-success', false);
         $this->questionmark = \mod_privatestudentfolder\local\allfilestable\base::approval_icon('question', 'text-warning', false);
         $this->invalid = \mod_privatestudentfolder\local\allfilestable\base::approval_icon('times', 'text-danger', false);
-        $this->share = \mod_privatestudentfolder\local\allfilestable\base::approval_icon('share-from-square', 'text-success', false);
+        $this->share = \mod_privatestudentfolder\local\allfilestable\base::approval_icon(
+            'share-from-square',
+            'text-success',
+            false
+        );
     }
 
     /**
@@ -97,7 +101,10 @@ class base extends \html_table {
     public function init() {
         $files = $this->get_files();
 
-        if ((!$files || count($files) == 0) && has_capability('mod/privatestudentfolder:upload', $this->privatestudentfolder->get_context())) {
+        if (
+            (!$files || count($files) == 0) &&
+            has_capability('mod/privatestudentfolder:upload', $this->privatestudentfolder->get_context())
+        ) {
             return 0;
         }
 
@@ -325,7 +332,10 @@ class base extends \html_table {
                 false
             );
 
-            if ($this->privatestudentfolder->get_openpdffilesinpdfjs_status() == "1" && $file->get_mimetype() == "application/pdf") {
+            if (
+                $this->privatestudentfolder->get_openpdffilesinpdfjs_status() == "1" &&
+                $file->get_mimetype() == "application/pdf"
+            ) {
                 $pdfjsurl = new \moodle_url('/mod/privatestudentfolder/pdfjs-5.4.296-dist/web/viewer.html', [
                     'file' => $pluginurl->out(),
                 ]);
@@ -344,10 +354,7 @@ class base extends \html_table {
                 ['target' => '_blank', 'rel' => 'noopener noreferrer', 'title' => $filename]
             );
         } else {
-            /* TODO : Make it better, show that link cannot be clicked */
-            // $data[] = $displayname;
-
-            // Lien désactivé
+            // Disactivated links.
             $data[] = \html_writer::tag('a', $displayname, [
                 'class' => 'disabled-link',
                 'href' => '#',

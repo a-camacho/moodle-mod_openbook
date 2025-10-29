@@ -24,6 +24,10 @@
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// Let codechecker ignore some sniffs for this file as it is perfectly well ordered, just not alphabetically.
+// phpcs:disable moodle.Files.LangFilesOrdering.UnexpectedComment
+// phpcs:disable moodle.Files.LangFilesOrdering.IncorrectOrder
+
 $string['availabilityrestriction'] = 'Appliquer des restrictions de disponibilité à la liste des utilisateurs';
 $string['availabilityrestriction_admin'] = 'Paramètre par défaut pour les restrictions de disponibilité sur la liste des utilisateurs';
 $string['availabilityrestriction_help'] = 'Les utilisateurs qui ne peuvent pas accéder à l\'activité en raison de restrictions de disponibilité seront retirés de la liste.<br> Cela inclut uniquement les conditions marquées comme appliquées aux listes d\'utilisateurs. Par exemple, les conditions de groupe sont incluses, mais les conditions de date ne le sont pas.';
@@ -137,7 +141,7 @@ $string['uploadnotopen'] = 'Le téléversement de fichiers est fermé !';
 
 $string['reset_userdata'] = 'Toutes les données';
 
-// Strings from the file mod_form
+// Strings from the file mod_form.
 $string['configautoimport'] = 'Si vous souhaitez que les remises des étudiants soient automatiquement importées dans les instances de Private Student Folder. Cette fonctionnalité peut être activée/désactivée séparément pour chaque instance de Private Student Folder.';
 $string['availability'] = 'Période d\'édition (téléversement ou approbation)';
 $string['submissionsettings'] = 'Paramètres de remise';
@@ -179,15 +183,15 @@ $string['nonexistentfiletypes'] = 'Les types de fichiers suivants n\'ont pas ét
 $string['completionupload'] = 'L’étudiant doit téléverser un fichier';
 $string['completiondetail:upload'] = 'Téléverser un fichier';
 
-// Strings from file mod_privatestudentfolder_grantextension_form.php
+// Strings from file mod_privatestudentfolder_grantextension_form.php.
 $string['extensionduedate'] = 'Date limite de prolongation';
 $string['extensionnotafterduedate'] = 'La date de prolongation doit être postérieure à la date limite';
 $string['extensionnotafterfromdate'] = 'La date de prolongation doit être postérieure à la date de début des remises autorisées';
 
-// Strings from file index.php
+// Strings from file index.php.
 $string['noprivatestudentfoldersincourse'] = 'Il n\'y a aucune instance de Private Student Folder dans ce cours.';
 
-// Strings from file view.php
+// Strings from file view.php.
 $string['allowsubmissionsfromdate_upload'] = 'Téléversement à partir de';
 $string['allowsubmissionsfromdate_import'] = 'Approbation à partir de';
 $string['duedate_upload'] = 'Téléversement jusqu\'à';
@@ -235,7 +239,7 @@ $string['notice_files_imported'] = 'Les fichiers affichés sont importés depuis
 $string['notice_files_imported_group'] = 'Les fichiers affichés proviennent d\'une remise de groupe, importée depuis une activité de devoir.';
 $string['notice_changes_possible_in_original'] = 'Les modifications des fichiers existants ne sont possibles que dans l\'activité de devoir originale.';
 
-// Strings for approval
+// Strings for approval.
 $string['notice_obtainteacherapproval_studentsapproval'] = 'Dans l\'esprit de la législation sur le droit d\'auteur, nous vous demandons de solliciter l\'approbation des participants pour publier des fichiers par un autre moyen.';
 
 $string['notice_obtainapproval_import_both'] = 'En tant qu\'enseignant, vous pouvez rejeter l\'approbation pour le privatestudentfolder à tout moment si un fichier ne respecte pas les exigences définies.';
@@ -300,7 +304,7 @@ $string['grantextension'] = 'Accorder une prolongation';
 $string['saveteacherapproval'] = 'Enregistrer les modifications';
 $string['reset'] = 'Annuler';
 
-// Strings from the file upload.php
+// Strings from the file upload.php.
 $string['filesofthesetypes'] = 'Les fichiers de ces types peuvent être ajoutés :';
 $string['guideline'] = 'Publication des fichiers soumise';
 $string['published_immediately'] = 'Approbation automatique';
@@ -309,11 +313,11 @@ $string['save_changes'] = 'Enregistrer les modifications';
 
 $string['overview'] = 'Aperçu';
 
-// Strings for JS
+// Strings for JS.
 $string['total'] = 'Total';
 $string['details'] = 'Détails';
 
-// Strings for privacy-API
+// Strings for privacy-API.
 $string['privacy:metadata:privatestudentfolderperpage'] = 'Nombre d’entrées affichées par page dans un tableau.';
 $string['privacy:path:files'] = 'Fichiers';
 $string['privacy:path:resources'] = 'Ressources';
@@ -336,7 +340,7 @@ $string['privacy:metadata:contenthash'] = 'Hash SHA1 du contenu du fichier, util
 $string['privacy:metadata:filename'] = 'Nom du fichier.';
 $string['privacy:metadata:extensionduedate'] = 'Date d’échéance effective pour les étudiants suite à une prolongation/modification.';
 
-// Strings for filters
+// Strings for filters.
 $string['filter'] = 'Filtrer';
 $string['filter:nofilter'] = 'Sans filtre';
 $string['filter:allfiles'] = 'Toutes les soumissions de fichiers';
@@ -345,7 +349,7 @@ $string['filter:rejected'] = 'Soumissions de fichiers rejetées';
 $string['filter:approvalrequired'] = 'Décision en attente';
 $string['filter:nofiles'] = 'Aucune soumission de fichier';
 
-// Strings for overrides
+// Strings for overrides.
 $string['eventoverridecreated'] = 'Prolongation du Private Student Folder créée';
 $string['eventoverridedeleted'] = 'Prolongation du Private Student Folder supprimée';
 $string['eventoverrideupdated'] = 'Prolongation du Private Student Folder mise à jour';

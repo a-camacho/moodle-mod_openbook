@@ -69,18 +69,6 @@ class import extends base {
                 $headers[] = get_string('studentapproval', 'privatestudentfolder');
                 $helpicons[] = new \help_icon('studentapproval', 'privatestudentfolder');
             }
-            /*
-            $columns[] = 'teacherapproval';
-            if ($this->privatestudentfolder->get_instance()->obtainstudentapproval) {
-                $headers[] = get_string('obtainstudentapproval', 'privatestudentfolder');
-            } else {
-                $headers[] = get_string('teacherapproval', 'privatestudentfolder');
-            }
-            $helpicons[] = new \help_icon('teacherapproval', 'privatestudentfolder');
-
-            $columns[] = 'visibleforstudents';
-            $headers[] = get_string('visibleforstudents', 'privatestudentfolder');
-            $helpicons[] = null;*/
             $columns[] = 'privatestudentfolderstatus';
             $headers[] = get_string('privatestudentfolderstatus', 'privatestudentfolder');
             $helpicons[] = new \help_icon('privatestudentfolderstatus', 'privatestudentfolder');

@@ -143,8 +143,10 @@ class mod_privatestudentfolder_files_form extends moodleform {
             $approvalfromdate = $override->approvalfromdate > 0 ? userdate($override->approvalfromdate) : false;
             $approvaltodate = $override->approvaltodate > 0 ? userdate($override->approvaltodate) : false;
         } else {
-            $approvalfromdate = $privatestudentfolderinstance->approvalfromdate > 0 ? userdate($privatestudentfolderinstance->approvalfromdate) : false;
-            $approvaltodate = $privatestudentfolderinstance->approvaltodate > 0 ? userdate($privatestudentfolderinstance->approvaltodate) : false;
+            $approvalfromdate = $privatestudentfolderinstance->approvalfromdate > 0 ?
+                userdate($privatestudentfolderinstance->approvalfromdate) : false;
+            $approvaltodate = $privatestudentfolderinstance->approvaltodate > 0 ?
+                userdate($privatestudentfolderinstance->approvaltodate) : false;
         }
 
         if ($privatestudentfolderinstance->duedate > 0 || ($override && $override->submissionoverride && $override->duedate > 0)) {
@@ -210,9 +212,6 @@ class mod_privatestudentfolder_files_form extends moodleform {
                 $noticehtml .= html_writer::end_tag('div');
 
                 $mform->addElement('html', $noticehtml);
-
-                // $mform->addElement('static', 'approvaltimeover', get_string('approval_timeover', 'privatestudentfolder'));
-                // $mform->addElement('html', '<div class="qheader">'  . get_string('approval_timeover', 'privatestudentfolder') . '</div>');
             }
         }
 

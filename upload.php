@@ -54,7 +54,13 @@ if (!empty($id)) {
 $PAGE->set_url($url);
 
 if (!$privatestudentfolder->is_open()) {
-    redirect(new moodle_url('/mod/privatestudentfolder/view.php', ['id' => $cm->id]), get_string('uploadnotopen', 'mod_privatestudentfolder'));
+    redirect(
+        new moodle_url(
+            '/mod/privatestudentfolder/view.php',
+            ['id' => $cm->id],
+        ),
+        get_string('uploadnotopen', 'mod_privatestudentfolder'),
+    );
 }
 
 $entry = new stdClass();
@@ -83,7 +89,15 @@ $attachmentoptions = [
         'accepted_types' => $acceptedfiletypes,
 ];
 
-$entry = file_prepare_standard_editor($entry, 'definition', $definitionoptions, $context, 'mod_privatestudentfolder', 'entry', $entry->id);
+$entry = file_prepare_standard_editor(
+    $entry,
+    'definition',
+    $definitionoptions,
+    $context,
+    'mod_privatestudentfolder',
+    'entry',
+    $entry->id,
+);
 $entry = file_prepare_standard_filemanager(
     $entry,
     'attachment',
@@ -142,7 +156,8 @@ if ($mform->is_cancelled()) {
     }
 
     $filescount = count($values);
-    $rows = $DB->get_records('privatestudentfolder_file', ['privatestudentfolder' => $privatestudentfolder->get_instance()->id, 'userid' => $USER->id]);
+    $rows = $DB->get_records('privatestudentfolder_file', ['privatestudentfolder' => $privatestudentfolder->get_instance()->id,
+        'userid' => $USER->id]);
 
     // Find new files and store in db.
     foreach ($files as $file) {
@@ -192,7 +207,7 @@ if ($mform->is_cancelled()) {
         }
     }
 
-    // Update competion status - if filescount == 0 => activity not completed, else => activity completed
+    // Update competion status - if filescount == 0 => activity not completed, else => activity completed.
 
     $completion = new completion_info($course);
     if ($completion->is_enabled($cm) && $privatestudentfolder->get_instance()->completionupload) {
