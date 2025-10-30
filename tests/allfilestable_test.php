@@ -23,15 +23,16 @@
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+// phpcs:disable moodle.PHPUnit.TestCaseNames.UnexpectedLevel2NS
+
 namespace mod_privatestudentfolder\local\tests;
 
 use Exception;
 use mod_assign_generator;
 use coding_exception;
 
-if (!defined('MOODLE_INTERNAL')) {
-    die('Direct access to this script is forbidden.'); // It must be included from a Moodle page!
-}
+defined('MOODLE_INTERNAL') || die();
 
 // Make sure the code being tested is accessible.
 global $CFG;
@@ -45,24 +46,25 @@ require_once($CFG->dirroot . '/mod/privatestudentfolder/locallib.php'); // Inclu
  * @copyright 2017 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class allfilestable_test extends base {
-    /*
-     * The base test class already contains a setUp-method setting up a course including users and groups.
-     */
-
+final class allfilestable_test extends base {
     /**
      * Tests the basic creation of a privatestudentfolder instance with standardized settings!
+     *
+     * @covers \privatestudentfolder::__construct
+     * @return void
      */
-    public function test_create_instance() {
+    public function test_create_instance(): void {
         self::assertNotEmpty($this->create_instance());
     }
 
     /**
      * Tests if we can create an allfilestable without uploaded files
      *
+     * @covers \privatestudentfolder::get_allfilestable_upload
+     * @return void
      * @throws Exception
      */
-    public function test_allfilestable_upload() {
+    public function test_allfilestable_upload(): void {
         // Setup fixture!
         $privatestudentfolder = $this->create_instance([
             'mode' => PRIVATESTUDENTFOLDER_MODE_UPLOAD,
@@ -83,9 +85,11 @@ class allfilestable_test extends base {
     /**
      * Tests if we can create an allfilestable without imported files
      *
+     * @covers \privatestudentfolder::get_allfilestable_import
+     * @return void
      * @throws coding_exception
      */
-    public function test_allfilestable_import() {
+    public function test_allfilestable_import(): void {
         // Setup fixture!
         /** @var mod_assign_generator $generator */
         $generator = self::getDataGenerator()->get_plugin_generator('mod_assign');
@@ -111,9 +115,12 @@ class allfilestable_test extends base {
     /**
      * Tests if we can create an allfilestable without imported group-files
      *
+     * @covers \privatestudentfolder::get_allfilestable_group
+     * @return void
      * @throws coding_exception
      */
-    public function test_allfilestable_group() {
+    public function test_allfilestable_group(): void {
+        // phpcs:disable moodle.Commenting.TodoComment
         // TODO : Setup fixture!
 
         $this->resetAfterTest();

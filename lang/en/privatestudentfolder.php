@@ -24,6 +24,10 @@
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// Let codechecker ignore some sniffs for this file as it is perfectly well ordered, just not alphabetically.
+// phpcs:disable moodle.Files.LangFilesOrdering.UnexpectedComment
+// phpcs:disable moodle.Files.LangFilesOrdering.IncorrectOrder
+
 $string['availabilityrestriction'] = 'Apply availability restrictions to user list';
 $string['availabilityrestriction_admin'] = 'Default setting for availability restrictions to user list';
 $string['availabilityrestriction_help'] = 'Users who cannot access the activity due to availability restrictions will be removed from the list.<br>This only includes conditions which are marked as being applied to user lists. For example, group conditions are included but date conditions are not included.';
@@ -138,7 +142,7 @@ $string['uploadnotopen'] = 'File upload is closed!';
 
 $string['reset_userdata'] = 'All data';
 
-// Strings from the file mod_form
+// Strings from the file mod_form.
 $string['configautoimport'] = 'If you prefer to have student submissions be automatically imported into student folder instances. This feature can be enabled/disabled for each student folder instance separately.';
 $string['availability'] = 'Editing period (upload or approval)';
 $string['submissionsettings'] = 'Submission settings';
@@ -180,15 +184,15 @@ $string['nonexistentfiletypes'] = 'The following file types were not recognised:
 $string['completionupload'] = 'Student must upload a file';
 $string['completiondetail:upload'] = 'Upload a file';
 
-// Strings from the File mod_privatestudentfolder_grantextension_form.php
+// Strings from the File mod_privatestudentfolder_grantextension_form.php.
 $string['extensionduedate'] = 'Extension due date';
 $string['extensionnotafterduedate'] = 'Extension date must be after the due date';
 $string['extensionnotafterfromdate'] = 'Extension date must be after the allow submissions from date';
 
-// Strings from the File index.php
+// Strings from the File index.php.
 $string['noprivatestudentfoldersincourse'] = 'There is no student folder instance in this course.';
 
-// Strings from the File view.php
+// Strings from the File view.php.
 $string['allowsubmissionsfromdate_upload'] = 'Upload from';
 $string['allowsubmissionsfromdate_import'] = 'Approval from';
 $string['duedate_upload'] = 'Upload to';
@@ -237,7 +241,7 @@ $string['notice_files_imported'] = 'Shown files are imported from an assignment 
 $string['notice_files_imported_group'] = 'Shown files are from a group submission, imported from an assignment activity.';
 $string['notice_changes_possible_in_original'] = 'Changes to existing files are only possible in the original assignment activity.';
 
-// Strings for approval
+// Strings for approval.
 $string['notice_obtainteacherapproval_studentsapproval'] = 'In the spirit of copyright law, we ask that you request approval to publish files from participants in a separate way.';
 
 $string['notice_obtainapproval_import_both'] = 'As a teacher, you can reject approval for publication at any time, if a file not meets the defined requirements.';
@@ -302,7 +306,7 @@ $string['grantextension'] = 'Grant extension';
 $string['saveteacherapproval'] = 'Save changes';
 $string['reset'] = 'Revert';
 
-// Strings from the file upload.php
+// Strings from the file upload.php.
 $string['filesofthesetypes'] = 'Files of these types may be added:';
 $string['guideline'] = 'Private Student Folder of file submissions';
 $string['published_immediately'] = 'Approve automatically';
@@ -311,11 +315,11 @@ $string['save_changes'] = 'Save changes';
 
 $string['overview'] = 'Overview';
 
-// Strings for JS
+// Strings for JS.
 $string['total'] = 'Total';
 $string['details'] = 'Details';
 
-// Strings for privacy-API
+// Strings for privacy-API.
 $string['privacy:metadata:privatestudentfolderperpage'] = 'How many entries should be displayed on a single table page!';
 $string['privacy:path:files'] = 'Files';
 $string['privacy:path:resources'] = 'Resources';
@@ -338,7 +342,7 @@ $string['privacy:metadata:contenthash'] = 'SHA1 hash of the file\'s content, use
 $string['privacy:metadata:filename'] = 'The file\'s name.';
 $string['privacy:metadata:extensionduedate'] = 'The due date effective for students due to the override/extension.';
 
-// Strings for filters
+// Strings for filters.
 $string['filter'] = 'Filter';
 $string['filter:nofilter'] = 'No filter';
 $string['filter:allfiles'] = 'All file submissions';
@@ -347,7 +351,7 @@ $string['filter:rejected'] = 'Rejected file submissions';
 $string['filter:approvalrequired'] = 'Decision pending';
 $string['filter:nofiles'] = 'No file submission';
 
-// Strings for overrides
+// Strings for overrides.
 $string['eventoverridecreated'] = 'Private Student Folder override created';
 $string['eventoverridedeleted'] = 'Private Student Folder override deleted';
 $string['eventoverrideupdated'] = 'Private Student Folder override updated';

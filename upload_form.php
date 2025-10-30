@@ -54,7 +54,13 @@ class mod_privatestudentfolder_upload_form extends moodleform {
 
         $mform->addElement('static', 'guideline', get_string('guideline', 'privatestudentfolder'), $text);
 
-        $mform->addElement('filemanager', 'attachment_filemanager', get_string('myfiles', 'privatestudentfolder'), null, $attachmentoptions);
+        $mform->addElement(
+            'filemanager',
+            'attachment_filemanager',
+            get_string('myfiles', 'privatestudentfolder'),
+            null,
+            $attachmentoptions,
+        );
 
         // Add notice of allowed file types if they're restricted!
         if (!empty($attachmentoptions['accepted_types']) && $attachmentoptions['accepted_types'] !== '*') {

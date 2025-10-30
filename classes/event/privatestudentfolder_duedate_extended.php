@@ -69,9 +69,9 @@ class privatestudentfolder_duedate_extended extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The due-date of the privatestudentfolder with id '" . $this->data['other']['privatestudentfolder'] . "' was extended to "
-            . date_format_string($this->data['other']['extensionduedate'], "%d.%m.%Y") . " by the user with id '"
-            . $this->data['other']['userid'] . "'";
+        return "The due-date of the privatestudentfolder with id '" . $this->data['other']['privatestudentfolder'] . "' was " .
+            "extended to " . date_format_string($this->data['other']['extensionduedate'], "%d.%m.%Y") . " by the " .
+            "user with id '" . $this->data['other']['userid'] . "'";
     }
 
     /**

@@ -92,7 +92,6 @@ class group extends base {
                 }
             } else if ($studentapproval == 2 || !empty($rejectedstudents)) {
                 $studentdenied = true;
-                // $hint = get_string('student_rejected', 'privatestudentfolder');
                 $hint = $rejected;
             } else {
                 $hint = $pending;
@@ -160,6 +159,7 @@ class group extends base {
      * @param \stored_file $file Stored file instance
      * @return string[] Array of table cell contents
      */
+    // phpcs:disable Squiz.PHP.CommentedOutCode
     /*
     public function add_file2(\stored_file $file) {
         global $USER, $DB, $OUTPUT;

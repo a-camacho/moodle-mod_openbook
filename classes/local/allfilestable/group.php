@@ -54,7 +54,8 @@ class group extends base {
         $params = [];
 
         $fields = "g.id, g.name AS groupname, NULL AS groupmembers, COUNT(*) AS filecount,
-                   SUM(files.studentapproval) AS studentapproval, SUM(files.teacherapproval) AS teacherapproval, MAX(files.timecreated) AS timemodified ";
+                   SUM(files.studentapproval) AS studentapproval, SUM(files.teacherapproval) AS teacherapproval, " .
+                  "MAX(files.timecreated) AS timemodified ";
 
         $groups = $this->privatestudentfolder->get_groups($this->groupingid);
         if (count($groups) > 0) {
@@ -78,11 +79,14 @@ class group extends base {
 
         $having = '';
         if ($this->filter == PRIVATESTUDENTFOLDER_FILTER_NOFILTER) {
-            $from = $grouptable . " LEFT JOIN {privatestudentfolder_file} files ON g.id = files.userid AND files.privatestudentfolder = :privatestudentfolder ";
+            $from = $grouptable . " LEFT JOIN {privatestudentfolder_file} files ON g.id = files.userid AND " .
+                "files.privatestudentfolder = :privatestudentfolder ";
         } else if ($this->filter == PRIVATESTUDENTFOLDER_FILTER_ALLFILES) {
-            $from = $grouptable . " JOIN {privatestudentfolder_file} files ON g.id = files.userid AND files.privatestudentfolder = :privatestudentfolder ";
+            $from = $grouptable . " JOIN {privatestudentfolder_file} files ON g.id = files.userid AND " .
+                "files.privatestudentfolder = :privatestudentfolder ";
         } else if ($this->filter == PRIVATESTUDENTFOLDER_FILTER_APPROVED) {
-            $from = $grouptable . " JOIN {privatestudentfolder_file} files ON g.id = files.userid AND files.privatestudentfolder = :privatestudentfolder ";
+            $from = $grouptable . " JOIN {privatestudentfolder_file} files ON g.id = files.userid AND " .
+                "files.privatestudentfolder = :privatestudentfolder ";
             if ($this->obtainteacherapproval) {
                 $from .= ' AND files.teacherapproval = 1 ';
             }
@@ -90,13 +94,16 @@ class group extends base {
                 $from .= ' AND files.studentapproval = 1 ';
             }
         } else if ($this->filter == PRIVATESTUDENTFOLDER_FILTER_REJECTED) {
-            $from = $grouptable . " LEFT JOIN {privatestudentfolder_file} files ON g.id = files.userid AND files.privatestudentfolder = :privatestudentfolder " .
+            $from = $grouptable . " LEFT JOIN {privatestudentfolder_file} files ON g.id = files.userid AND " .
+                "files.privatestudentfolder = :privatestudentfolder " .
                 "AND files.teacherapproval = 2 ";
         } else if ($this->filter == PRIVATESTUDENTFOLDER_FILTER_APPROVALREQUIRED) {
-            $from = $grouptable . " LEFT JOIN {privatestudentfolder_file} files ON g.id = files.userid AND files.privatestudentfolder = :privatestudentfolder " .
+            $from = $grouptable . " LEFT JOIN {privatestudentfolder_file} files ON g.id = files.userid AND " .
+                "files.privatestudentfolder = :privatestudentfolder " .
                 "AND (files.teacherapproval = 3 OR files.teacherapproval IS NULL OR files.teacherapproval = 0) ";
         } else if ($this->filter == PRIVATESTUDENTFOLDER_FILTER_NOFILES) {
-            $from = $grouptable . " LEFT JOIN {privatestudentfolder_file} files ON g.id = files.userid AND files.privatestudentfolder = :privatestudentfolder ";
+            $from = $grouptable . " LEFT JOIN {privatestudentfolder_file} files ON g.id = files.userid AND " .
+                "files.privatestudentfolder = :privatestudentfolder ";
             $having = ' HAVING timemodified IS NULL ';
         }
 
@@ -106,18 +113,21 @@ class group extends base {
         $this->set_sql($fields, $from, $where, $params, $groupby);
 
         if ($this->filter != PRIVATESTUDENTFOLDER_FILTER_NOFILES) {
-            $this->set_count_sql("SELECT COUNT(a.gid) FROM (SELECT DISTINCT g.id AS gid  FROM " . $from . " WHERE " . $where . ') a', $params);
+            $this->set_count_sql("SELECT COUNT(a.gid) FROM (SELECT DISTINCT g.id AS gid  FROM " . $from .
+                " WHERE " . $where . ') a', $params);
         } else {
             $this->set_count_sql("SELECT
             COUNT(a.gid) FROM
-            (SELECT g.id AS gid, MAX(files.timecreated) AS timemodified FROM $from WHERE $where GROUP BY g.id) a WHERE a.timemodified IS NULL", $params);
+            (SELECT g.id AS gid, MAX(files.timecreated) AS timemodified FROM $from WHERE $where GROUP BY g.id) a
+                         WHERE a.timemodified IS NULL", $params);
         }
     }
 
     /**
      * Constructor function
      *
-     * @param string $uniqueid a string identifying this table. Used as a key in session vars. It gets set automatically with the helper methods!
+     * @param string $uniqueid a string identifying this table. Used as a key in session vars.
+     * It gets set automatically with the helper methods!
      * @param \privatestudentfolder $privatestudentfolder privatestudentfolder object
      * @param string $filter filters
      */
@@ -166,7 +176,7 @@ class group extends base {
 
         $this->print_initials_bar();
 
-        echo $OUTPUT->box(get_string('nofilestodisplay', 'privatestudentfolder'), 'font-italic');
+        echo $OUTPUT->box(get_string('nofilestodisplay', 'privatestudentfolder'), 'fst-italic');
     }
 
     /**
@@ -181,7 +191,13 @@ class group extends base {
         ]);
 
         $columns = ['selection', 'groupname', 'groupmembers', 'timemodified', 'files'];
-        $headers = [$selectallnone, get_string('group'), get_string('groupmembers'), get_string('lastmodified'), get_string('files')];
+        $headers = [
+            $selectallnone,
+            get_string('group'),
+            get_string('groupmembers'),
+            get_string('lastmodified'),
+            get_string('files'),
+        ];
         $helpicons = [null, null, null, null, null];
 
         if (has_capability('mod/privatestudentfolder:approve', $this->context) && $this->allfilespage) {
@@ -189,7 +205,10 @@ class group extends base {
                 $columns[] = 'studentapproval';
                 $headers[] = get_string('studentapproval', 'privatestudentfolder');
                 $helpicons[] = new \help_icon('studentapproval', 'privatestudentfolder');
-            }/*
+            }
+
+            // phpcs:disable Squiz.PHP.CommentedOutCode
+            /*
             $columns[] = 'teacherapproval';
             if ($this->privatestudentfolder->get_instance()->obtainstudentapproval) {
                 $headers[] = get_string('obtainstudentapproval', 'privatestudentfolder');

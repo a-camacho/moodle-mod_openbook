@@ -39,7 +39,7 @@ $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
 require_login($course, true, $cm);
 $PAGE->set_url($url);
 
-// Charger le CSS du plugin
+// Load the CSS of the plugin.
 $PAGE->requires->css(new \moodle_url($CFG->wwwroot . '/mod/privatestudentfolder/styles.css'));
 
 $context = context_module::instance($cm->id);
