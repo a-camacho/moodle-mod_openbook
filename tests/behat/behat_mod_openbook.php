@@ -55,9 +55,10 @@ class behat_mod_openbook extends behat_base {
      * Convert page names to URLs for steps like 'When I am on the "[identifier]" "[page type]" page'.
      *
      * Recognised page names are:
-     * | pagetype          | name meaning                              | description                                   |
-     * | view              | Openbook name                          | The openbook info page (view.php)          |
-     * | report            | Openbook name                          | The openbook report page (report.php)      |
+     * | pagetype          | name meaning          | description                                  |
+     * | view              | Openbook name         | The openbook info page (view.php)            |
+     * | submissions       | Openbook name         | The openbook submissions page (view.php)     |
+     * | edit              | Openbook name         | The openbook edit page (edit.php)            |
      *
      * @param string $type identifies which type of page this is, e.g. 'report'.
      * @param string $identifier identifies the particular page, e.g. 'Test openbook > report > Attempt 1'.
@@ -72,10 +73,22 @@ class behat_mod_openbook extends behat_base {
                     ['id' => $this->get_cm_by_openbook_name($identifier)->id]
                 );
 
+            case 'edit':
+                return new moodle_url(
+                    '/course/modedit.php',
+                    ['update' => $this->get_cm_by_openbook_name($identifier)->id]
+                );
+
             case 'submissions':
                 return new moodle_url(
                     '/mod/openbook/view.php',
                     ['id' => $this->get_cm_by_openbook_name($identifier)->id, 'allfilespage' => 1]
+                );
+
+            case 'overrides':
+                return new moodle_url(
+                    '/mod/openbook/overrides.php',
+                    ['id' => $this->get_cm_by_openbook_name($identifier)->id]
                 );
 
             default:

@@ -20,7 +20,7 @@
     Openbook resource folder's overrides template.
 
     The purpose of this template is to the contents of the overrides.
-    
+
     Example context (json):
     {
         "newoverrideurl": "https://example.com/mod/openbook/overrides_edit.php?add=1",
@@ -53,7 +53,7 @@
         <thead>
             <tr>
                 <th>{{usergroupcoltitle}}</th>
-                <th>{{#str}}overrides,assign{{/str}}</th>
+                <th>{{#str}}overrides,openbook{{/str}}</th>
                 <th>{{#str}}action{{/str}}</th>
             </tr>
         </thead>
@@ -67,7 +67,8 @@
                 {{#overrides}}
                     <tr>
                         <td>{{#userurl}}<a href="{{.}}" title="{{fullname}}">{{/userurl}}{{fullname}}{{#userurl}}</a>{{/userurl}}</td>
-                        <td><div class="">{{submissionoverride}}</div><div class="">{{approvaloverride}}</div></td>
+                        <td><div class="">{{submissionoverride}}</div><div class="">{{approvaloverride}}</div>
+                            <div class="">{{securewindowoverride}}</div></td>
                         <td><a href="{{editurl}}">{{#pix}}t/edit{{/pix}}</a><a href="{{deleteurl}}">{{#pix}}t/delete{{/pix}}</a></td>
                 {{/overrides}}
             {{/overridesempty}}

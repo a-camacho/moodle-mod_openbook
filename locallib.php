@@ -205,13 +205,17 @@ class openbook {
 
         $override = $this->override_get_currentuserorgroup();
         if ($override) {
+            if ($override->submissionoverride) {
+                echo '<tr><td class="c0">' . get_string('submissionoverride', 'openbook') . ':</td>';
+                echo '    <td class="c1">' . $override->submissionoverride . '</td></tr>';
+            }
             if ($override->approvaloverride) {
                 echo '<tr><td class="c0">' . get_string('approvaloverride', 'openbook') . ':</td>';
                 echo '    <td class="c1">' . $override->approvaloverride . '</td></tr>';
             }
-            if ($override->submissionoverride) {
+            if ($override->securewindowoverride) {
                 echo '<tr><td class="c0">' . get_string('submissionoverride', 'openbook') . ':</td>';
-                echo '    <td class="c1">' . $override->submissionoverride . '</td></tr>';
+                echo '    <td class="c1">' . $override->securewindowoverride . '</td></tr>';
             }
         }
 
@@ -313,6 +317,27 @@ class openbook {
     }
 
     /**
+     * Get the secure window to date (if set)
+     *
+     * @param int $uid User ID to fetch overriden secure window to date for
+     * @return int overridden date if set or 0
+     */
+    public function user_overridensecurewindowtodate($uid) {
+        global $DB;
+
+        $overriddensecurewindowtodate = $DB->get_field('openbook_overrides', 'securewindowtodate', [
+            'openbook' => $this->get_instance()->id,
+            'userid' => $uid,
+        ]);
+
+        if (!$overriddensecurewindowtodate) {
+            return 0;
+        }
+
+        return $overriddensecurewindowtodate;
+    }
+
+    /**
      * Allfilespage setter
      *
      * @param bool $allfilespage
@@ -329,7 +354,7 @@ class openbook {
     }
 
     /**
-     * Check if submission is currently allowed due to allowsubmissionsfromdae and duedate
+     * Check if submission is currently allowed due to allowsubmissionsfromdate and duedate
      *
      * @return bool
      */
@@ -403,6 +428,43 @@ class openbook {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Check if secure window time frame is now and secure window is therefore enforced.
+     * If no date is set secure window is not enforced.
+     */
+    public function is_securewindow_enforced() {
+        global $USER;
+
+        $now = time();
+
+        $from = $this->get_instance()->securewindowfromdate;
+        $to = $this->get_instance()->securewindowtodate;
+        $overridesecurewindowtodate = $this->user_overridensecurewindowtodate($USER->id);
+
+        if ($to != 0 && $overridesecurewindowtodate) {
+            $to = $overridesecurewindowtodate;
+        }
+
+        $override = $this->override_get_currentuserorgroup();
+
+        if ($override && $override->securewindowoverride) {
+            if ($override->securewindowfromdate > 0) {
+                $from = $override->securewindowfromdate;
+            }
+            if ($override->securewindowtodate > 0) {
+                $to = $override->securewindowtodate;
+            }
+        }
+
+        if ($from == 0 && $to == 0) {
+            return false;
+        } else if (($from == 0 || $from < $now) && ($to == 0 || $to > $now)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -2587,6 +2649,7 @@ class openbook {
     public function override_export_for_template_single($override) {
         $override->submissionoverride = null;
         $override->approvaloverride = null;
+        $override->securewindowoverride = null;
         if (
             $this->mode == OPENBOOK_MODE_FILEUPLOAD &&
             ($override->allowsubmissionsfromdate > 0 || $override->duedate > 0)
@@ -2617,6 +2680,19 @@ class openbook {
                 $override->approvaloverride = get_string('override:approval:from', 'mod_openbook', $fromto);
             } else if ($override->approvaltodate > 0) {
                 $override->approvaloverride = get_string('override:approval:to', 'mod_openbook', $fromto);
+            }
+        }
+        if ($override->securewindowfromdate > 0 || $override->securewindowtodate > 0) {
+            $fromto = (object)[
+                'from' => userdate($override->securewindowfromdate),
+                'to' => userdate($override->securewindowtodate),
+            ];
+            if ($override->securewindowfromdate > 0 && $override->securewindowtodate > 0) {
+                $override->securewindowoverride = get_string('override:securewindow:fromto', 'mod_openbook', $fromto);
+            } else if ($override->securewindowfromdate > 0) {
+                $override->securewindowoverride = get_string('override:securewindow:from', 'mod_openbook', $fromto);
+            } else if ($override->securewindowtodate > 0) {
+                $override->securewindowoverride = get_string('override:securewindow:to', 'mod_openbook', $fromto);
             }
         }
         return $override;

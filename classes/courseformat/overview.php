@@ -117,6 +117,41 @@ class overview extends \core_courseformat\activityoverviewbase {
         );
     }
 
+
+    /**
+     * Get the secure window overview item.
+     *
+     * @return overviewitem|null
+     * @throws \coding_exception
+     */
+    public function get_securewindow_date_overview(): ?overviewitem {
+        global $USER;
+
+        $dates = activity_dates::get_dates_for_module($this->cm, $USER->id);
+        $closedate = null;
+        foreach ($dates as $date) {
+            if ($date['dataid'] === 'securewindowend') {
+                $closedate = $date['timestamp'];
+                break;
+            }
+        }
+        if (empty($closedate)) {
+            return new overviewitem(
+                name: get_string('securewindowtodate', 'openbook'),
+                value: null,
+                content: '-',
+            );
+        }
+
+        $content = humandate::create_from_timestamp($closedate);
+
+        return new overviewitem(
+            name: get_string('securewindowtodate', 'openbook'),
+            value: $closedate,
+            content: $content,
+        );
+    }
+
     #[\Override]
     public function get_actions_overview(): ?overviewitem {
         if (!has_capability('mod/openbook:approve', $this->context)) {
@@ -143,6 +178,7 @@ class overview extends \core_courseformat\activityoverviewbase {
     public function get_extra_overview_items(): array {
         return [
             'approvaldatedue' => $this->get_approve_date_overview(),
+            'securewindowdate' => $this->get_securewindow_date_overview(),
             'studentwhoresponded' => $this->get_extra_students_who_responded_overview(),
             'responded' => $this->get_extra_status_for_user(),
         ];

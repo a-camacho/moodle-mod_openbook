@@ -321,6 +321,27 @@ class mod_openbook_mod_form extends moodleform_mod {
         $mform->addHelpButton('notifystatuschange', 'notify:statuschange', 'openbook');
         $mform->setDefault('notifystatuschange', get_config('openbook', 'notifystatuschange'));
 
+        $mform->addElement('header', 'securewindowsettings', get_string('securewindowsettings', 'openbook'));
+        $mform->setExpanded('securewindowsettings');
+
+        $mform->addElement(
+            'date_time_selector',
+            'securewindowfromdate',
+            get_string('securewindowfromdate', 'openbook'),
+            ['optional' => true]
+        );
+        $mform->addHelpButton('securewindowfromdate', 'securewindowfromdate', 'openbook');
+        $mform->setDefault('securewindowfromdate', time());
+
+        $mform->addElement(
+            'date_time_selector',
+            'securewindowtodate',
+            get_string('securewindowtodate', 'openbook'),
+            ['optional' => true]
+        );
+        $mform->addHelpButton('securewindowtodate', 'securewindowtodate', 'openbook');
+        $mform->setDefault('securewindowtodate', time() + 7 * 24 * 3600);
+
         // Standard coursemodule elements.
         $this->standard_coursemodule_elements();
 
@@ -446,6 +467,12 @@ class mod_openbook_mod_form extends moodleform_mod {
             }
             if ($studentapprovalrequired && $data['approvalfromdate'] > $data['approvaltodate']) {
                 $errors['approvaltodate'] = get_string('approvaltodatevalidation', 'openbook');
+            }
+        }
+
+        if ($data['securewindowfromdate'] && $data['securewindowtodate']) {
+            if ($data['securewindowfromdate'] > $data['securewindowtodate']) {
+                $errors['securewindowtodate'] = get_string('securewindowtodatevalidation', 'openbook');
             }
         }
 
