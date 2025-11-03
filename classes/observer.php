@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,18 +17,18 @@
 /**
  * observer.php
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace mod_privatestudentfolder;
+namespace mod_openbook;
 
 use core\notification;
 use mod_assign\event\assessable_submitted;
 use mod_assign\event\base;
-use privatestudentfolder;
+use openbook;
 use stdClass;
 
 /**
@@ -46,14 +46,14 @@ class observer {
         if (
             isset($eventdata['other']) &&
             isset($eventdata['other']['modulename']) &&
-            $eventdata['other']['modulename'] == 'privatestudentfolder'
+            $eventdata['other']['modulename'] == 'openbook'
         ) {
-            $cm = get_coursemodule_from_instance('privatestudentfolder', $eventdata['other']['instanceid'], 0, false, MUST_EXIST);
-            $privatestudentfolder = new privatestudentfolder($cm);
-            if ($privatestudentfolder->get_instance()->mode == PRIVATESTUDENTFOLDER_MODE_IMPORT) {
-                $privatestudentfolder->importfiles();
+            $cm = get_coursemodule_from_instance('openbook', $eventdata['other']['instanceid'], 0, false, MUST_EXIST);
+            $openbook = new openbook($cm);
+            if ($openbook->get_instance()->mode == OPENBOOK_MODE_IMPORT) {
+                $openbook->importfiles();
             }
-            privatestudentfolder::send_all_pending_notifications();
+            openbook::send_all_pending_notifications();
         }
     }
 
@@ -67,7 +67,7 @@ class observer {
         global $DB, $CFG, $OUTPUT;
 
         // Keep other page calls slimmed down!
-        require_once($CFG->dirroot . '/mod/privatestudentfolder/locallib.php');
+        require_once($CFG->dirroot . '/mod/openbook/locallib.php');
 
         // We have the submission ID, so first we fetch the corresponding submission, assign, etc.!
         $assign = $e->get_assign();
@@ -89,23 +89,23 @@ class observer {
         $assigncontext = \context_module::instance($assigncm->id);
 
         $sql = "SELECT pub.*
-                  FROM {privatestudentfolder} pub
+                  FROM {openbook} pub
                  WHERE (pub.mode = ?) AND (pub.importfrom = ?)";
-        $params = [\PRIVATESTUDENTFOLDER_MODE_IMPORT, $assignid];
-        if (!$privatestudentfolders = $DB->get_records_sql($sql, $params)) {
+        $params = [\OPENBOOK_MODE_IMPORT, $assignid];
+        if (!$openbooks = $DB->get_records_sql($sql, $params)) {
             return true;
         }
 
-        foreach ($privatestudentfolders as $pub) {
-            $cm = get_coursemodule_from_instance('privatestudentfolder', $pub->id);
+        foreach ($openbooks as $pub) {
+            $cm = get_coursemodule_from_instance('openbook', $pub->id);
             if (!$cm) {
                 continue;
             }
-            $privatestudentfolder = new privatestudentfolder($cm);
-            $privatestudentfolder->importfiles();
+            $openbook = new openbook($cm);
+            $openbook->importfiles();
         }
 
-        privatestudentfolder::send_all_pending_notifications();
+        openbook::send_all_pending_notifications();
         return true;
     }
 }

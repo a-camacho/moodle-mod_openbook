@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,20 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Search area for mod_privatestudentfolder activities.
+ * Search area for mod_openbook activities.
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace mod_privatestudentfolder\search;
+namespace mod_openbook\search;
 
 use core_search\base_activity;
 
 /**
- * Search area for mod_privatestudentfolder activities.
+ * Search area for mod_openbook activities.
  */
 class activity extends base_activity {
     /**
@@ -51,7 +51,7 @@ class activity extends base_activity {
         $cm = $this->get_cm($this->get_module_name(), $document->get('itemid'), $document->get('courseid'));
         $context = \context_module::instance($cm->id);
 
-        $files = $fs->get_area_files($context->id, 'mod_privatestudentfolder', 'intro', false, 'sortorder DESC, id ASC', false);
+        $files = $fs->get_area_files($context->id, 'mod_openbook', 'intro', false, 'sortorder DESC, id ASC', false);
 
         foreach ($files as $file) {
             $document->add_stored_file($file);

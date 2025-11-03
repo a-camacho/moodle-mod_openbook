@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * mod_privatestudentfolder external file
+ * mod_openbook external file
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -28,12 +28,12 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
 require_once($CFG->libdir . "/externallib.php");
-require_once($CFG->dirroot . "/mod/privatestudentfolder/locallib.php");
+require_once($CFG->dirroot . "/mod/openbook/locallib.php");
 
 /**
- * Class mod_privatestudentfolder_external contains external functions used by mod_privatestudentfolder's AJAX
+ * Class mod_openbook_external contains external functions used by mod_openbook's AJAX
  */
-class mod_privatestudentfolder_external extends external_api {
+class mod_openbook_external extends external_api {
     /**
      * Returns description of method parameters
      *
@@ -70,14 +70,14 @@ class mod_privatestudentfolder_external extends external_api {
                         'cmid' => $cmid,
             ]
         );
-        $cm = get_coursemodule_from_id('privatestudentfolder', $params['cmid'], 0, false, MUST_EXIST);
+        $cm = get_coursemodule_from_id('openbook', $params['cmid'], 0, false, MUST_EXIST);
         $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
         $context = context_module::instance($cm->id);
         self::validate_context($context);
-        require_capability('mod/privatestudentfolder:view', $context);
+        require_capability('mod/openbook:view', $context);
         require_login($course, true, $cm);
 
-        $text = privatestudentfolder::export_onlinetext_for_preview($params['itemid'], $cm->instance, $context->id);
+        $text = openbook::export_onlinetext_for_preview($params['itemid'], $cm->instance, $context->id);
 
         return format_text($text, FORMAT_HTML);
     }

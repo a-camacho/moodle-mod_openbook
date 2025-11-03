@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'privatestudentfolder', language 'en'
+ * Strings for component 'openbook', language 'en'
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -32,65 +32,65 @@ $string['availabilityrestriction'] = 'Apply availability restrictions to user li
 $string['availabilityrestriction_admin'] = 'Default setting for availability restrictions to user list';
 $string['availabilityrestriction_help'] = 'Users who cannot access the activity due to availability restrictions will be removed from the list.<br>This only includes conditions which are marked as being applied to user lists. For example, group conditions are included but date conditions are not included.';
 $string['availabilityrestriction_admin_desc'] = 'Users who cannot access the activity due to availability restrictions will be removed from the list.<br>This only includes conditions which are marked as being applied to user lists. For example, group conditions are included but date conditions are not included.';
-$string['modulename'] = 'Private Student Folder';
-$string['pluginname'] = 'Private Student Folder';
-$string['modulename_help'] = 'The student folder offers the following features:<br><ul><li>Students can upload files or import them from an assignment activity.</li><li>The files will be published (will be made visible to everyone) automatically or after students and/ or teachers approval for publishing.</li><li>Students and/or teachers will receive a notification when students upload or change a file or when a file is imported or updated from an assignment activity. Furthermore students and/ or teachers will receive a notification about any changes of the privatestudentfolder status.</li></ul>';
+$string['modulename'] = 'Openbook resource folder';
+$string['pluginname'] = 'Openbook resource folder';
+$string['modulename_help'] = 'The openbook resource folder offers the following features:<br><ul><li>Students can upload files. The time period can be restricted by the teacher.</li><li>The files will be published automatically or after students and/or teachers approval for publishing. If allowed, students can choose to make the file visible for all participants, otherwise each student will only see her/his uploaded document(s).</li><li>Students and/or teachers will receive a notification when students upload or change a file. Furthermore students and/or teachers will receive a notification about any changes of the openbook folder status.</li><li>PDF files in the openbook resource folder can be chosen to be opened in a PDF.js.</li><li>Teacher can set up a time period in which the opened documents are displayed in a secure window, i.e. a window without Moodle navigation etcetera.</li></li></ul>';
 
-$string['eventprivatestudentfolderfiledeleted'] = 'Private Student Folder file delete';
-$string['eventprivatestudentfolderfileuploaded'] = 'Private Student Folder file upload';
-$string['eventprivatestudentfolderfileimported'] = 'Private Student Folder file import';
-$string['eventprivatestudentfolderduedateextended'] = 'Private Student Folder due-date extended';
-$string['eventprivatestudentfolderapprovalchanged'] = 'Private Student Folder file approval changed';
+$string['eventopenbookfiledeleted'] = 'Openbook resource folder file deleted';
+$string['eventopenbookfileuploaded'] = 'Openbook resource folder file uploaded';
+$string['eventopenbookfileimported'] = 'Openbook resource folder file imported';
+$string['eventopenbookduedateextended'] = 'Openbook resource folder due-date extended';
+$string['eventopenbookapprovalchanged'] = 'Openbook resource folder file approval changed';
 
-$string['modulenameplural'] = 'Private Student Folders';
-$string['pluginadministration'] = 'Student folder administration';
-$string['privatestudentfolder:addinstance'] = 'Add a new Private Student Folder';
-$string['privatestudentfolder:view'] = 'View Private Student Folder';
-$string['privatestudentfolder:upload'] = 'Upload files to a Private Student Folder';
-$string['privatestudentfolder:approve'] = 'Decide if files should be published (visible for all participants)';
-$string['privatestudentfolder:grantextension'] = 'Grant extension';
-$string['privatestudentfolder:manageoverrides'] = 'Manage overrides';
-$string['privatestudentfolder:receiveteachernotification'] = 'Receive notifications for teachers';
-$string['search:activity'] = 'Student folder - activity information';
+$string['modulenameplural'] = 'Openbook resource folders';
+$string['pluginadministration'] = 'Openbook resource folder folder administration';
+$string['openbook:addinstance'] = 'Add a new Openbook resource folder';
+$string['openbook:view'] = 'View Openbook resource folder';
+$string['openbook:upload'] = 'Upload files to a Openbook resource folder';
+$string['openbook:approve'] = 'Decide if files should be published (visible for all participants)';
+$string['openbook:grantextension'] = 'Grant extension';
+$string['openbook:manageoverrides'] = 'Manage overrides';
+$string['openbook:receiveteachernotification'] = 'Receive notifications for teachers';
+$string['search:activity'] = 'Openbook resource folder - activity information';
 
-$string['messageprovider:privatestudentfolder_updates'] = 'Private Student Folder notifications';
+$string['messageprovider:openbook_updates'] = 'Openbook resource folder notifications';
 
 $string['notifications'] = 'Notifications';
 $string['notifyteacher'] = 'Notify teachers about submitted files';
-$string['notifystudents'] = 'Notify students about Private Student Folder changes';
+$string['notifystudents'] = 'Notify students about Openbook resource folder changes';
 $string['notifyteacher_help'] = 'If enabled, teachers will receive a notification when students upload a file.';
-$string['notifystudents_help'] = 'If enabled, students will receive a notification when the Private Student Folder status of one of their uploaded files changes.';
+$string['notifystudents_help'] = 'If enabled, students will receive a notification when the Openbook resource folder status of one of their uploaded files changes.';
 
 $string['notify:setting:0'] = 'No notifications';
 $string['notify:setting:1'] = 'Teachers only';
 $string['notify:setting:2'] = 'Students only';
 $string['notify:setting:3'] = 'Both teachers and students';
-$string['notify:statuschange'] = 'Notifications about Private Student Folder status changes';
-$string['notify:statuschange_help'] = ' Depends on the setting, if enabled, students and/or teachers will receive a notification when the Private Student Folder status of one of the files is changed.';
-$string['notify:statuschange_admin'] = 'Default notification setting for Private Student Folder status changes';
+$string['notify:statuschange'] = 'Notifications about Openbook resource folder status changes';
+$string['notify:statuschange_help'] = ' Depends on the setting, if enabled, students and/or teachers will receive a notification when the Openbook resource folder status of one of the files is changed.';
+$string['notify:statuschange_admin'] = 'Default notification setting for Openbook resource folder status changes';
 $string['notify:filechange'] = 'Notifications about submitted or imported files';
 $string['notify:filechange_help'] = 'Depends on the setting, if enabled, students and/or teachers will receive a notification when students upload or change a file, or when a file is imported or updated from an assignment activity.';
 $string['notify:filechange_admin'] = 'Default notification setting for file changes - submitted or imported';
 
-$string['email:statuschange:header'] = 'The Private Student Folder status of the following file(s) for <b>\'{$a->privatestudentfolder}\'</b> was changed on {$a->dayupdated} at {$a->timeupdated} by <b>{$a->username}</b>:<br /><ul>';
+$string['email:statuschange:header'] = 'The Openbook resource folder status of the following file(s) for <b>\'{$a->openbook}\'</b> was changed on {$a->dayupdated} at {$a->timeupdated} by <b>{$a->username}</b>:<br /><ul>';
 $string['email:statuschange:filename'] = '<li>\'{$a->filename}\' to \'<b>{$a->apstatus}</b>\'</li>';
 $string['email:statuschange:footer'] = '</ul>';
-$string['email:statuschange:subject'] = 'Private Student Folder status changed';
-$string['email:filechange_upload:header'] = '<b>{$a->username}</b> has uploaded the following file(s) to <b>\'{$a->privatestudentfolder}\'</b> on {$a->dayupdated} at {$a->timeupdated}:<br /><ul>';
+$string['email:statuschange:subject'] = 'Openbook resource folder status changed';
+$string['email:filechange_upload:header'] = '<b>{$a->username}</b> has uploaded the following file(s) to <b>\'{$a->openbook}\'</b> on {$a->dayupdated} at {$a->timeupdated}:<br /><ul>';
 $string['email:filechange_upload:subject'] = 'File(s) uploaded';
-$string['email:filechange_import:header'] = 'The following file(s) from Assignment <b>\'{$a->assign}\'</b> was/were imported into <b>\'{$a->privatestudentfolder}\'</b> on {$a->dayupdated} at {$a->timeupdated}:<br /><ul>';
+$string['email:filechange_import:header'] = 'The following file(s) from Assignment <b>\'{$a->assign}\'</b> was/were imported into <b>\'{$a->openbook}\'</b> on {$a->dayupdated} at {$a->timeupdated}:<br /><ul>';
 $string['email:filechange_import:subject'] = 'File(s) imported';
-$string['email:filechange:footer'] = '</ul><br />Please check if your permission for Private Student Folder is required.';
+$string['email:filechange:footer'] = '</ul><br />Please check if your permission for Openbook resource folder is required.';
 
 $string['uploaded'] = 'Uploaded';
-$string['approvalchange'] = 'Private Student Folder status changed';
+$string['approvalchange'] = 'Openbook resource folder status changed';
 
-$string['approvalsettings'] = 'Private Student Folder settings';
+$string['approvalsettings'] = 'Openbook resource folder settings';
 $string['name'] = 'Name';
 $string['obtainstudentapproval'] = 'Student approval';
 $string['obtainstudentapproval_admin'] = 'Default student approval setting';
 $string['obtainstudentapproval_admin_desc'] = 'This setting determines the default approval setting for students.';
-$string['obtainstudentapproval_help'] = 'This option determines how the Private Student Folder (visibility) of file submissions by student approval takes place: <br><ul><li><strong>Automatic</strong> - no approval from students is required. In the spirit of copyright law, we ask that you request approval to publish files from students in a separate way.</li><li><strong>Required</strong> - Students need to manually approve the file for Private Student Folder</li></ul>';
+$string['obtainstudentapproval_help'] = 'This option determines how the Openbook resource folder (visibility) of file submissions by student approval takes place: <br><ul><li><strong>Automatic</strong> - no approval from students is required. In the spirit of copyright law, we ask that you request approval to publish files from students in a separate way.</li><li><strong>Required</strong> - Students need to manually approve the file for Openbook resource folder</li></ul>';
 $string['saveapproval'] = 'Save changes';
 
 $string['filesarepersonal'] = 'Files are personal';
@@ -110,7 +110,7 @@ $string['openpdffilesinpdfjs_help'] = 'This option determines whether submitted 
 $string['myownfiles'] = 'My own files';
 
 $string['obtainteacherapproval'] = 'Teacher approval';
-$string['obtainteacherapproval_help'] = 'This option determines how the Private Student Folder (visibility) of file submissions by teachers approval takes place: <br><ul><li><strong>Automatic</strong> - no approval from teachers is required.</li><li><strong>Required</strong> - Teachers need to manually approve the file for Private Student Folder</li></ul>';
+$string['obtainteacherapproval_help'] = 'This option determines how the Openbook resource folder (visibility) of file submissions by teachers approval takes place: <br><ul><li><strong>Automatic</strong> - no approval from teachers is required.</li><li><strong>Required</strong> - Teachers need to manually approve the file for Openbook resource folder</li></ul>';
 $string['obtainteacherapproval_no'] = 'Automatic';
 $string['obtainteacherapproval_yes'] = 'Required';
 $string['obtainteacherapproval_admin'] = 'Default teacher approval setting';
@@ -184,13 +184,13 @@ $string['nonexistentfiletypes'] = 'The following file types were not recognised:
 $string['completionupload'] = 'Student must upload a file';
 $string['completiondetail:upload'] = 'Upload a file';
 
-// Strings from the File mod_privatestudentfolder_grantextension_form.php.
+// Strings from the File mod_openbook_grantextension_form.php.
 $string['extensionduedate'] = 'Extension due date';
 $string['extensionnotafterduedate'] = 'Extension date must be after the due date';
 $string['extensionnotafterfromdate'] = 'Extension date must be after the allow submissions from date';
 
 // Strings from the File index.php.
-$string['noprivatestudentfoldersincourse'] = 'There is no student folder instance in this course.';
+$string['noopenbooksincourse'] = 'There is no student folder instance in this course.';
 
 // Strings from the File view.php.
 $string['allowsubmissionsfromdate_upload'] = 'Upload from';
@@ -275,8 +275,8 @@ $string['status:approvedrevoke'] = 'Revoked';
 $string['giveapproval'] = 'Give approval';
 $string['overdue'] = 'Deadline of editing period passed';
 $string['approval_required'] = 'Decision pending';
-$string['privatestudentfolderstatus'] = 'Publication';
-$string['privatestudentfolderstatus_help'] = 'The status of the publication represents the approval of the teacher and the final publication: <ul><li><i class="fa fa-check text-success fa-fw"></i> File is published and therefore visible for all participants</li><li><i class="fa fa-times text-danger fa-fw"></i> File is not published (approval has not yet been given or has been rejected) and therefore not visible</li></ul>';
+$string['openbookstatus'] = 'Publication';
+$string['openbookstatus_help'] = 'The status of the publication represents the approval of the teacher and the final publication: <ul><li><i class="fa fa-check text-success fa-fw"></i> File is published and therefore visible for all participants</li><li><i class="fa fa-times text-danger fa-fw"></i> File is not published (approval has not yet been given or has been rejected) and therefore not visible</li></ul>';
 
 $string['allfiles'] = 'File submissions';
 $string['publicfiles'] = 'Shared files';
@@ -308,7 +308,7 @@ $string['reset'] = 'Revert';
 
 // Strings from the file upload.php.
 $string['filesofthesetypes'] = 'Files of these types may be added:';
-$string['guideline'] = 'Private Student Folder of file submissions';
+$string['guideline'] = 'Openbook resource folder of file submissions';
 $string['published_immediately'] = 'Approve automatically';
 $string['published_aftercheck'] = 'Approval from teachers required';
 $string['save_changes'] = 'Save changes';
@@ -320,16 +320,16 @@ $string['total'] = 'Total';
 $string['details'] = 'Details';
 
 // Strings for privacy-API.
-$string['privacy:metadata:privatestudentfolderperpage'] = 'How many entries should be displayed on a single table page!';
+$string['privacy:metadata:openbookperpage'] = 'How many entries should be displayed on a single table page!';
 $string['privacy:path:files'] = 'Files';
 $string['privacy:path:resources'] = 'Resources';
 $string['privacy:type:upload'] = 'Uploaded file';
 $string['privacy:type:import'] = 'Imported file';
 $string['privacy:type:onlinetext'] = 'Imported onlinetext';
 $string['privacy:metadata:groupapproval'] = 'Stores information about approval or rejection of files by group members, imported from a group submission.';
-$string['privacy:metadata:privatestudentfolderfileexplanation'] = 'Files and converted onlinetext-submissions for this plugin get stored via Moodle\'s file API.';
-$string['privacy:metadata:extduedates'] = 'Stores information about overridden/extended due dates for mod_privatestudentfolder.';
-$string['privacy:metadata:files'] = 'Stores information (identifier, whom it belongs, where it came from, hash of content, file name and if approved by teacher and/or student) about the files uploaded/imported into mod_privatestudentfolder.';
+$string['privacy:metadata:openbookfileexplanation'] = 'Files and converted onlinetext-submissions for this plugin get stored via Moodle\'s file API.';
+$string['privacy:metadata:extduedates'] = 'Stores information about overridden/extended due dates for mod_openbook.';
+$string['privacy:metadata:files'] = 'Stores information (identifier, whom it belongs, where it came from, hash of content, file name and if approved by teacher and/or student) about the files uploaded/imported into mod_openbook.';
 $string['privacy:metadata:fileid'] = 'Identifier of the file.';
 $string['privacy:metadata:userid'] = 'Identifier of the user.';
 $string['privacy:metadata:timecreated'] = 'The time and date the data record was created.';
@@ -352,9 +352,9 @@ $string['filter:approvalrequired'] = 'Decision pending';
 $string['filter:nofiles'] = 'No file submission';
 
 // Strings for overrides.
-$string['eventoverridecreated'] = 'Private Student Folder override created';
-$string['eventoverridedeleted'] = 'Private Student Folder override deleted';
-$string['eventoverrideupdated'] = 'Private Student Folder override updated';
+$string['eventoverridecreated'] = 'Openbook resource folder override created';
+$string['eventoverridedeleted'] = 'Openbook resource folder override deleted';
+$string['eventoverrideupdated'] = 'Openbook resource folder override updated';
 $string['override:add:group'] = 'Add group override';
 $string['override:add:user'] = 'Add user override';
 $string['overrides:empty'] = 'No overrides';

@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 /**
  * Form class for granting extensions for student's submissions
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -29,48 +29,48 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
 require_once($CFG->dirroot . '/course/moodleform_mod.php');
-require_once($CFG->dirroot . '/mod/privatestudentfolder/locallib.php');
+require_once($CFG->dirroot . '/mod/openbook/locallib.php');
 
 /**
  * Form for granting extensions
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_privatestudentfolder_grantextension_form extends moodleform {
-    /** @var object privatestudentfolder instance */
+class mod_openbook_grantextension_form extends moodleform {
+    /** @var object openbook instance */
     private $instance;
 
     /**
      * Form definition method
      */
     public function definition() {
-        $privatestudentfolder = &$this->_customdata['privatestudentfolder'];
-        $this->instance = $privatestudentfolder->get_instance();
+        $openbook = &$this->_customdata['openbook'];
+        $this->instance = $openbook->get_instance();
         $userids = &$this->_customdata['userids'];
 
         $mform = $this->_form;
 
-        if ($privatestudentfolder->get_instance()->allowsubmissionsfromdate) {
+        if ($openbook->get_instance()->allowsubmissionsfromdate) {
             $mform->addElement(
                 'static',
                 'fromdate',
-                get_string('allowsubmissionsfromdate', 'privatestudentfolder'),
-                userdate($privatestudentfolder->get_instance()->allowsubmissionsfromdate)
+                get_string('allowsubmissionsfromdate', 'openbook'),
+                userdate($openbook->get_instance()->allowsubmissionsfromdate)
             );
         }
 
-        if ($privatestudentfolder->get_instance()->duedate) {
+        if ($openbook->get_instance()->duedate) {
             $mform->addElement(
                 'static',
                 'duedate',
-                get_string('duedate', 'privatestudentfolder'),
-                userdate($privatestudentfolder->get_instance()->duedate)
+                get_string('duedate', 'openbook'),
+                userdate($openbook->get_instance()->duedate)
             );
-            $finaldate = $privatestudentfolder->get_instance()->duedate;
+            $finaldate = $openbook->get_instance()->duedate;
         } else {
             $finaldate = 0;
         }
@@ -78,7 +78,7 @@ class mod_privatestudentfolder_grantextension_form extends moodleform {
         $mform->addElement(
             'date_time_selector',
             'extensionduedate',
-            get_string('extensionduedate', 'privatestudentfolder'),
+            get_string('extensionduedate', 'openbook'),
             ['optional' => true]
         );
         if ($finaldate) {
@@ -86,13 +86,13 @@ class mod_privatestudentfolder_grantextension_form extends moodleform {
         }
 
         if (count($userids) == 1) {
-            $extensionduedate = $privatestudentfolder->user_extensionduedate($userids[0]);
+            $extensionduedate = $openbook->user_extensionduedate($userids[0]);
             if ($extensionduedate) {
                 $mform->setDefault('extensionduedate', $extensionduedate);
             }
         }
 
-        $mform->addElement('hidden', 'id', $privatestudentfolder->get_coursemodule()->id);
+        $mform->addElement('hidden', 'id', $openbook->get_coursemodule()->id);
         $mform->setType('id', PARAM_INT);
 
         foreach ($userids as $idx => $userid) {
@@ -100,7 +100,7 @@ class mod_privatestudentfolder_grantextension_form extends moodleform {
             $mform->setType('userids[' . $idx . ']', PARAM_INT);
         }
 
-        $this->add_action_buttons(true, get_string('save_changes', 'privatestudentfolder'));
+        $this->add_action_buttons(true, get_string('save_changes', 'openbook'));
     }
 
     /**
@@ -114,12 +114,12 @@ class mod_privatestudentfolder_grantextension_form extends moodleform {
         $errors = parent::validation($data, $files);
         if ($this->instance->duedate && $data['extensionduedate']) {
             if ($this->instance->duedate > $data['extensionduedate']) {
-                $errors['extensionduedate'] = get_string('extensionnotafterduedate', 'privatestudentfolder');
+                $errors['extensionduedate'] = get_string('extensionnotafterduedate', 'openbook');
             }
         }
         if ($this->instance->allowsubmissionsfromdate && $data['extensionduedate']) {
             if ($this->instance->allowsubmissionsfromdate > $data['extensionduedate']) {
-                $errors['extensionduedate'] = get_string('extensionnotafterfromdate', 'privatestudentfolder');
+                $errors['extensionduedate'] = get_string('extensionnotafterfromdate', 'openbook');
             }
         }
 

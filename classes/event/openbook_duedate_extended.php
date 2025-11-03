@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,49 +15,49 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Contains event class for a single mod_privatestudentfolder being viewed
+ * Contains event class for a single mod_openbook being viewed
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_privatestudentfolder\event;
+namespace mod_openbook\event;
 
 /**
- * A file was deleted for this event
+ * Duedate was extended for this event
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class privatestudentfolder_file_deleted extends \core\event\base {
+class openbook_duedate_extended extends \core\event\base {
     /**
      * Init event objecttable
      */
     protected function init() {
         $this->data['crud'] = 'u';
-        $this->data['objecttable'] = 'privatestudentfolder_file';
+        $this->data['objecttable'] = 'openbook_file';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
     }
 
     /**
-     * Logs deletion of privatestudentfolder
+     * Logs due-date extension
      * @param \stdClass $cm
-     * @param object $do additional data
+     * @param object $do
      * @return \core\event\base
      * @throws \coding_exception
      */
-    public static function create_from_object(\stdClass $cm, $do) {
+    public static function duedate_extended(\stdClass $cm, $do) {
         // Trigger overview event.
         $event = self::create([
-            'objectid'      => $do->id,
+            'objectid'      => (int)$do['openbook'],
             'context'       => \context_module::instance($cm->id),
-            'relateduserid' => $do->userid,
+            'relateduserid' => null,
             'other'         => (array)$do,
         ]);
         return $event;
@@ -69,8 +69,9 @@ class privatestudentfolder_file_deleted extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The user with id '" . $this->data['other']['userid'] . "' deleted a file with id '" . $this->data['other']['id'] .
-            "' in privatestudentfolder with id '" . $this->data['other']['privatestudentfolder'] . "'";
+        return "The due-date of the openbook with id '" . $this->data['other']['openbook'] . "' was " .
+            "extended to " . date_format_string($this->data['other']['extensionduedate'], "%d.%m.%Y") . " by the " .
+            "user with id '" . $this->data['other']['userid'] . "'";
     }
 
     /**
@@ -79,7 +80,7 @@ class privatestudentfolder_file_deleted extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventprivatestudentfolderfiledeleted', 'privatestudentfolder');
+        return get_string('eventopenbookduedateextended', 'openbook');
     }
 
     /**
@@ -88,8 +89,8 @@ class privatestudentfolder_file_deleted extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        $moduleid = get_coursemodule_from_instance('privatestudentfolder', $this->data['other']['privatestudentfolder'])->id;
-        return new \moodle_url("/mod/privatestudentfolder/view.php", ['id'  => $moduleid]);
+        $moduleid = get_coursemodule_from_instance('openbook', $this->data['other']['openbook'])->id;
+        return new \moodle_url("/mod/openbook/view.php", ['id'  => $moduleid]);
     }
 
     /**
@@ -107,10 +108,6 @@ class privatestudentfolder_file_deleted extends \core\event\base {
         // Make sure the context level is set to module.
         if ($this->contextlevel != CONTEXT_MODULE) {
             throw new \coding_exception('Context level must be CONTEXT_MODULE.');
-        }
-
-        if (!isset($this->data['relateduserid'])) {
-            throw new \coding_exception('Related user has to be set!');
         }
     }
 }

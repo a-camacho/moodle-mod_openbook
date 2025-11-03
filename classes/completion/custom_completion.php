@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace mod_privatestudentfolder\completion;
+namespace mod_openbook\completion;
 
 use core_completion\activity_custom_completion;
 
@@ -24,7 +24,7 @@ use core_completion\activity_custom_completion;
  * Class for defining mod_assign's custom completion rules and fetching the completion statuses
  * of the custom completion rules for a given assign instance and a user.
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -45,13 +45,13 @@ class custom_completion extends activity_custom_completion {
         $userid = $this->userid;
         $cm = $this->cm;
 
-        require_once($CFG->dirroot . '/mod/privatestudentfolder/locallib.php');
+        require_once($CFG->dirroot . '/mod/openbook/locallib.php');
 
-        $privatestudentfolder = new \privatestudentfolder($cm, $cm->course, \context_module::instance($cm->id));
+        $openbook = new \openbook($cm, $cm->course, \context_module::instance($cm->id));
         $status = false;
-        if ($privatestudentfolder->get_mode() == PRIVATESTUDENTFOLDER_MODE_FILEUPLOAD) {
-            $filescount = $DB->count_records('privatestudentfolder_file', [
-                'privatestudentfolder' => $privatestudentfolder->get_instance()->id,
+        if ($openbook->get_mode() == OPENBOOK_MODE_FILEUPLOAD) {
+            $filescount = $DB->count_records('openbook_file', [
+                'openbook' => $openbook->get_instance()->id,
                 'userid' => $userid,
             ]);
             $status = $filescount > 0;
@@ -77,7 +77,7 @@ class custom_completion extends activity_custom_completion {
      */
     public function get_custom_rule_descriptions(): array {
         return [
-            'completionupload' => get_string('completiondetail:upload', 'privatestudentfolder'),
+            'completionupload' => get_string('completiondetail:upload', 'openbook'),
         ];
     }
 

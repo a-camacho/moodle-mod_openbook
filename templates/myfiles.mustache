@@ -1,5 +1,5 @@
 {{!
-    This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+    This file is part of mod_openbook for Moodle - http://moodle.org/
 
     Moodle is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,9 +15,9 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template mod_privatestudentfolder/myfiles
+    @template mod_openbook/myfiles
 
-    Private Student Folder's myfiles template.
+    Openbook resource folder's myfiles template.
 
     The purpose of this template is to the contents of the myfiles.
 
@@ -32,9 +32,9 @@
         "lastmodified": "Wednesday, 22 October 2025, 09:32",
         "myfilestitle": "My uploaded files",
         "myfiles": [
-            ["<a href='https://example.com/pluginfile.php/123/mod_privatestudentfolder/file1.pdf'>file1.pdf</a>"],
-            ["<a href='https://example.com/pluginfile.php/124/mod_privatestudentfolder/file2.docx'>file2.docx</a>"],
-            ["<a href='https://example.com/pluginfile.php/125/mod_privatestudentfolder/image.png'>image.png</a>"]
+            ["<a href='https://example.com/pluginfile.php/123/mod_openbook/file1.pdf'>file1.pdf</a>"],
+            ["<a href='https://example.com/pluginfile.php/124/mod_openbook/file2.docx'>file2.docx</a>"],
+            ["<a href='https://example.com/pluginfile.php/125/mod_openbook/image.png'>image.png</a>"]
         ]
     }
 }}
@@ -47,17 +47,17 @@
 {{/timeremaining}}
 {{#approvalfromdate}}
     <tr>
-        <th>{{#str}}approvalfromdate,privatestudentfolder{{/str}}</th><td>{{.}}</td>
+        <th>{{#str}}approvalfromdate,openbook{{/str}}</th><td>{{.}}</td>
     </tr>
 {{/approvalfromdate}}
 {{#approvaltodate}}
     <tr>
-        <th>{{#str}}approvaltodate,privatestudentfolder{{/str}}</th><td>{{.}}</td>
+        <th>{{#str}}approvaltodate,openbook{{/str}}</th><td>{{.}}</td>
     </tr>
 {{/approvaltodate}}
 {{#extensionduedate}}
     <tr>
-        <th>{{#str}}extensionto,privatestudentfolder{{/str}}</th>
+        <th>{{#str}}extensionto,openbook{{/str}}</th>
         <td>{{.}}</td>
     </tr>
 {{/extensionduedate}}
@@ -76,7 +76,7 @@
             </table>
         {{/hasmyfiles}}
         {{^hasmyfiles}}
-            {{#str}}nofiles,privatestudentfolder{{/str}}
+            {{#str}}nofiles,openbook{{/str}}
         {{/hasmyfiles}}
     </td>
 </tr>

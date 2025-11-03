@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * backup/moodle2/backup_privatestudentfolder_activity_task.class.php
+ * backup/moodle2/backup_openbook_activity_task.class.php
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -28,18 +28,18 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 
-require_once($CFG->dirroot . '/mod/privatestudentfolder/backup/moodle2/backup_privatestudentfolder_stepslib.php');
+require_once($CFG->dirroot . '/mod/openbook/backup/moodle2/backup_openbook_stepslib.php');
 
 /**
  * Class contains backup steps definition
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class backup_privatestudentfolder_activity_task extends backup_activity_task {
+class backup_openbook_activity_task extends backup_activity_task {
     /**
      * Define (add) particular settings this activity can have
      */
@@ -51,9 +51,9 @@ class backup_privatestudentfolder_activity_task extends backup_activity_task {
      * Define (add) particular steps this activity can have
      */
     protected function define_my_steps() {
-        $this->add_step(new backup_privatestudentfolder_activity_structure_step(
-            'privatestudentfolder_structure',
-            'privatestudentfolder.xml'
+        $this->add_step(new backup_openbook_activity_structure_step(
+            'openbook_structure',
+            'openbook.xml'
         ));
     }
 
@@ -69,11 +69,11 @@ class backup_privatestudentfolder_activity_task extends backup_activity_task {
 
         $base = preg_quote($CFG->wwwroot, "/");
 
-        $search = "/(" . $base . "\/mod\/privatestudentfolder\/index.php\?id\=)([0-9]+)/";
-        $content = preg_replace($search, '$@PRIVATESTUDENTFOLDERINDEX*$2@$', $content);
+        $search = "/(" . $base . "\/mod\/openbook\/index.php\?id\=)([0-9]+)/";
+        $content = preg_replace($search, '$@OPENBOOKINDEX*$2@$', $content);
 
-        $search = "/(" . $base . "\/mod\/privatestudentfolder\/view.php\?id\=)([0-9]+)/";
-        $content = preg_replace($search, '$@PRIVATESTUDENTFOLDERVIEWBYID*$2@$', $content);
+        $search = "/(" . $base . "\/mod\/openbook\/view.php\?id\=)([0-9]+)/";
+        $content = preg_replace($search, '$@OPENBOOKVIEWBYID*$2@$', $content);
 
         return $content;
     }

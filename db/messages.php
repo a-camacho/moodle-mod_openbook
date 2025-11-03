@@ -17,7 +17,7 @@
 /**
  * db/messages.php
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -33,5 +33,5 @@ defined('MOODLE_INTERNAL') || die;
  */
 
 $messageproviders = [
-    'privatestudentfolder_updates' => [],
+    'openbook_updates' => [],
 ];

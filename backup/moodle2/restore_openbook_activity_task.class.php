@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * backup/moodle2/restore_privatestudentfolder_activity_task.class.php
+ * backup/moodle2/restore_openbook_activity_task.class.php
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -28,18 +28,18 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 
-require_once($CFG->dirroot . '/mod/privatestudentfolder/backup/moodle2/restore_privatestudentfolder_stepslib.php');
+require_once($CFG->dirroot . '/mod/openbook/backup/moodle2/restore_openbook_stepslib.php');
 
 /**
  * Class to define restoration activity data structure
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class restore_privatestudentfolder_activity_task extends restore_activity_task {
+class restore_openbook_activity_task extends restore_activity_task {
     /**
      * Define (add) particular settings this activity can have.
      */
@@ -52,9 +52,9 @@ class restore_privatestudentfolder_activity_task extends restore_activity_task {
      */
     protected function define_my_steps() {
         // Assignment only has one structure step.
-        $this->add_step(new restore_privatestudentfolder_activity_structure_step(
-            'privatestudentfolder_structure',
-            'privatestudentfolder.xml'
+        $this->add_step(new restore_openbook_activity_structure_step(
+            'openbook_structure',
+            'openbook.xml'
         ));
     }
 
@@ -67,7 +67,7 @@ class restore_privatestudentfolder_activity_task extends restore_activity_task {
     public static function define_decode_contents() {
         $contents = [];
 
-        $contents[] = new restore_decode_content('privatestudentfolder', ['intro'], 'privatestudentfolder');
+        $contents[] = new restore_decode_content('openbook', ['intro'], 'openbook');
 
         return $contents;
     }
@@ -82,13 +82,13 @@ class restore_privatestudentfolder_activity_task extends restore_activity_task {
         $rules = [];
 
         $rules[] = new restore_decode_rule(
-            'PRIVATESTUDENTFOLDERVIEWBYID',
-            '/mod/privatestudentfolder/view.php?id=$1',
+            'OPENBOOKVIEWBYID',
+            '/mod/openbook/view.php?id=$1',
             'course_module'
         );
         $rules[] = new restore_decode_rule(
-            'PRIVATESTUDENTFOLDERINDEX',
-            '/mod/privatestudentfolder/index.php?id=$1',
+            'OPENBOOKINDEX',
+            '/mod/openbook/index.php?id=$1',
             'course_module'
         );
 
@@ -106,9 +106,9 @@ class restore_privatestudentfolder_activity_task extends restore_activity_task {
     public static function define_restore_log_rules() {
         $rules = [];
 
-        $rules[] = new restore_log_rule('privatestudentfolder', 'add', 'view.php?id={course_module}', '{privatestudentfolder}');
-        $rules[] = new restore_log_rule('privatestudentfolder', 'update', 'view.php?id={course_module}', '{privatestudentfolder}');
-        $rules[] = new restore_log_rule('privatestudentfolder', 'view', 'view.php?id={course_module}', '{privatestudentfolder}');
+        $rules[] = new restore_log_rule('openbook', 'add', 'view.php?id={course_module}', '{openbook}');
+        $rules[] = new restore_log_rule('openbook', 'update', 'view.php?id={course_module}', '{openbook}');
+        $rules[] = new restore_log_rule('openbook', 'view', 'view.php?id={course_module}', '{openbook}');
 
         return $rules;
     }

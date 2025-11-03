@@ -1,4 +1,4 @@
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 /**
  * Resets checked checkboxes after ZIP file was loaded!
  *
- * @module        mod_privatestudentfolder/filesform
+ * @module        mod_openbook/filesform
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -24,13 +24,13 @@
  */
 
 /**
- * @module mod_privatestudentfolder/filesform
+ * @module mod_openbook/filesform
  */
 define(['jquery', 'core/log'], function($, log) {
 
     /**
      * @constructor
-     * @alias module:mod_privatestudentfolder/modform
+     * @alias module:mod_openbook/modform
      */
     var Filesform = function() {
         this.form = $('#fastg');
@@ -42,7 +42,7 @@ define(['jquery', 'core/log'], function($, log) {
     var instance = new Filesform();
 
     instance.initializer = function() {
-        log.info('Initialize filesform JS!', 'mod_privatestudentfolder');
+        log.info('Initialize filesform JS!', 'mod_openbook');
         instance.form.on('submit', function() {
             if (instance.menuaction.val() === 'zipusers') {
                 setTimeout(function() {

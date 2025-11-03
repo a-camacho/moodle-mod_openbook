@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Displays a single mod_privatestudentfolder instance
+ * Displays a single mod_openbook instance
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -25,14 +25,14 @@
  */
 
 require_once('../../config.php');
-require_once($CFG->dirroot . '/mod/privatestudentfolder/locallib.php');
+require_once($CFG->dirroot . '/mod/openbook/locallib.php');
 
 $id = required_param('id', PARAM_INT); // Course Module ID.
 $itemid = required_param('itemid', PARAM_INT); // Item-ID (group- or user-ID).
 $itemname = optional_param('itemname', false, PARAM_TEXT); // Item-Name to save DB access!
 
-$url = new moodle_url('/mod/privatestudentfolder/onlinetextpreview.php', ['id' => $id, 'itemid' => $itemid]);
-$cm = get_coursemodule_from_id('privatestudentfolder', $id, 0, false, MUST_EXIST);
+$url = new moodle_url('/mod/openbook/onlinetextpreview.php', ['id' => $id, 'itemid' => $itemid]);
+$cm = get_coursemodule_from_id('openbook', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
 
 require_login($course, true, $cm);
@@ -40,13 +40,13 @@ $PAGE->set_url($url);
 
 $context = context_module::instance($cm->id);
 
-require_capability('mod/privatestudentfolder:view', $context);
+require_capability('mod/openbook:view', $context);
 
 echo $OUTPUT->header();
 
 echo $OUTPUT->heading(get_string('preview') . ' ' . get_string('onlinetextfilename', 'assignsubmission_onlinetext') .
         ($itemname ? ' ' . strtolower(get_string('from')) . ' ' . $itemname : ''));
 
-echo privatestudentfolder::export_onlinetext_for_preview($itemid, $cm->instance, $context->id);
+echo openbook::export_onlinetext_for_preview($itemid, $cm->instance, $context->id);
 
 echo $OUTPUT->footer();

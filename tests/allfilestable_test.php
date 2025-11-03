@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for mod_privatestudentfolder's allfilestable classes.
+ * Unit tests for mod_openbook's allfilestable classes.
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -26,7 +26,7 @@
 
 // phpcs:disable moodle.PHPUnit.TestCaseNames.UnexpectedLevel2NS
 
-namespace mod_privatestudentfolder\local\tests;
+namespace mod_openbook\local\tests;
 
 use Exception;
 use mod_assign_generator;
@@ -36,21 +36,21 @@ defined('MOODLE_INTERNAL') || die();
 
 // Make sure the code being tested is accessible.
 global $CFG;
-require_once($CFG->dirroot . '/mod/privatestudentfolder/locallib.php'); // Include the code to test!
+require_once($CFG->dirroot . '/mod/openbook/locallib.php'); // Include the code to test!
 
 /**
  * This class contains the test cases for the formular validation.
  *
- * @package   mod_privatestudentfolder
+ * @package   mod_openbook
  * @author    Philipp Hager
  * @copyright 2017 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class allfilestable_test extends base {
     /**
-     * Tests the basic creation of a privatestudentfolder instance with standardized settings!
+     * Tests the basic creation of a openbook instance with standardized settings!
      *
-     * @covers \privatestudentfolder::__construct
+     * @covers \openbook::__construct
      * @return void
      */
     public function test_create_instance(): void {
@@ -60,14 +60,14 @@ final class allfilestable_test extends base {
     /**
      * Tests if we can create an allfilestable without uploaded files
      *
-     * @covers \privatestudentfolder::get_allfilestable_upload
+     * @covers \openbook::get_allfilestable_upload
      * @return void
      * @throws Exception
      */
     public function test_allfilestable_upload(): void {
         // Setup fixture!
-        $privatestudentfolder = $this->create_instance([
-            'mode' => PRIVATESTUDENTFOLDER_MODE_UPLOAD,
+        $openbook = $this->create_instance([
+            'mode' => OPENBOOK_MODE_UPLOAD,
             'filesarepersonal' => 1,
             'openpdffilesinpdfjs' => 1,
             'obtainteacherapproval' => 0,
@@ -75,17 +75,17 @@ final class allfilestable_test extends base {
         ]);
 
         // Exercise SUT!
-        $output = $privatestudentfolder->display_allfilesform();
+        $output = $openbook->display_allfilesform();
         self::assertFalse(strpos($output, "Nothing to display"));
 
         // Teardown fixture!
-        $privatestudentfolder = null;
+        $openbook = null;
     }
 
     /**
      * Tests if we can create an allfilestable without imported files
      *
-     * @covers \privatestudentfolder::get_allfilestable_import
+     * @covers \openbook::get_allfilestable_import
      * @return void
      * @throws coding_exception
      */
@@ -95,8 +95,8 @@ final class allfilestable_test extends base {
         $generator = self::getDataGenerator()->get_plugin_generator('mod_assign');
         $params['course'] = $this->course->id;
         $assign = $generator->create_instance($params);
-        $privatestudentfolder = $this->create_instance([
-            'mode' => PRIVATESTUDENTFOLDER_MODE_IMPORT,
+        $openbook = $this->create_instance([
+            'mode' => OPENBOOK_MODE_IMPORT,
             'importfrom' => $assign->id,
             'filesarepersonal' => 1,
             'openpdffilesinpdfjs' => 1,
@@ -105,17 +105,17 @@ final class allfilestable_test extends base {
         ]);
 
         // Exercise SUT!
-        $output = $privatestudentfolder->display_allfilesform();
+        $output = $openbook->display_allfilesform();
         self::assertFalse(strpos($output, "Nothing to display"));
 
         // Teardown fixture!
-        $privatestudentfolder = null;
+        $openbook = null;
     }
 
     /**
      * Tests if we can create an allfilestable without imported group-files
      *
-     * @covers \privatestudentfolder::get_allfilestable_group
+     * @covers \openbook::get_allfilestable_group
      * @return void
      * @throws coding_exception
      */
@@ -182,8 +182,8 @@ final class allfilestable_test extends base {
         }
 
         $this->setAdminUser();
-        $privatestudentfolder = $this->create_instance([
-            'mode' => PRIVATESTUDENTFOLDER_MODE_IMPORT,
+        $openbook = $this->create_instance([
+            'mode' => OPENBOOK_MODE_IMPORT,
             'importfrom' => $assign->id,
             'obtainteacherapproval' => 0,
             'obtainstudentapproval' => 0,
@@ -192,9 +192,9 @@ final class allfilestable_test extends base {
             'groupmode' => NOGROUPS,
         ]);
 
-        $privatestudentfolder->importfiles();
-        $privatestudentfolder->set_allfilespage(true);
-        $allfilestable = $privatestudentfolder->get_allfilestable(PRIVATESTUDENTFOLDER_FILTER_NOFILTER);
+        $openbook->importfiles();
+        $openbook->set_allfilespage(true);
+        $allfilestable = $openbook->get_allfilestable(OPENBOOK_FILTER_NOFILTER);
         ob_start();
         $allfilestable->out(10, true); // Print the whole table.
         $tableoutput = ob_get_contents();
@@ -205,6 +205,6 @@ final class allfilestable_test extends base {
         self::assertFalse($nofilesfound);
 
         // Teardown fixture!
-        $privatestudentfolder = null;
+        $openbook = null;
     }
 }

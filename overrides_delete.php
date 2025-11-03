@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Displays a single mod_privatestudentfolder instance
+ * Displays a single mod_openbook instance
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -25,15 +25,15 @@
  */
 
 require_once('../../config.php');
-require_once($CFG->dirroot . '/mod/privatestudentfolder/locallib.php');
+require_once($CFG->dirroot . '/mod/openbook/locallib.php');
 require_once(__DIR__ . '/overrides_form.php');
 
 $id = required_param('id', PARAM_INT); // Course Module ID.
 $overrideid = required_param('overrideid', PARAM_INT);
 $confirm = optional_param('confirm', false, PARAM_BOOL);
 
-$url = new moodle_url('/mod/privatestudentfolder/overrides_delete.php', ['id' => $id, 'overrideid' => $overrideid]);
-$cm = get_coursemodule_from_id('privatestudentfolder', $id, 0, false, MUST_EXIST);
+$url = new moodle_url('/mod/openbook/overrides_delete.php', ['id' => $id, 'overrideid' => $overrideid]);
+$cm = get_coursemodule_from_id('openbook', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
 
 require_login($course, true, $cm);
@@ -41,12 +41,12 @@ $PAGE->set_url($url);
 
 $context = context_module::instance($cm->id);
 
-$backurl = new moodle_url('/mod/privatestudentfolder/overrides.php', ['id' => $id]);
-require_capability('mod/privatestudentfolder:manageoverrides', $context);
+$backurl = new moodle_url('/mod/openbook/overrides.php', ['id' => $id]);
+require_capability('mod/openbook:manageoverrides', $context);
 
-$privatestudentfolder = new privatestudentfolder($cm, $course, $context);
+$openbook = new openbook($cm, $course, $context);
 
-$override = $privatestudentfolder->override_get($overrideid);
+$override = $openbook->override_get($overrideid);
 
 if (!$override) {
     redirect($backurl, 'Invalid override id');
@@ -54,26 +54,26 @@ if (!$override) {
 
 if ($confirm) {
     require_sesskey();
-    $privatestudentfolder->override_delete($overrideid);
+    $openbook->override_delete($overrideid);
     $eventparams = [
         'context' => $context,
         'other' => [
-            'privatestudentfolder' => $privatestudentfolder->get_instance()->id,
+            'openbook' => $openbook->get_instance()->id,
         ],
     ];
     $eventparams['objectid'] = $override->id;
-    if ($privatestudentfolder->get_mode() == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION) {
+    if ($openbook->get_mode() == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
         $eventparams['other']['groupid'] = $override->groupid;
-        $event = \mod_privatestudentfolder\event\group_override_deleted::create($eventparams);
+        $event = \mod_openbook\event\group_override_deleted::create($eventparams);
     } else {
         $eventparams['relateduserid'] = $override->userid;
-        $event = \mod_privatestudentfolder\event\user_override_deleted::create($eventparams);
+        $event = \mod_openbook\event\user_override_deleted::create($eventparams);
     }
     $event->trigger();
-    redirect($backurl, get_string('override:delete:success', 'mod_privatestudentfolder'));
+    redirect($backurl, get_string('override:delete:success', 'mod_openbook'));
 }
 
-$pagetitle = strip_tags($course->shortname . ': ' . format_string($privatestudentfolder->get_instance()->name));
+$pagetitle = strip_tags($course->shortname . ': ' . format_string($openbook->get_instance()->name));
 
 // Print the page header.
 $PAGE->set_pagelayout('admin');
@@ -85,7 +85,7 @@ $activityheader->set_attrs([
     'description' => '',
     'hidecompletion' => true,
     'title' => $activityheader->is_title_allowed() ? format_string(
-        $privatestudentfolder->get_instance()->name,
+        $openbook->get_instance()->name,
         true,
         ['context' => $context],
     ) : "",
@@ -95,9 +95,9 @@ echo $OUTPUT->header();
 
 echo $OUTPUT->heading(get_string('overrides', 'mod_assign'), 2);
 
-$mode = $privatestudentfolder->get_mode();
+$mode = $openbook->get_mode();
 $confirmstrcontext = new stdClass();
-if ($mode == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION) {
+if ($mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
     $confirmstrcontext->userorgroup = get_string('group');
     $group = $DB->get_record('groups', ['id' => $override->groupid]);
     if ($group) {
@@ -115,7 +115,7 @@ if ($mode == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION) {
     }
 }
 
-$confirmstr = get_string('override:delete:ask', 'mod_privatestudentfolder', $confirmstrcontext);
+$confirmstr = get_string('override:delete:ask', 'mod_openbook', $confirmstrcontext);
 $confirmurl = new moodle_url($url, ['id' => $id, 'overrideid' => $overrideid, 'confirm' => 1, 'sesskey' => sesskey()]);
 
 echo $OUTPUT->confirm($confirmstr, $confirmurl, $backurl);

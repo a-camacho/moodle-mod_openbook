@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,51 +15,51 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Contains event class for a single mod_privatestudentfolder being viewed
+ * Contains event class for a single mod_openbook being viewed
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_privatestudentfolder\event;
-use phpDocumentor\Reflection\Types\Object_;
+namespace mod_openbook\event;
 
 /**
- * A file was uploaded for this event
+ * Approval has changed for this event
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class privatestudentfolder_file_uploaded extends \core\event\base {
+class openbook_approval_changed extends \core\event\base {
     /**
      * Init event objecttable
      */
     protected function init() {
         $this->data['crud'] = 'u';
-        $this->data['objecttable'] = 'privatestudentfolder_file';
+        $this->data['objecttable'] = 'openbook_file';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
     }
 
     /**
-     * Logs that a file was uploaded
+     * Logs approval changes
      * @param \stdClass $cm
-     * @param object $dobj
+     * @param object $do
      * @return \core\event\base
      * @throws \coding_exception
+     *
      */
-    public static function create_from_object(\stdClass $cm, $dobj) {
+    public static function approval_changed(\stdClass $cm, $do) {
         // Trigger overview event.
         $event = self::create([
-            'objectid'      => $dobj->id,
+            'objectid'      => $do->openbook,
             'context'       => \context_module::instance($cm->id),
-            'relateduserid' => $dobj->userid,
-            'other'         => (array)$dobj,
+            'relateduserid' => $do->reluser,
+            'other'         => (array)$do,
         ]);
         return $event;
     }
@@ -70,8 +70,10 @@ class privatestudentfolder_file_uploaded extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The user with id '" . $this->data['other']['userid'] . "' uploaded a new file with id '" .
-            $this->data['other']['id'] . "' to privatestudentfolder with id '" . $this->data['other']['privatestudentfolder'] . "'";
+        return "Approval for file with id '" . $this->data['other']['fileid']
+            . "' in openbook with id '" . $this->data['other']['openbook']
+            . "' has been changed to '" . $this->data['other']['approval']
+            . "' by the user with id '" . $this->data['other']['userid'] . "'.";
     }
 
     /**
@@ -80,7 +82,7 @@ class privatestudentfolder_file_uploaded extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventprivatestudentfolderfileuploaded', 'privatestudentfolder');
+        return get_string('eventopenbookapprovalchanged', 'openbook');
     }
 
     /**
@@ -89,7 +91,25 @@ class privatestudentfolder_file_uploaded extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        $moduleid = get_coursemodule_from_instance('privatestudentfolder', $this->data['other']['privatestudentfolder'])->id;
-        return new \moodle_url("/mod/privatestudentfolder/view.php", ['id'  => $moduleid]);
+        $moduleid = get_coursemodule_from_instance('openbook', $this->data['other']['openbook'])->id;
+        return new \moodle_url("/mod/openbook/view.php", ['id'  => $moduleid]);
+    }
+
+    /**
+     * Custom validation.
+     *
+     * @throws \coding_exception
+     * @return void
+     */
+    protected function validate_data() {
+        parent::validate_data();
+        // Make sure this class is never used without proper object details.
+        if (empty($this->objectid) || empty($this->objecttable)) {
+            throw new \coding_exception('The registration_created event must define objectid and object table.');
+        }
+        // Make sure the context level is set to module.
+        if ($this->contextlevel != CONTEXT_MODULE) {
+            throw new \coding_exception('Context level must be CONTEXT_MODULE.');
+        }
     }
 }

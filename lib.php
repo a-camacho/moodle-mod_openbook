@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Contains interface and callback methods for mod_privatestudentfolder
+ * Contains interface and callback methods for mod_openbook
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -29,35 +29,35 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/locallib.php');
 
 /**
- * Adds a new privatestudentfolder instance
+ * Adds a new openbook instance
  *
- * @param stdClass $privatestudentfolder data (from mod_privatestudentfolder_mod_form)
- * @return int privatestudentfolder ID
+ * @param stdClass $openbook data (from mod_openbook_mod_form)
+ * @return int openbook ID
  */
-function privatestudentfolder_add_instance($privatestudentfolder) {
+function openbook_add_instance($openbook) {
     global $DB, $OUTPUT;
 
-    $cmid = $privatestudentfolder->coursemodule;
-    $courseid = $privatestudentfolder->course;
+    $cmid = $openbook->coursemodule;
+    $courseid = $openbook->course;
 
     $id = 0;
     try {
-        $id = $DB->insert_record('privatestudentfolder', $privatestudentfolder);
+        $id = $DB->insert_record('openbook', $openbook);
     } catch (Exception $e) {
         echo $OUTPUT->notification($e->getMessage(), 'error');
     }
 
     $DB->set_field('course_modules', 'instance', $id, ['id' => $cmid]);
 
-    $record = $DB->get_record('privatestudentfolder', ['id' => $id]);
+    $record = $DB->get_record('openbook', ['id' => $id]);
 
     $record->course = $courseid;
     $record->cmid = $cmid;
 
     $course = $DB->get_record('course', ['id' => $record->course], '*', MUST_EXIST);
-    $cm = get_coursemodule_from_id('privatestudentfolder', $cmid, 0, false, MUST_EXIST);
+    $cm = get_coursemodule_from_id('openbook', $cmid, 0, false, MUST_EXIST);
     $context = context_module::instance($cm->id);
-    $instance = new privatestudentfolder($cm, $course, $context);
+    $instance = new openbook($cm, $course, $context);
 
     $instance->update_calendar_event();
 
@@ -70,7 +70,7 @@ function privatestudentfolder_add_instance($privatestudentfolder) {
  * @param string $feature FEATURE_xx constant for requested feature
  * @return mixed True if module supports feature, null if doesn't know
  */
-function privatestudentfolder_supports($feature) {
+function openbook_supports($feature) {
     switch ($feature) {
         case FEATURE_GROUPS:
             return true;
@@ -100,76 +100,76 @@ function privatestudentfolder_supports($feature) {
 }
 
 /**
- * updates an existing privatestudentfolder instance
+ * updates an existing openbook instance
  *
- * @param stdClass $privatestudentfolder from mod_privatestudentfolder_mod_form
+ * @param stdClass $openbook from mod_openbook_mod_form
  * @return bool true
  */
-function privatestudentfolder_update_instance($privatestudentfolder) {
+function openbook_update_instance($openbook) {
     global $DB;
 
-    if ($privatestudentfolder->filesarepersonal == 1) {
-        $privatestudentfolder->obtainstudentapproval = "0";
+    if ($openbook->filesarepersonal == 1) {
+        $openbook->obtainstudentapproval = "0";
     }
 
-    $privatestudentfolder->id = $privatestudentfolder->instance;
+    $openbook->id = $openbook->instance;
 
-    $privatestudentfolder->timemodified = time();
+    $openbook->timemodified = time();
 
-    $DB->update_record('privatestudentfolder', $privatestudentfolder);
+    $DB->update_record('openbook', $openbook);
 
-    $course = $DB->get_record('course', ['id' => $privatestudentfolder->course], '*', MUST_EXIST);
-    $cm = get_coursemodule_from_instance('privatestudentfolder', $privatestudentfolder->id, 0, false, MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $openbook->course], '*', MUST_EXIST);
+    $cm = get_coursemodule_from_instance('openbook', $openbook->id, 0, false, MUST_EXIST);
     $context = context_module::instance($cm->id);
-    $instance = new privatestudentfolder($cm, $course, $context);
+    $instance = new openbook($cm, $course, $context);
 
     $approvalreseted = false;
     // If the files are personal, reset the student approval.
-    if ($privatestudentfolder->filesarepersonal == 1) {
+    if ($openbook->filesarepersonal == 1) {
         $approvalreseted = $instance->reset_all_studentapproval();
     }
 
     $instance->update_calendar_event();
 
-    if ($instance->get_instance()->mode == PRIVATESTUDENTFOLDER_MODE_IMPORT || $approvalreseted) {
+    if ($instance->get_instance()->mode == OPENBOOK_MODE_IMPORT || $approvalreseted) {
         // Fetch all files right now!
         $instance->importfiles();
-        privatestudentfolder::send_all_pending_notifications();
+        openbook::send_all_pending_notifications();
     }
 
     return true;
 }
 
 /**
- * complete deletes an privatestudentfolder instance
+ * complete deletes an openbook instance
  *
  * @param int $id
  * @return bool
  */
-function privatestudentfolder_delete_instance($id) {
+function openbook_delete_instance($id) {
     global $DB;
 
-    if (!$privatestudentfolder = $DB->get_record('privatestudentfolder', ['id' => $id])) {
+    if (!$openbook = $DB->get_record('openbook', ['id' => $id])) {
         return false;
     }
 
-    $DB->delete_records('privatestudentfolder_extduedates', ['privatestudentfolder' => $privatestudentfolder->id]);
+    $DB->delete_records('openbook_extduedates', ['openbook' => $openbook->id]);
 
     $fs = get_file_storage();
 
-    $fs->delete_area_files($privatestudentfolder->id, 'mod_privatestudentfolder', 'attachment');
+    $fs->delete_area_files($openbook->id, 'mod_openbook', 'attachment');
 
-    $DB->delete_records('privatestudentfolder_file', ['privatestudentfolder' => $privatestudentfolder->id]);
+    $DB->delete_records('openbook_file', ['openbook' => $openbook->id]);
 
-    $DB->delete_records('event', ['modulename' => 'privatestudentfolder', 'instance' => $privatestudentfolder->id]);
+    $DB->delete_records('event', ['modulename' => 'openbook', 'instance' => $openbook->id]);
 
-    $tableuniqueid = \mod_privatestudentfolder\local\allfilestable\base::get_table_uniqueid($id);
+    $tableuniqueid = \mod_openbook\local\allfilestable\base::get_table_uniqueid($id);
     $DB->delete_records('user_preferences', ['name' => $tableuniqueid]);
-    $filteruserpreference = 'mod-privatestudentfolder-perpage-' . $id;
+    $filteruserpreference = 'mod-openbook-perpage-' . $id;
     $DB->delete_records('user_preferences', ['name' => $filteruserpreference]);
 
     $result = true;
-    if (!$DB->delete_records('privatestudentfolder', ['id' => $privatestudentfolder->id])) {
+    if (!$DB->delete_records('openbook', ['id' => $openbook->id])) {
         $result = false;
     }
 
@@ -182,65 +182,65 @@ function privatestudentfolder_delete_instance($id) {
  * @param stdClass $coursemodule The coursemodule object (record).
  * @return bool|cached_cm_info An object on information that the courses will know about (most noticeably, an icon) or false.
  */
-function privatestudentfolder_get_coursemodule_info($coursemodule) {
+function openbook_get_coursemodule_info($coursemodule) {
     global $DB;
 
     $dbparams = ['id' => $coursemodule->instance];
     $fields = 'id, name, alwaysshowdescription, allowsubmissionsfromdate, intro, introformat, completionupload';
-    if (!$privatestudentfolder = $DB->get_record('privatestudentfolder', $dbparams, $fields)) {
+    if (!$openbook = $DB->get_record('openbook', $dbparams, $fields)) {
         return false;
     }
 
     $result = new cached_cm_info();
-    $result->name = $privatestudentfolder->name;
+    $result->name = $openbook->name;
     if ($coursemodule->showdescription) {
-        if ($privatestudentfolder->alwaysshowdescription || time() > $privatestudentfolder->allowsubmissionsfromdate) {
+        if ($openbook->alwaysshowdescription || time() > $openbook->allowsubmissionsfromdate) {
             // Convert intro to html. Do not filter cached version, filters run at display time.
-            $result->content = format_module_intro('privatestudentfolder', $privatestudentfolder, $coursemodule->id, false);
+            $result->content = format_module_intro('openbook', $openbook, $coursemodule->id, false);
         }
     }
 
     // Populate the custom completion rules as key => value pairs, but only if the completion mode is 'automatic'.
     if ($coursemodule->completion == COMPLETION_TRACKING_AUTOMATIC) {
-        $result->customdata['customcompletionrules']['completionupload'] = $privatestudentfolder->completionupload;
+        $result->customdata['customcompletionrules']['completionupload'] = $openbook->completionupload;
     }
 
     return $result;
 }
 
 /**
- * Defines which elements mod_privatestudentfolder needs to add to reset form
+ * Defines which elements mod_openbook needs to add to reset form
  *
  * @param MoodleQuickForm $mform The reset course form to extend
  */
-function privatestudentfolder_reset_course_form_definition(&$mform) {
-    $mform->addElement('header', 'privatestudentfolderheader', get_string('modulenameplural', 'privatestudentfolder'));
-    $mform->addElement('checkbox', 'reset_privatestudentfolder_userdata', get_string('reset_userdata', 'privatestudentfolder'));
+function openbook_reset_course_form_definition(&$mform) {
+    $mform->addElement('header', 'openbookheader', get_string('modulenameplural', 'openbook'));
+    $mform->addElement('checkbox', 'reset_openbook_userdata', get_string('reset_userdata', 'openbook'));
 }
 
 /**
- * Reset the userdata in privatestudentfolder module
+ * Reset the userdata in openbook module
  *
  * @param object $data settings object which userdata to reset
  * @return array[] array of associative arrays giving feedback what has been successfully reset
  */
-function privatestudentfolder_reset_userdata($data) {
+function openbook_reset_userdata($data) {
     global $DB;
 
-    if (!$DB->count_records('privatestudentfolder', ['course' => $data->courseid])) {
+    if (!$DB->count_records('openbook', ['course' => $data->courseid])) {
         return [];
     }
 
-    $componentstr = get_string('modulenameplural', 'privatestudentfolder');
+    $componentstr = get_string('modulenameplural', 'openbook');
     $status = [];
 
-    if (isset($data->reset_privatestudentfolder_userdata)) {
-        $privatestudentfolders = $DB->get_records('privatestudentfolder', ['course' => $data->courseid]);
+    if (isset($data->reset_openbook_userdata)) {
+        $openbooks = $DB->get_records('openbook', ['course' => $data->courseid]);
 
-        foreach ($privatestudentfolders as $privatestudentfolder) {
-            $DB->delete_records('privatestudentfolder_extduedates', ['privatestudentfolder' => $privatestudentfolder->id]);
+        foreach ($openbooks as $openbook) {
+            $DB->delete_records('openbook_extduedates', ['openbook' => $openbook->id]);
 
-            $filerecords = $DB->get_records('privatestudentfolder_file', ['privatestudentfolder' => $privatestudentfolder->id]);
+            $filerecords = $DB->get_records('openbook_file', ['openbook' => $openbook->id]);
 
             $fs = get_file_storage();
             foreach ($filerecords as $filerecord) {
@@ -249,11 +249,11 @@ function privatestudentfolder_reset_userdata($data) {
                 }
             }
 
-            $DB->delete_records('privatestudentfolder_file', ['privatestudentfolder' => $privatestudentfolder->id]);
+            $DB->delete_records('openbook_file', ['openbook' => $openbook->id]);
 
             $status[] = [
                     'component' => $componentstr,
-                    'item' => $privatestudentfolder->name,
+                    'item' => $openbook->name,
                     'error' => false,
             ];
         }
@@ -269,10 +269,10 @@ function privatestudentfolder_reset_userdata($data) {
  * @param navigation_node $navref
  * @return void
  */
-function privatestudentfolder_extend_settings_navigation(settings_navigation $settings, navigation_node $navref) {
+function openbook_extend_settings_navigation(settings_navigation $settings, navigation_node $navref) {
     global $DB, $CFG;
 
-    require_once($CFG->dirroot . '/mod/privatestudentfolder/locallib.php');
+    require_once($CFG->dirroot . '/mod/openbook/locallib.php');
 
     // We want to add these new nodes after the Edit settings node, and before the
     // Locally assigned roles node. Of course, both of those are controlled by capabilities.
@@ -297,31 +297,31 @@ function privatestudentfolder_extend_settings_navigation(settings_navigation $se
         return;
     }
 
-    if (has_capability('mod/privatestudentfolder:addinstance', $settings->get_page()->cm->context)) {
-        $url = new moodle_url('/mod/privatestudentfolder/view.php', ['id' => $settings->get_page()->cm->id, 'allfilespage' => '1']);
+    if (has_capability('mod/openbook:addinstance', $settings->get_page()->cm->context)) {
+        $url = new moodle_url('/mod/openbook/view.php', ['id' => $settings->get_page()->cm->id, 'allfilespage' => '1']);
 
         $node = navigation_node::create(
-            get_string('allfiles', 'privatestudentfolder'),
+            get_string('allfiles', 'openbook'),
             $url,
             navigation_node::TYPE_SETTING,
             null,
-            'mod_privatestudentfolder_allfiles'
+            'mod_openbook_allfiles'
         );
         $navref->add_node($node, $beforekey);
     }
 
-    if (has_capability('mod/privatestudentfolder:manageoverrides', $settings->get_page()->cm->context)) {
-        $privatestudentfolder = new privatestudentfolder($cm, $course, $context);
-        $mode = $privatestudentfolder->get_mode();
-        if ($mode != PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION || true) {
-            $url = new moodle_url('/mod/privatestudentfolder/overrides.php', ['id' => $settings->get_page()->cm->id]);
+    if (has_capability('mod/openbook:manageoverrides', $settings->get_page()->cm->context)) {
+        $openbook = new openbook($cm, $course, $context);
+        $mode = $openbook->get_mode();
+        if ($mode != OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION || true) {
+            $url = new moodle_url('/mod/openbook/overrides.php', ['id' => $settings->get_page()->cm->id]);
 
             $node = navigation_node::create(
                 get_string('overrides', 'assign'),
                 $url,
                 navigation_node::TYPE_SETTING,
                 null,
-                'mod_privatestudentfolder_useroverrides'
+                'mod_openbook_useroverrides'
             );
             $navref->add_node($node, $beforekey);
         }
@@ -340,7 +340,7 @@ function privatestudentfolder_extend_settings_navigation(settings_navigation $se
  * @param array $options additional options affecting the file serving
  * @return bool false if file not found, does not return if found - just send the file
  */
-function mod_privatestudentfolder_pluginfile(
+function mod_openbook_pluginfile(
     $course,
     $cm,
     context $context,
@@ -354,7 +354,7 @@ function mod_privatestudentfolder_pluginfile(
     }
 
     require_login($course, false, $cm);
-    if (!has_capability('mod/privatestudentfolder:view', $context)) {
+    if (!has_capability('mod/openbook:view', $context)) {
         return false;
     }
 
@@ -366,7 +366,7 @@ function mod_privatestudentfolder_pluginfile(
 
     $relativepath = implode('/', $args);
 
-    $fullpath = "/{$context->id}/mod_privatestudentfolder/$filearea/$itemid/$relativepath";
+    $fullpath = "/{$context->id}/mod_openbook/$filearea/$itemid/$relativepath";
     $fs = get_file_storage();
     $file = $fs->get_file_by_hash(sha1($fullpath));
 
@@ -386,21 +386,21 @@ function mod_privatestudentfolder_pluginfile(
  * @param calendar_event $event
  * @param \core_calendar\action_factory $factory
  */
-function mod_privatestudentfolder_core_calendar_provide_event_action(
+function mod_openbook_core_calendar_provide_event_action(
     calendar_event $event,
     \core_calendar\action_factory $factory
 ) {
     global $CFG, $USER, $DB;
-    require_once($CFG->dirroot . '/mod/privatestudentfolder/locallib.php');
+    require_once($CFG->dirroot . '/mod/openbook/locallib.php');
 
-    // Get the instance of the privatestudentfolder with the way recommended by the docs.
-    $courseinstance = get_fast_modinfo($event->courseid)->instances['privatestudentfolder'][$event->instance];
-    $instance = new privatestudentfolder($courseinstance);
+    // Get the instance of the openbook with the way recommended by the docs.
+    $courseinstance = get_fast_modinfo($event->courseid)->instances['openbook'][$event->instance];
+    $instance = new openbook($courseinstance);
 
     // Only show this instance if it's open.
     if ($instance->is_open()) {
         // Also don't show this instance when the user already uploaded one or more files.
-        $files = $DB->count_records('privatestudentfolder_file', ['privatestudentfolder' => $event->instance,
+        $files = $DB->count_records('openbook_file', ['openbook' => $event->instance,
             'userid' => $USER->id]);
 
         if ($files >= 1) {
@@ -408,9 +408,9 @@ function mod_privatestudentfolder_core_calendar_provide_event_action(
         }
 
         return $factory->create_instance(
-            get_string('add_uploads', 'privatestudentfolder'), // Name of the action button.
+            get_string('add_uploads', 'openbook'), // Name of the action button.
             new \moodle_url(
-                '/mod/privatestudentfolder/view.php',
+                '/mod/openbook/view.php',
                 ['id' => $courseinstance->id],
             ), // URL of the instance.
             1, // Count of necessary actions.
@@ -425,7 +425,7 @@ function mod_privatestudentfolder_core_calendar_provide_event_action(
  * @param cm_info|stdClass $cm object with fields ->completion and ->customdata['customcompletionrules']
  * @return array $descriptions the array of descriptions for the custom rules.
  */
-function mod_privatestudentfolder_get_completion_active_rule_descriptions($cm) {
+function mod_openbook_get_completion_active_rule_descriptions($cm) {
     // Values will be present in cm_info, and we assume these are up to date.
     if (
         empty($cm->customdata['customcompletionrules'])
@@ -439,7 +439,7 @@ function mod_privatestudentfolder_get_completion_active_rule_descriptions($cm) {
         switch ($key) {
             case 'completionupload':
                 if (!empty($val)) {
-                    $descriptions[] = get_string('completionupload', 'privatestudentfolder');
+                    $descriptions[] = get_string('completionupload', 'openbook');
                 }
                 break;
             default:

@@ -1,5 +1,5 @@
 {{!
-    @template mod_privatestudentfolder/partial_assignlink
+    @template mod_openbook/partial_assignlink
 
     Template partial for displaying the assignment link in a table row.
 
@@ -15,12 +15,12 @@
 }}
 <table>
     <tr>
-        <th>{{#str}}assignment,privatestudentfolder{{/str}}</th>
+        <th>{{#str}}assignment,openbook{{/str}}</th>
             {{#notset}}
-                <td class="alert-warning">{{#str}}assignment_notset,privatestudentfolder{{/str}}</td>
+                <td class="alert-warning">{{#str}}assignment_notset,openbook{{/str}}</td>
             {{/notset}}
             {{#notfound}}
-                <td class="alert-warning">{{#str}}assignment_notfound,privatestudentfolder{{/str}}</td>
+                <td class="alert-warning">{{#str}}assignment_notfound,openbook{{/str}}</td>
             {{/notfound}}
             {{#assign}}
                 <td><a href="{{url}}">{{name}}</a></td>

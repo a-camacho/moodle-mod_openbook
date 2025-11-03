@@ -16,7 +16,7 @@
 /**
  * Javascript to align rows
  *
- * @module        mod_privatestudentfolder/alignrows
+ * @module        mod_openbook/alignrows
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -24,13 +24,13 @@
  */
 
 /**
- * @module mod_privatestudentfolder/alignrows
+ * @module mod_openbook/alignrows
  */
 define(['jquery'], function($) {
 
     /**
      * @constructor
-     * @alias module:mod_privatestudentfolder/alignrows
+     * @alias module:mod_openbook/alignrows
      */
     var Alignrows = function() {
         this.cmid = 0;

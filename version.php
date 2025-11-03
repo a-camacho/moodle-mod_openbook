@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 /**
  * Version information
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -28,6 +28,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->version  = 2025102103;
 $plugin->requires = 2024100700;
-$plugin->component = 'mod_privatestudentfolder';
+$plugin->component = 'mod_openbook';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->release  = "v4.5.3";

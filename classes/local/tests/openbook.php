@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,15 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * subclass of mod_privatestudentfolder to publish all testable methods!
+ * subclass of mod_openbook to publish all testable methods!
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace mod_privatestudentfolder\local\tests;
+namespace mod_openbook\local\tests;
 
 use stdClass;
 use coding_exception;
@@ -37,19 +37,19 @@ use Exception;
  * Please ignore the nasty code in here just catching all kind of exceptions and then throwing them again, it's just to shut up
  * code-checker about "unnecessary method overrides" which we need to make the methods under test publicly available!
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class privatestudentfolder extends \privatestudentfolder {
+class openbook extends \openbook {
     /**
-     * Additional method to get privatestudentfolder record.
+     * Additional method to get openbook record.
      *
      * @return stdClass Instances database record
      */
-    public function get_privatestudentfolder() {
+    public function get_openbook() {
         return $this->instance;
     }
 

@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,14 +17,14 @@
 /**
  * Base class for tables showing files related to me (uploaded by me, imported from me or my group and options to approve them)
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_privatestudentfolder\local\filestable;
+namespace mod_openbook\local\filestable;
 
 use core_text;
 
@@ -33,21 +33,21 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
 require_once($CFG->dirroot . '/course/moodleform_mod.php');
-require_once($CFG->dirroot . '/mod/privatestudentfolder/locallib.php');
+require_once($CFG->dirroot . '/mod/openbook/locallib.php');
 require_once($CFG->libdir . '/tablelib.php');
 
 /**
  * Base class for tables showing my files or group files (upload or import)
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class base extends \html_table {
-    /** @var \privatestudentfolder privatestudentfolder object */
-    protected $privatestudentfolder = null;
+    /** @var \openbook openbook object */
+    protected $openbook = null;
     /** @var \file_storage file storage object */
     protected $fs = null;
     /** @var \stored_file[] array of stored_file objects */
@@ -72,21 +72,21 @@ class base extends \html_table {
     /**
      * constructor
      *
-     * @param \privatestudentfolder $privatestudentfolder privatestudentfolder object
+     * @param \openbook $openbook openbook object
      */
-    public function __construct(\privatestudentfolder $privatestudentfolder) {
+    public function __construct(\openbook $openbook) {
         global $OUTPUT;
 
         parent::__construct();
 
-        $this->privatestudentfolder = $privatestudentfolder;
+        $this->openbook = $openbook;
 
         $this->fs = get_file_storage();
 
-        $this->valid = \mod_privatestudentfolder\local\allfilestable\base::approval_icon('check', 'text-success', false);
-        $this->questionmark = \mod_privatestudentfolder\local\allfilestable\base::approval_icon('question', 'text-warning', false);
-        $this->invalid = \mod_privatestudentfolder\local\allfilestable\base::approval_icon('times', 'text-danger', false);
-        $this->share = \mod_privatestudentfolder\local\allfilestable\base::approval_icon(
+        $this->valid = \mod_openbook\local\allfilestable\base::approval_icon('check', 'text-success', false);
+        $this->questionmark = \mod_openbook\local\allfilestable\base::approval_icon('question', 'text-warning', false);
+        $this->invalid = \mod_openbook\local\allfilestable\base::approval_icon('times', 'text-danger', false);
+        $this->share = \mod_openbook\local\allfilestable\base::approval_icon(
             'share-from-square',
             'text-success',
             false
@@ -103,7 +103,7 @@ class base extends \html_table {
 
         if (
             (!$files || count($files) == 0) &&
-            has_capability('mod/privatestudentfolder:upload', $this->privatestudentfolder->get_context())
+            has_capability('mod/openbook:upload', $this->openbook->get_context())
         ) {
             return 0;
         }
@@ -117,8 +117,8 @@ class base extends \html_table {
         }
 
         $this->options = [];
-        $this->options[1] = get_string('student_approve', 'privatestudentfolder');
-        $this->options[2] = get_string('student_reject', 'privatestudentfolder');
+        $this->options[1] = get_string('student_approve', 'openbook');
+        $this->options[2] = get_string('student_reject', 'openbook');
 
         if (empty($files) || count($files) == 0) {
             return 0;
@@ -141,8 +141,8 @@ class base extends \html_table {
         global $OUTPUT;
         $templatecontext = new \stdClass();
         // Now add the specific data to the table!
-        $teacherapproval = $this->privatestudentfolder->teacher_approval($file);
-        $obtainteacherapproval = $this->privatestudentfolder->get_instance()->obtainteacherapproval;
+        $teacherapproval = $this->openbook->teacher_approval($file);
+        $obtainteacherapproval = $this->openbook->get_instance()->obtainteacherapproval;
 
         $teacherapproved = false;
         $teacherdenied = false;
@@ -173,11 +173,11 @@ class base extends \html_table {
         global $OUTPUT;
         $templatecontext = new \stdClass();
         // Now add the specific data to the table!
-        $teacherapproval = $this->privatestudentfolder->teacher_approval($file);
-        $studentapproval = $this->privatestudentfolder->student_approval($file);
+        $teacherapproval = $this->openbook->teacher_approval($file);
+        $studentapproval = $this->openbook->student_approval($file);
 
-        $obtainteacherapproval = $this->privatestudentfolder->get_instance()->obtainteacherapproval;
-        $obtainstudentapproval = $this->privatestudentfolder->get_instance()->obtainstudentapproval;
+        $obtainteacherapproval = $this->openbook->get_instance()->obtainteacherapproval;
+        $obtainstudentapproval = $this->openbook->get_instance()->obtainstudentapproval;
 
         $hint = '';
 
@@ -190,17 +190,17 @@ class base extends \html_table {
         if ($obtainteacherapproval == 1) {
             if ($teacherapproval == 1) {
                 $teacherapproved = true;
-                $hint .= get_string('teacher_approved', 'privatestudentfolder');
+                $hint .= get_string('teacher_approved', 'openbook');
             } else if ($teacherapproval == 2) {
                 $teacherdenied = true;
-                $hint .= get_string('teacher_rejected', 'privatestudentfolder');
+                $hint .= get_string('teacher_rejected', 'openbook');
             } else {
                 $teacherpending = true;
-                $hint .= get_string('teacher_pending', 'privatestudentfolder');
+                $hint .= get_string('teacher_pending', 'openbook');
             }
         } else {
             $teacherapproved = true;
-            $hint .= get_string('teacher_approved_automatically', 'privatestudentfolder');
+            $hint .= get_string('teacher_approved_automatically', 'openbook');
         }
 
         $hint .= ' ';
@@ -211,25 +211,25 @@ class base extends \html_table {
         $studentdenied = false;
         $studentpending = false;
 
-        if ($this->privatestudentfolder->get_filesarepersonal_status() == "0") {
+        if ($this->openbook->get_filesarepersonal_status() == "0") {
             if ($obtainstudentapproval == 1) {
                 if ($studentapproval == 1) {
                     $studentapproved = true;
-                    $hint .= get_string('student_approved', 'privatestudentfolder');
+                    $hint .= get_string('student_approved', 'openbook');
                 } else if ($studentapproval == 2) {
                     $studentdenied = true;
-                    $hint .= get_string('student_rejected', 'privatestudentfolder');
+                    $hint .= get_string('student_rejected', 'openbook');
                 } else {
-                    if ($this->privatestudentfolder->is_approval_open()) {
+                    if ($this->openbook->is_approval_open()) {
                         $this->changepossible = true;
                         return \html_writer::select($this->options, 'studentapproval[' . $file->get_id() . ']', $studentapproval);
                     }
                     $studentpending = true;
-                    $hint .= get_string('student_pending', 'privatestudentfolder');
+                    $hint .= get_string('student_pending', 'openbook');
                 }
             } else {
                 $studentapproved = true;
-                $hint .= get_string('student_approved_automatically', 'privatestudentfolder');
+                $hint .= get_string('student_approved_automatically', 'openbook');
             }
         }
 
@@ -244,14 +244,14 @@ class base extends \html_table {
         } else if (!$teacherapproved) {
             $templatecontext->icon = $this->invalid;
         } else {
-            if ($studentapproved && $this->privatestudentfolder->get_filesarepersonal_status() == "0") {
+            if ($studentapproved && $this->openbook->get_filesarepersonal_status() == "0") {
                 $templatecontext->icon = $this->share;
             } else {
                 $templatecontext->icon = $this->valid;
             }
         }
 
-        return $OUTPUT->render_from_template('mod_privatestudentfolder/approval_icon', $templatecontext);
+        return $OUTPUT->render_from_template('mod_openbook/approval_icon', $templatecontext);
     }
 
     /**
@@ -266,12 +266,12 @@ class base extends \html_table {
             return $this->files;
         }
 
-        $contextid = $this->privatestudentfolder->get_context()->id;
+        $contextid = $this->openbook->get_context()->id;
         $filearea = 'attachment';
         // User ID for regular instances, group id for assignments with teamsubmission!
         $itemid = $USER->id;
 
-        $files = $this->fs->get_area_files($contextid, 'mod_privatestudentfolder', $filearea, $itemid, 'timemodified', false);
+        $files = $this->fs->get_area_files($contextid, 'mod_openbook', $filearea, $itemid, 'timemodified', false);
 
         foreach ($files as $file) {
             if ($file->get_filepath() == '/resources/') {
@@ -294,8 +294,8 @@ class base extends \html_table {
      */
     public function changepossible() {
         $result = ($this->changepossible ? true : false) && has_capability(
-            'mod/privatestudentfolder:upload',
-            $this->privatestudentfolder->get_context()
+            'mod/openbook:upload',
+            $this->openbook->get_context()
         );
         return $result;
     }
@@ -333,16 +333,16 @@ class base extends \html_table {
             );
 
             if (
-                $this->privatestudentfolder->get_openpdffilesinpdfjs_status() == "1" &&
+                $this->openbook->get_openpdffilesinpdfjs_status() == "1" &&
                 $file->get_mimetype() == "application/pdf"
             ) {
-                $pdfjsurl = new \moodle_url('/mod/privatestudentfolder/pdfjs-5.4.296-dist/web/viewer.html', [
+                $pdfjsurl = new \moodle_url('/mod/openbook/pdfjs-5.4.296-dist/web/viewer.html', [
                     'file' => $pluginurl->out(),
                 ]);
                 $url = $pdfjsurl;
             } else {
-                $dlurl = new \moodle_url('/mod/privatestudentfolder/view.php', [
-                        'id' => $this->privatestudentfolder->get_coursemodule()->id,
+                $dlurl = new \moodle_url('/mod/openbook/view.php', [
+                        'id' => $this->openbook->get_coursemodule()->id,
                         'download' => $file->get_id(),
                 ]);
                 $url = $dlurl;

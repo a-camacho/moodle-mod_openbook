@@ -17,7 +17,7 @@
 /**
  * Contains class for report-editdates support
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -27,42 +27,42 @@
 /**
  * Class needed for report-editdates support
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_privatestudentfolder_report_editdates_integration extends report_editdates_mod_date_extractor {
+class mod_openbook_report_editdates_integration extends report_editdates_mod_date_extractor {
     /**
-     * mod_privatestudentfolder_report_editdates_integration constructor.
+     * mod_openbook_report_editdates_integration constructor.
      * @param object $course the course
      */
     public function __construct($course) {
-        parent::__construct($course, 'privatestudentfolder');
+        parent::__construct($course, 'openbook');
         parent::load_data();
     }
 
     /**
-     * Returns the duedates for a specific privatestudentfolder
+     * Returns the duedates for a specific openbook
      * @param cm_info $cm
      * @return array
      * @throws coding_exception
      */
     public function get_settings(cm_info $cm) {
-        $privatestudentfolder = $this->mods[$cm->instance];
+        $openbook = $this->mods[$cm->instance];
 
         return [
                 'allowsubmissionsfromdate' => new report_editdates_date_setting(
-                    get_string('allowsubmissionsfromdate', 'privatestudentfolder'),
-                    $privatestudentfolder->allowsubmissionsfromdate,
+                    get_string('allowsubmissionsfromdate', 'openbook'),
+                    $openbook->allowsubmissionsfromdate,
                     self::DATETIME,
                     true,
                     5
                 ),
                 'duedate' => new report_editdates_date_setting(
-                    get_string('duedate', 'privatestudentfolder'),
-                    $privatestudentfolder->duedate,
+                    get_string('duedate', 'openbook'),
+                    $openbook->duedate,
                     self::DATETIME,
                     true,
                     5
@@ -83,7 +83,7 @@ class mod_privatestudentfolder_report_editdates_integration extends report_editd
             $dates['allowsubmissionsfromdate'] && $dates['duedate']
                 && $dates['duedate'] < $dates['allowsubmissionsfromdate']
         ) {
-            $errors['duedate'] = get_string('duedatevalidation', 'privatestudentfolder');
+            $errors['duedate'] = get_string('duedatevalidation', 'openbook');
         }
 
         return $errors;
@@ -103,6 +103,6 @@ class mod_privatestudentfolder_report_editdates_integration extends report_editd
         $update->duedate = $dates['duedate'];
         $update->allowsubmissionsfromdate = $dates['allowsubmissionsfromdate'];
 
-        $DB->update_record('privatestudentfolder', $update);
+        $DB->update_record('openbook', $update);
     }
 }

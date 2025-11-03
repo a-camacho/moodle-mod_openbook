@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 /**
  * Webservice definition
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -26,8 +26,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $services = [
-        'mod_privatestudentfolder_onlinetextpreview' => [ // The name of the web service.
-           'functions' => ['mod_privatestudentfolder_get_onlinetextpreview'], // Web service functions of this service.
+        'mod_openbook_onlinetextpreview' => [ // The name of the web service.
+           'functions' => ['mod_openbook_get_onlinetextpreview'], // Web service functions of this service.
            'requiredcapability' => '', /* If set, the web service user need this capability to access any function of this
                                         * service. For example: 'some/capability:specified'.*/
            'restrictedusers' => 0, /* If enabled, the Moodle administrator must link some user to this service into the
@@ -37,10 +37,10 @@ $services = [
 ];
 
 $functions = [
-        'mod_privatestudentfolder_get_onlinetextpreview' => [ // Web service function name.
-           'classname' => 'mod_privatestudentfolder_external', // Class containing the external function.
+        'mod_openbook_get_onlinetextpreview' => [ // Web service function name.
+           'classname' => 'mod_openbook_external', // Class containing the external function.
            'methodname' => 'get_onlinetextpreview', // External function name.
-           'classpath' => 'mod/privatestudentfolder/externallib.php', // File containing the class/external function.
+           'classpath' => 'mod/openbook/externallib.php', // File containing the class/external function.
            'description' => 'Fetches HTML snippet to preview onlinetext.', /* Human readable description of the web service
                                                                             * function.*/
            'type' => 'read', // Database rights of the WS-function (read, write).

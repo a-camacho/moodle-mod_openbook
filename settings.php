@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Settings definitions for mod_privatestudentfolder
+ * Settings definitions for mod_openbook
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -32,112 +32,112 @@ if ($ADMIN->fulltree) {
     require_once(__DIR__ . '/locallib.php');
 
     $settings->add(new admin_setting_configtext(
-        'privatestudentfolder/maxfiles',
-        get_string('maxfiles', 'privatestudentfolder'),
-        get_string('configmaxfiles', 'privatestudentfolder'),
+        'openbook/maxfiles',
+        get_string('maxfiles', 'openbook'),
+        get_string('configmaxfiles', 'openbook'),
         5,
         PARAM_INT
     ));
 
     $options = [
-        '1' => get_string('filesarepersonal_yes', 'privatestudentfolder'),
-        '0' => get_string('filesarepersonal_no', 'privatestudentfolder'),
+        '1' => get_string('filesarepersonal_yes', 'openbook'),
+        '0' => get_string('filesarepersonal_no', 'openbook'),
     ];
 
     $settings->add(new admin_setting_configselect(
-        'privatestudentfolder/filesarepersonal',
-        get_string('filesarepersonal_admin', 'privatestudentfolder'),
-        get_string('filesarepersonal_admin_desc', 'privatestudentfolder'),
+        'openbook/filesarepersonal',
+        get_string('filesarepersonal_admin', 'openbook'),
+        get_string('filesarepersonal_admin_desc', 'openbook'),
         1,
         $options
     ));
 
     $options = [
-        '1' => get_string('openpdffilesinpdfjs_yes', 'privatestudentfolder'),
-        '0' => get_string('openpdffilesinpdfjs_no', 'privatestudentfolder'),
+        '1' => get_string('openpdffilesinpdfjs_yes', 'openbook'),
+        '0' => get_string('openpdffilesinpdfjs_no', 'openbook'),
     ];
 
     $settings->add(new admin_setting_configselect(
-        'privatestudentfolder/openpdffilesinpdfjs',
-        get_string('openpdffilesinpdfjs_admin', 'privatestudentfolder'),
-        get_string('openpdffilesinpdfjs_admin_desc', 'privatestudentfolder'),
+        'openbook/openpdffilesinpdfjs',
+        get_string('openpdffilesinpdfjs_admin', 'openbook'),
+        get_string('openpdffilesinpdfjs_admin_desc', 'openbook'),
         1,
         $options
     ));
 
     $options = [
-        '0' => get_string('obtainapproval_automatic', 'privatestudentfolder'),
-        '1' => get_string('obtainapproval_required', 'privatestudentfolder'),
+        '0' => get_string('obtainapproval_automatic', 'openbook'),
+        '1' => get_string('obtainapproval_required', 'openbook'),
     ];
 
     $settings->add(new admin_setting_configselect(
-        'privatestudentfolder/obtainteacherapproval',
-        get_string('obtainteacherapproval_admin', 'privatestudentfolder'),
-        get_string('obtainteacherapproval_admin_desc', 'privatestudentfolder'),
+        'openbook/obtainteacherapproval',
+        get_string('obtainteacherapproval_admin', 'openbook'),
+        get_string('obtainteacherapproval_admin_desc', 'openbook'),
         0,
         $options
     ));
 
     $settings->add(new admin_setting_configselect(
-        'privatestudentfolder/obtainstudentapproval',
-        get_string('obtainstudentapproval_admin', 'privatestudentfolder'),
-        get_string('obtainstudentapproval_admin_desc', 'privatestudentfolder'),
+        'openbook/obtainstudentapproval',
+        get_string('obtainstudentapproval_admin', 'openbook'),
+        get_string('obtainstudentapproval_admin_desc', 'openbook'),
         0,
         $options
     ));
 
     $options = [
-        PRIVATESTUDENTFOLDER_APPROVAL_GROUPAUTOMATIC => get_string('obtainapproval_automatic', 'privatestudentfolder'),
-        PRIVATESTUDENTFOLDER_APPROVAL_SINGLE => get_string('obtaingroupapproval_single', 'privatestudentfolder'),
-        PRIVATESTUDENTFOLDER_APPROVAL_ALL => get_string('obtaingroupapproval_all', 'privatestudentfolder'),
+        OPENBOOK_APPROVAL_GROUPAUTOMATIC => get_string('obtainapproval_automatic', 'openbook'),
+        OPENBOOK_APPROVAL_SINGLE => get_string('obtaingroupapproval_single', 'openbook'),
+        OPENBOOK_APPROVAL_ALL => get_string('obtaingroupapproval_all', 'openbook'),
     ];
 
     $settings->add(new admin_setting_configselect(
-        'privatestudentfolder/obtaingroupapproval',
-        get_string('obtaingroupapproval_admin', 'privatestudentfolder'),
-        get_string('obtaingroupapproval_admin_desc', 'privatestudentfolder'),
+        'openbook/obtaingroupapproval',
+        get_string('obtaingroupapproval_admin', 'openbook'),
+        get_string('obtaingroupapproval_admin_desc', 'openbook'),
         0,
         $options
     ));
 
 
     $options = [
-        PRIVATESTUDENTFOLDER_NOTIFY_NONE => get_string('notify:setting:0', 'privatestudentfolder'),
-        PRIVATESTUDENTFOLDER_NOTIFY_TEACHER => get_string('notify:setting:1', 'privatestudentfolder'),
-        PRIVATESTUDENTFOLDER_NOTIFY_STUDENT => get_string('notify:setting:2', 'privatestudentfolder'),
-        PRIVATESTUDENTFOLDER_NOTIFY_ALL => get_string('notify:setting:3', 'privatestudentfolder'),
+        OPENBOOK_NOTIFY_NONE => get_string('notify:setting:0', 'openbook'),
+        OPENBOOK_NOTIFY_TEACHER => get_string('notify:setting:1', 'openbook'),
+        OPENBOOK_NOTIFY_STUDENT => get_string('notify:setting:2', 'openbook'),
+        OPENBOOK_NOTIFY_ALL => get_string('notify:setting:3', 'openbook'),
     ];
 
     $settings->add(new admin_setting_configselect(
-        'privatestudentfolder/notifyfilechange',
-        get_string('notify:filechange_admin', 'privatestudentfolder'),
-        get_string('notify:filechange_help', 'privatestudentfolder'),
-        PRIVATESTUDENTFOLDER_NOTIFY_STUDENT,
+        'openbook/notifyfilechange',
+        get_string('notify:filechange_admin', 'openbook'),
+        get_string('notify:filechange_help', 'openbook'),
+        OPENBOOK_NOTIFY_STUDENT,
         $options
     ));
 
     $settings->add(new admin_setting_configselect(
-        'privatestudentfolder/notifystatuschange',
-        get_string('notify:statuschange_admin', 'privatestudentfolder'),
-        get_string('notify:statuschange_help', 'privatestudentfolder'),
-        PRIVATESTUDENTFOLDER_NOTIFY_ALL,
+        'openbook/notifystatuschange',
+        get_string('notify:statuschange_admin', 'openbook'),
+        get_string('notify:statuschange_help', 'openbook'),
+        OPENBOOK_NOTIFY_ALL,
         $options
     ));
 
     if (isset($CFG->maxbytes)) {
         $settings->add(new admin_setting_configselect(
-            'privatestudentfolder/maxbytes',
-            get_string('maxbytes', 'privatestudentfolder'),
-            get_string('configmaxbytes', 'privatestudentfolder'),
+            'openbook/maxbytes',
+            get_string('maxbytes', 'openbook'),
+            get_string('configmaxbytes', 'openbook'),
             5242880,
             get_max_upload_sizes($CFG->maxbytes)
         ));
     }
 
     $settings->add(new admin_setting_configselect(
-        'privatestudentfolder/availabilityrestriction',
-        get_string('availabilityrestriction_admin', 'privatestudentfolder'),
-        get_string('availabilityrestriction_admin_desc', 'privatestudentfolder'),
+        'openbook/availabilityrestriction',
+        get_string('availabilityrestriction_admin', 'openbook'),
+        get_string('availabilityrestriction_admin_desc', 'openbook'),
         1,
         [get_string('no'), get_string('yes')]
     ));
