@@ -17,7 +17,7 @@
 /**
  * Contains the class for fetching the important dates in mod_assign for a given module instance and a user.
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -26,7 +26,7 @@
 
 declare(strict_types=1);
 
-namespace mod_privatestudentfolder;
+namespace mod_openbook;
 
 use core\activity_dates;
 
@@ -44,18 +44,18 @@ class dates extends activity_dates {
      */
     protected function get_dates(): array {
         global $CFG, $USER;
-        require_once($CFG->dirroot . '/mod/privatestudentfolder/locallib.php');
+        require_once($CFG->dirroot . '/mod/openbook/locallib.php');
 
         $course = get_course($this->cm->course);
         $context = \context_module::instance($this->cm->id);
 
-        $privatestudentfolder = new \privatestudentfolder($this->cm, $course, $context);
-        $instance = $privatestudentfolder->get_instance();
+        $openbook = new \openbook($this->cm, $course, $context);
+        $instance = $openbook->get_instance();
 
-        $textsuffix = ($instance->mode == PRIVATESTUDENTFOLDER_MODE_IMPORT) ? "_import" : "_upload";
+        $textsuffix = ($instance->mode == OPENBOOK_MODE_IMPORT) ? "_import" : "_upload";
         $dates = [];
 
-        $override = $privatestudentfolder->override_get_currentuserorgroup();
+        $override = $openbook->override_get_currentuserorgroup();
 
         if ($override && $override->submissionoverride) {
             $instance->duedate = $override->duedate;
@@ -63,22 +63,22 @@ class dates extends activity_dates {
         }
         if ($instance->allowsubmissionsfromdate) {
             $dates[] = [
-                'label' => get_string('allowsubmissionsfromdate' . $textsuffix, 'privatestudentfolder') . ':',
+                'label' => get_string('allowsubmissionsfromdate' . $textsuffix, 'openbook') . ':',
                 'timestamp' => $instance->allowsubmissionsfromdate,
             ];
         }
         if ($instance->duedate) {
             $dates[] = [
-                'label' => get_string('duedate' . $textsuffix, 'privatestudentfolder') . ':',
+                'label' => get_string('duedate' . $textsuffix, 'openbook') . ':',
                 'timestamp' => $instance->duedate,
             ];
         }
 
-        $extensionduedate = $privatestudentfolder->user_extensionduedate($USER->id);
+        $extensionduedate = $openbook->user_extensionduedate($USER->id);
 
         if ($extensionduedate) {
             $dates[] = [
-                'label' => get_string('extensionto', 'privatestudentfolder') . ':',
+                'label' => get_string('extensionto', 'openbook') . ':',
                 'timestamp' => $extensionduedate,
             ];
         }
@@ -90,13 +90,13 @@ class dates extends activity_dates {
             }
             if ($instance->approvalfromdate) {
                 $dates[] = [
-                    'label' => get_string('approvalfromdate', 'privatestudentfolder') . ':',
+                    'label' => get_string('approvalfromdate', 'openbook') . ':',
                     'timestamp' => $instance->approvalfromdate,
                 ];
             }
             if ($instance->approvaltodate) {
                 $dates[] = [
-                    'label' => get_string('approvaltodate', 'privatestudentfolder') . ':',
+                    'label' => get_string('approvaltodate', 'openbook') . ':',
                     'timestamp' => $instance->approvaltodate,
                 ];
             }

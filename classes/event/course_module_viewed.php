@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,21 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Contains event class for a single mod_privatestudentfolder being viewed
+ * Contains event class for a single mod_openbook being viewed
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_privatestudentfolder\event;
+namespace mod_openbook\event;
 
 /**
  * Course module has been viewed for this event
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -40,7 +40,7 @@ class course_module_viewed extends \core\event\course_module_viewed {
      * Init event objecttable
      */
     protected function init() {
-        $this->data['objecttable'] = 'privatestudentfolder';
+        $this->data['objecttable'] = 'openbook';
         parent::init();
     }
     // You might need to override get_url() and get_legacy_log_data() if view mode needs to be stored as well.

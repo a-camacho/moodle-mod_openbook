@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,19 +17,19 @@
 /**
  * Contains class for files table listing all files for imported teamsubmissions
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_privatestudentfolder\local\allfilestable;
+namespace mod_openbook\local\allfilestable;
 
 /**
  * Table showing my group files
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -57,16 +57,16 @@ class group extends base {
                    SUM(files.studentapproval) AS studentapproval, SUM(files.teacherapproval) AS teacherapproval, " .
                   "MAX(files.timecreated) AS timemodified ";
 
-        $groups = $this->privatestudentfolder->get_groups($this->groupingid);
+        $groups = $this->openbook->get_groups($this->groupingid);
         if (count($groups) > 0) {
             [$sqlgroupids, $groupparams] = $DB->get_in_or_equal($groups, SQL_PARAMS_NAMED, 'group');
-            $params = $params + $groupparams + ['privatestudentfolder' => $this->cm->instance];
+            $params = $params + $groupparams + ['openbook' => $this->cm->instance];
         } else {
             $sqlgroupids = " = :group ";
-            $params = $params + ['group' => -1, 'privatestudentfolder' => $this->cm->instance];
+            $params = $params + ['group' => -1, 'openbook' => $this->cm->instance];
         }
 
-        if ($this->requiregroup || !count($this->privatestudentfolder->get_submissionmembers(0))) {
+        if ($this->requiregroup || !count($this->openbook->get_submissionmembers(0))) {
             $grouptable = '{groups} g ';
         } else {
             // If no group is required by assign to submit, we have to include all users without group as group 0 - standard group!
@@ -78,32 +78,32 @@ class group extends base {
         }
 
         $having = '';
-        if ($this->filter == PRIVATESTUDENTFOLDER_FILTER_NOFILTER) {
-            $from = $grouptable . " LEFT JOIN {privatestudentfolder_file} files ON g.id = files.userid AND " .
-                "files.privatestudentfolder = :privatestudentfolder ";
-        } else if ($this->filter == PRIVATESTUDENTFOLDER_FILTER_ALLFILES) {
-            $from = $grouptable . " JOIN {privatestudentfolder_file} files ON g.id = files.userid AND " .
-                "files.privatestudentfolder = :privatestudentfolder ";
-        } else if ($this->filter == PRIVATESTUDENTFOLDER_FILTER_APPROVED) {
-            $from = $grouptable . " JOIN {privatestudentfolder_file} files ON g.id = files.userid AND " .
-                "files.privatestudentfolder = :privatestudentfolder ";
+        if ($this->filter == OPENBOOK_FILTER_NOFILTER) {
+            $from = $grouptable . " LEFT JOIN {openbook_file} files ON g.id = files.userid AND " .
+                "files.openbook = :openbook ";
+        } else if ($this->filter == OPENBOOK_FILTER_ALLFILES) {
+            $from = $grouptable . " JOIN {openbook_file} files ON g.id = files.userid AND " .
+                "files.openbook = :openbook ";
+        } else if ($this->filter == OPENBOOK_FILTER_APPROVED) {
+            $from = $grouptable . " JOIN {openbook_file} files ON g.id = files.userid AND " .
+                "files.openbook = :openbook ";
             if ($this->obtainteacherapproval) {
                 $from .= ' AND files.teacherapproval = 1 ';
             }
             if ($this->obtainstudentapproval) {
                 $from .= ' AND files.studentapproval = 1 ';
             }
-        } else if ($this->filter == PRIVATESTUDENTFOLDER_FILTER_REJECTED) {
-            $from = $grouptable . " LEFT JOIN {privatestudentfolder_file} files ON g.id = files.userid AND " .
-                "files.privatestudentfolder = :privatestudentfolder " .
+        } else if ($this->filter == OPENBOOK_FILTER_REJECTED) {
+            $from = $grouptable . " LEFT JOIN {openbook_file} files ON g.id = files.userid AND " .
+                "files.openbook = :openbook " .
                 "AND files.teacherapproval = 2 ";
-        } else if ($this->filter == PRIVATESTUDENTFOLDER_FILTER_APPROVALREQUIRED) {
-            $from = $grouptable . " LEFT JOIN {privatestudentfolder_file} files ON g.id = files.userid AND " .
-                "files.privatestudentfolder = :privatestudentfolder " .
+        } else if ($this->filter == OPENBOOK_FILTER_APPROVALREQUIRED) {
+            $from = $grouptable . " LEFT JOIN {openbook_file} files ON g.id = files.userid AND " .
+                "files.openbook = :openbook " .
                 "AND (files.teacherapproval = 3 OR files.teacherapproval IS NULL OR files.teacherapproval = 0) ";
-        } else if ($this->filter == PRIVATESTUDENTFOLDER_FILTER_NOFILES) {
-            $from = $grouptable . " LEFT JOIN {privatestudentfolder_file} files ON g.id = files.userid AND " .
-                "files.privatestudentfolder = :privatestudentfolder ";
+        } else if ($this->filter == OPENBOOK_FILTER_NOFILES) {
+            $from = $grouptable . " LEFT JOIN {openbook_file} files ON g.id = files.userid AND " .
+                "files.openbook = :openbook ";
             $having = ' HAVING timemodified IS NULL ';
         }
 
@@ -112,7 +112,7 @@ class group extends base {
 
         $this->set_sql($fields, $from, $where, $params, $groupby);
 
-        if ($this->filter != PRIVATESTUDENTFOLDER_FILTER_NOFILES) {
+        if ($this->filter != OPENBOOK_FILTER_NOFILES) {
             $this->set_count_sql("SELECT COUNT(a.gid) FROM (SELECT DISTINCT g.id AS gid  FROM " . $from .
                 " WHERE " . $where . ') a', $params);
         } else {
@@ -128,19 +128,19 @@ class group extends base {
      *
      * @param string $uniqueid a string identifying this table. Used as a key in session vars.
      * It gets set automatically with the helper methods!
-     * @param \privatestudentfolder $privatestudentfolder privatestudentfolder object
+     * @param \openbook $openbook openbook object
      * @param string $filter filters
      */
-    public function __construct($uniqueid, \privatestudentfolder $privatestudentfolder, $filter) {
+    public function __construct($uniqueid, \openbook $openbook, $filter) {
         global $DB, $PAGE;
 
-        $assignid = $privatestudentfolder->get_instance()->importfrom;
+        $assignid = $openbook->get_instance()->importfrom;
         $this->groupingid = $DB->get_field('assign', 'teamsubmissiongroupingid', ['id' => $assignid]);
-        $this->requiregroup = $privatestudentfolder->requiregroup();
-        $this->assigncm = get_coursemodule_from_instance('assign', $assignid, $privatestudentfolder->get_instance()->course);
+        $this->requiregroup = $openbook->requiregroup();
+        $this->assigncm = get_coursemodule_from_instance('assign', $assignid, $openbook->get_instance()->course);
         $this->assigncontext = \context_module::instance($this->assigncm->id);
 
-        parent::__construct($uniqueid, $privatestudentfolder, $filter);
+        parent::__construct($uniqueid, $openbook, $filter);
 
         $this->sortable(true, 'groupname'); // Sorted by group by default.
         $this->no_sorting('groupmembers');
@@ -148,21 +148,21 @@ class group extends base {
         // Init JS!
         $params = new \stdClass();
         $params->id = $uniqueid;
-        switch ($privatestudentfolder->get_instance()->groupapproval) {
-            case PRIVATESTUDENTFOLDER_APPROVAL_ALL:
-                $params->mode = get_string('obtaingroupapproval_all', 'mod_privatestudentfolder');
+        switch ($openbook->get_instance()->groupapproval) {
+            case OPENBOOK_APPROVAL_ALL:
+                $params->mode = get_string('obtaingroupapproval_all', 'mod_openbook');
                 break;
-            case PRIVATESTUDENTFOLDER_APPROVAL_SINGLE:
-                $params->mode = get_string('obtaingroupapproval_single', 'mod_privatestudentfolder');
+            case OPENBOOK_APPROVAL_SINGLE:
+                $params->mode = get_string('obtaingroupapproval_single', 'mod_openbook');
                 break;
         }
 
-        $PAGE->requires->js_call_amd('mod_privatestudentfolder/groupapprovalstatus', 'initializer', [$params]);
+        $PAGE->requires->js_call_amd('mod_openbook/groupapprovalstatus', 'initializer', [$params]);
 
         $params = new \stdClass();
-        $cm = get_coursemodule_from_instance('privatestudentfolder', $privatestudentfolder->get_instance()->id);
+        $cm = get_coursemodule_from_instance('openbook', $openbook->get_instance()->id);
         $params->cmid = $cm->id;
-        $PAGE->requires->js_call_amd('mod_privatestudentfolder/onlinetextpreview', 'initializer', [$params]);
+        $PAGE->requires->js_call_amd('mod_openbook/onlinetextpreview', 'initializer', [$params]);
     }
 
     /**
@@ -176,7 +176,7 @@ class group extends base {
 
         $this->print_initials_bar();
 
-        echo $OUTPUT->box(get_string('nofilestodisplay', 'privatestudentfolder'), 'fst-italic');
+        echo $OUTPUT->box(get_string('nofilestodisplay', 'openbook'), 'fst-italic');
     }
 
     /**
@@ -200,30 +200,30 @@ class group extends base {
         ];
         $helpicons = [null, null, null, null, null];
 
-        if (has_capability('mod/privatestudentfolder:approve', $this->context) && $this->allfilespage) {
-            if ($this->privatestudentfolder->get_instance()->obtainstudentapproval) {
+        if (has_capability('mod/openbook:approve', $this->context) && $this->allfilespage) {
+            if ($this->openbook->get_instance()->obtainstudentapproval) {
                 $columns[] = 'studentapproval';
-                $headers[] = get_string('studentapproval', 'privatestudentfolder');
-                $helpicons[] = new \help_icon('studentapproval', 'privatestudentfolder');
+                $headers[] = get_string('studentapproval', 'openbook');
+                $helpicons[] = new \help_icon('studentapproval', 'openbook');
             }
 
             // phpcs:disable Squiz.PHP.CommentedOutCode
             /*
             $columns[] = 'teacherapproval';
-            if ($this->privatestudentfolder->get_instance()->obtainstudentapproval) {
-                $headers[] = get_string('obtainstudentapproval', 'privatestudentfolder');
+            if ($this->openbook->get_instance()->obtainstudentapproval) {
+                $headers[] = get_string('obtainstudentapproval', 'openbook');
             } else {
-                $headers[] = get_string('teacherapproval', 'privatestudentfolder');
+                $headers[] = get_string('teacherapproval', 'openbook');
             }
-            $helpicons[] = new \help_icon('teacherapproval', 'privatestudentfolder');
+            $helpicons[] = new \help_icon('teacherapproval', 'openbook');
 
             $columns[] = 'visibleforstudents';
-            $headers[] = get_string('visibleforstudents', 'privatestudentfolder');
+            $headers[] = get_string('visibleforstudents', 'openbook');
             $helpicons[] = null;*/
 
-            $columns[] = 'privatestudentfolderstatus';
-            $headers[] = get_string('privatestudentfolderstatus', 'privatestudentfolder');
-            $helpicons[] = new \help_icon('privatestudentfolderstatus', 'privatestudentfolder');
+            $columns[] = 'openbookstatus';
+            $headers[] = get_string('openbookstatus', 'openbook');
+            $helpicons[] = new \help_icon('openbookstatus', 'openbook');
         }
 
         // Import and upload tables will enhance this list! Import from teamassignments will overwrite it!
@@ -239,7 +239,7 @@ class group extends base {
     public function col_groupmembers($values) {
         $cell = '';
 
-        $groupmembers = $this->privatestudentfolder->get_submissionmembers($values->id);
+        $groupmembers = $this->openbook->get_submissionmembers($values->id);
 
         if (!count($groupmembers)) {
             return $cell;
@@ -261,11 +261,11 @@ class group extends base {
     protected function add_details_tooltip(&$symbol, \stored_file $file) {
         global $DB, $OUTPUT;
 
-        $pubfileid = $DB->get_field('privatestudentfolder_file', 'id', [
-                'privatestudentfolder' => $this->privatestudentfolder->get_instance()->id,
+        $pubfileid = $DB->get_field('openbook_file', 'id', [
+                'openbook' => $this->openbook->get_instance()->id,
                 'fileid' => $file->get_id(),
         ]);
-        [, $approvaldetails] = $this->privatestudentfolder->group_approval($pubfileid);
+        [, $approvaldetails] = $this->openbook->group_approval($pubfileid);
 
         $approved = [];
         $rejected = [];
@@ -290,7 +290,7 @@ class group extends base {
         $status->approved = false;
         $status->rejected = false;
         $status->pending = false;
-        switch ($this->privatestudentfolder->student_approval($file)) {
+        switch ($this->openbook->student_approval($file)) {
             case 1:
                 $status->approved = true;
                 break;
@@ -312,7 +312,7 @@ class group extends base {
 
         $symbol = $symbol . \html_writer::tag(
             'span',
-            $OUTPUT->pix_icon('i/preview', get_string('show_details', 'privatestudentfolder')),
+            $OUTPUT->pix_icon('i/preview', get_string('show_details', 'openbook')),
             $detailsattr
         );
     }

@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 /**
  * Handles file uploads by students!
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -25,13 +25,13 @@
  */
 
 require_once('../../config.php');
-require_once($CFG->dirroot . '/mod/privatestudentfolder/locallib.php');
-require_once($CFG->dirroot . '/mod/privatestudentfolder/upload_form.php');
+require_once($CFG->dirroot . '/mod/openbook/locallib.php');
+require_once($CFG->dirroot . '/mod/openbook/upload_form.php');
 
 $cmid = required_param('cmid', PARAM_INT); // Course Module ID.
 $id = optional_param('id', 0, PARAM_INT); // EntryID.
 
-if (!$cm = get_coursemodule_from_id('privatestudentfolder', $cmid)) {
+if (!$cm = get_coursemodule_from_id('openbook', $cmid)) {
     throw new \moodle_exception('invalidcoursemodule');
 }
 
@@ -43,23 +43,23 @@ require_login($course, false, $cm);
 
 $context = context_module::instance($cm->id);
 
-require_capability('mod/privatestudentfolder:upload', $context);
+require_capability('mod/openbook:upload', $context);
 
-$privatestudentfolder = new privatestudentfolder($cm, $course, $context);
+$openbook = new openbook($cm, $course, $context);
 
-$url = new moodle_url('/mod/privatestudentfolder/upload.php', ['cmid' => $cm->id]);
+$url = new moodle_url('/mod/openbook/upload.php', ['cmid' => $cm->id]);
 if (!empty($id)) {
     $url->param('id', $id);
 }
 $PAGE->set_url($url);
 
-if (!$privatestudentfolder->is_open()) {
+if (!$openbook->is_open()) {
     redirect(
         new moodle_url(
-            '/mod/privatestudentfolder/view.php',
+            '/mod/openbook/view.php',
             ['id' => $cm->id],
         ),
-        get_string('uploadnotopen', 'mod_privatestudentfolder'),
+        get_string('uploadnotopen', 'mod_openbook'),
     );
 }
 
@@ -69,10 +69,10 @@ $entry->id = $USER->id;
 $entry->definition = '';          // Updated later.
 $entry->definitionformat = FORMAT_HTML; // Updated later.
 
-$maxfiles = $privatestudentfolder->get_instance()->maxfiles;
-$maxbytes = $privatestudentfolder->get_instance()->maxbytes;
+$maxfiles = $openbook->get_instance()->maxfiles;
+$maxbytes = $openbook->get_instance()->maxbytes;
 
-$acceptedfiletypes = $privatestudentfolder->get_accepted_types();
+$acceptedfiletypes = $openbook->get_accepted_types();
 
 $definitionoptions = [
         'trusttext' => true,
@@ -94,7 +94,7 @@ $entry = file_prepare_standard_editor(
     'definition',
     $definitionoptions,
     $context,
-    'mod_privatestudentfolder',
+    'mod_openbook',
     'entry',
     $entry->id,
 );
@@ -103,7 +103,7 @@ $entry = file_prepare_standard_filemanager(
     'attachment',
     $attachmentoptions,
     $context,
-    'mod_privatestudentfolder',
+    'mod_openbook',
     'attachment',
     $entry->id
 );
@@ -111,16 +111,16 @@ $entry = file_prepare_standard_filemanager(
 $entry->cmid = $cm->id;
 
 // Create a new form object (found in lib.php).
-$mform = new mod_privatestudentfolder_upload_form(null, [
+$mform = new mod_openbook_upload_form(null, [
         'current' => $entry,
         'cm' => $cm,
-        'privatestudentfolder' => $privatestudentfolder,
+        'openbook' => $openbook,
         'definitionoptions' => $definitionoptions,
         'attachmentoptions' => $attachmentoptions,
 ]);
 
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/mod/privatestudentfolder/view.php', ['id' => $cm->id]));
+    redirect(new moodle_url('/mod/openbook/view.php', ['id' => $cm->id]));
 } else if ($data = $mform->get_data()) {
     // Store updated set of files.
 
@@ -130,7 +130,7 @@ if ($mform->is_cancelled()) {
         'definition',
         $definitionoptions,
         $context,
-        'mod_privatestudentfolder',
+        'mod_openbook',
         'entry',
         $entry->id
     );
@@ -139,7 +139,7 @@ if ($mform->is_cancelled()) {
         'attachment',
         $attachmentoptions,
         $context,
-        'mod_privatestudentfolder',
+        'mod_openbook',
         'attachment',
         $entry->id
     );
@@ -148,7 +148,7 @@ if ($mform->is_cancelled()) {
     $sid = $USER->id;
     $fs = get_file_storage();
 
-    $files = $fs->get_area_files($context->id, 'mod_privatestudentfolder', $filearea, $sid, 'timemodified', false);
+    $files = $fs->get_area_files($context->id, 'mod_openbook', $filearea, $sid, 'timemodified', false);
 
     $values = [];
     foreach ($files as $file) {
@@ -156,7 +156,7 @@ if ($mform->is_cancelled()) {
     }
 
     $filescount = count($values);
-    $rows = $DB->get_records('privatestudentfolder_file', ['privatestudentfolder' => $privatestudentfolder->get_instance()->id,
+    $rows = $DB->get_records('openbook_file', ['openbook' => $openbook->get_instance()->id,
         'userid' => $USER->id]);
 
     // Find new files and store in db.
@@ -171,22 +171,22 @@ if ($mform->is_cancelled()) {
 
         if (!$found) {
             $dataobject = new stdClass();
-            $dataobject->privatestudentfolder = $privatestudentfolder->get_instance()->id;
+            $dataobject->openbook = $openbook->get_instance()->id;
             $dataobject->userid = $USER->id;
             $dataobject->timecreated = $file->get_timecreated();
             $dataobject->fileid = $file->get_id();
             $dataobject->studentapproval = 0;
             $dataobject->teacherapproval = 0;
             $dataobject->filename = $file->get_filename();
-            $dataobject->type = PRIVATESTUDENTFOLDER_MODE_UPLOAD;
+            $dataobject->type = OPENBOOK_MODE_UPLOAD;
 
-            $dataobject->id = $DB->insert_record('privatestudentfolder_file', $dataobject);
+            $dataobject->id = $DB->insert_record('openbook_file', $dataobject);
 
-            if ($privatestudentfolder->get_instance()->notifyfilechange != 0) {
-                privatestudentfolder::send_notification_filechange($cm, $dataobject, null, $privatestudentfolder);
+            if ($openbook->get_instance()->notifyfilechange != 0) {
+                openbook::send_notification_filechange($cm, $dataobject, null, $openbook);
             }
 
-            \mod_privatestudentfolder\event\privatestudentfolder_file_uploaded::create_from_object($cm, $dataobject)->trigger();
+            \mod_openbook\event\openbook_file_uploaded::create_from_object($cm, $dataobject)->trigger();
         }
     }
 
@@ -201,24 +201,24 @@ if ($mform->is_cancelled()) {
         }
 
         if (!$found) {
-            $dataobject = $DB->get_record('privatestudentfolder_file', ['id' => $row->id]);
-            \mod_privatestudentfolder\event\privatestudentfolder_file_deleted::create_from_object($cm, $dataobject)->trigger();
-            $DB->delete_records('privatestudentfolder_file', ['id' => $row->id]);
+            $dataobject = $DB->get_record('openbook_file', ['id' => $row->id]);
+            \mod_openbook\event\openbook_file_deleted::create_from_object($cm, $dataobject)->trigger();
+            $DB->delete_records('openbook_file', ['id' => $row->id]);
         }
     }
 
     // Update competion status - if filescount == 0 => activity not completed, else => activity completed.
 
     $completion = new completion_info($course);
-    if ($completion->is_enabled($cm) && $privatestudentfolder->get_instance()->completionupload) {
+    if ($completion->is_enabled($cm) && $openbook->get_instance()->completionupload) {
         if ($filescount == 0) {
             $completion->update_state($cm, COMPLETION_INCOMPLETE, $USER->id);
         } else {
             $completion->update_state($cm, COMPLETION_COMPLETE, $USER->id);
         }
     }
-    privatestudentfolder::send_all_pending_notifications();
-    redirect(new moodle_url('/mod/privatestudentfolder/view.php', ['id' => $cm->id]));
+    openbook::send_all_pending_notifications();
+    redirect(new moodle_url('/mod/openbook/view.php', ['id' => $cm->id]));
 }
 
 // Load existing files into draft area.

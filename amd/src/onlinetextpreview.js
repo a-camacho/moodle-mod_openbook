@@ -1,4 +1,4 @@
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 /**
  * JS showing detailed infos about user's approval status for group approvals in a modal window
  *
- * @module        mod_privatestudentfolder/onlinetextpreview
+ * @module        mod_openbook/onlinetextpreview
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -24,14 +24,14 @@
  */
 
 /**
- * @module mod_privatestudentfolder/onlinetextpreview
+ * @module mod_openbook/onlinetextpreview
  */
 define(['jquery', 'core/modal_factory', 'core/str', 'core/ajax', 'core/log', 'core/notification'], function($,
         ModalFactory, str, ajax, log, notification) {
 
     /**
      * @constructor
-     * @alias module:mod_privatestudentfolder/Onlinetextpreview
+     * @alias module:mod_openbook/Onlinetextpreview
      */
     var Onlinetextpreview = function() {
         this.cmid = '';
@@ -40,7 +40,7 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/ajax', 'core/log', 'co
     var instance = new Onlinetextpreview();
 
     /**
-     * Initialises the JavaScript for privatestudentfolder's group approval status tooltips
+     * Initialises the JavaScript for openbook's group approval status tooltips
      *
      *
      * @param {Object} config The configuration
@@ -48,7 +48,7 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/ajax', 'core/log', 'co
     instance.initializer = function(config) {
         instance.cmid = config.cmid;
 
-        log.info('Initialize onlinetextpreview JS!', 'mod_privatestudentfolder');
+        log.info('Initialize onlinetextpreview JS!', 'mod_openbook');
 
         // Prepare modal object!
         if (!instance.modal) {
@@ -63,11 +63,11 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/ajax', 'core/log', 'co
             {key: 'onlinetextfilename', component: 'assignsubmission_onlinetext'},
             {key: 'from', component: 'core'}
         ]).done(function(s) {
-            log.info('Done loading strings...', 'mod_privatestudentfolder');
+            log.info('Done loading strings...', 'mod_openbook');
             instance.modalpromise.done(function(modal) {
-                log.info('Done preparing modal', 'mod_privatestudentfolder');
+                log.info('Done preparing modal', 'mod_openbook');
                 instance.modal = modal;
-                $('.path-mod-privatestudentfolder table.privatestudentfolders .onlinetextpreview *').click(function(e) {
+                $('.path-mod-openbook table.openbooks .onlinetextpreview *').click(function(e) {
                     e.stopPropagation();
                     e.preventDefault();
                     var element = $(e.target);
@@ -83,7 +83,7 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/ajax', 'core/log', 'co
 
                     ajax.call([
                         {
-                            methodname: 'mod_privatestudentfolder_get_onlinetextpreview',
+                            methodname: 'mod_openbook_get_onlinetextpreview',
                             args: {itemid: itemid, cmid: instance.cmid},
                             done: function(data) {
                                 var itemname = '';
@@ -102,7 +102,7 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/ajax', 'core/log', 'co
                 });
             });
         }).fail(function(ex) {
-            log.error('Error getting strings: ' + ex, 'mod_privatestudentfolder');
+            log.error('Error getting strings: ' + ex, 'mod_openbook');
         });
     };
 

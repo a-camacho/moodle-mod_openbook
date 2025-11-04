@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,14 +17,14 @@
 /**
  * Base class with common logic for some unit tests.
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_privatestudentfolder\local\tests;
+namespace mod_openbook\local\tests;
 
 use advanced_testcase;
 use stdClass;
@@ -35,13 +35,13 @@ defined('MOODLE_INTERNAL') || die();
 
 // Make sure the code being tested is accessible.
 global $CFG;
-require_once($CFG->dirroot . '/mod/privatestudentfolder/locallib.php'); // Include the code to test!
+require_once($CFG->dirroot . '/mod/openbook/locallib.php'); // Include the code to test!
 require_once($CFG->dirroot . '/mod/assign/tests/generator.php'); // Include assign's generator helper trait!
 
 /**
  * This base class contains common logic for tests.
  *
- * @package   mod_privatestudentfolder
+ * @package   mod_openbook
  * @author    Philipp Hager
  * @copyright 2025 University of Geneva {@link http://www.unige.ch}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -157,28 +157,28 @@ abstract class base extends advanced_testcase {
     }
 
     /**
-     * Convenience function to create a testable instance of a privatestudentfolder instance.
+     * Convenience function to create a testable instance of a openbook instance.
      *
      * @param array $params Array of parameters to pass to the generator
-     * @return privatestudentfolder Testable wrapper around the privatestudentfolder class.
+     * @return openbook Testable wrapper around the openbook class.
      */
     protected function create_instance($params = []) {
-        $generator = self::getDataGenerator()->get_plugin_generator('mod_privatestudentfolder');
+        $generator = self::getDataGenerator()->get_plugin_generator('mod_openbook');
         if (!isset($params['course'])) {
             $params['course'] = $this->course->id;
         }
         $instance = $generator->create_instance($params);
-        $cm = get_coursemodule_from_instance('privatestudentfolder', $instance->id);
+        $cm = get_coursemodule_from_instance('openbook', $instance->id);
         $context = context_module::instance($cm->id);
 
-        return new privatestudentfolder($cm, $this->course, $context);
+        return new openbook($cm, $this->course, $context);
     }
 
     /**
      * Simulate a file upload
      *
      * @param int $userid
-     * @param int $privatestudentfolderid
+     * @param int $openbookid
      * @param string $filename
      * @param string $content
      * @return bool|int
@@ -187,17 +187,17 @@ abstract class base extends advanced_testcase {
      * @throws \file_exception
      * @throws \stored_file_creation_exception
      */
-    protected function create_upload($userid, $privatestudentfolderid, $filename, $content) {
+    protected function create_upload($userid, $openbookid, $filename, $content) {
         global $DB;
 
-        $cm = get_coursemodule_from_instance('privatestudentfolder', $privatestudentfolderid);
+        $cm = get_coursemodule_from_instance('openbook', $openbookid);
         $context = context_module::instance($cm->id);
         $fs = get_file_storage();
 
         // We gotta create a new one!
         $filerecord = (object)[
             'contextid' => $context->id,
-            'component' => 'mod_privatestudentfolder',
+            'component' => 'mod_openbook',
             'filearea' => 'attachment',
             'itemid' => $userid,
             'userid' => $userid,
@@ -207,14 +207,14 @@ abstract class base extends advanced_testcase {
         $file = $fs->create_file_from_string($filerecord, $content);
 
         $dataobject = new stdClass();
-        $dataobject->privatestudentfolder = $privatestudentfolderid;
+        $dataobject->openbook = $openbookid;
         $dataobject->userid = $userid;
         $dataobject->timecreated = $file->get_timecreated();
         $dataobject->fileid = $file->get_id();
         $dataobject->studentapproval = 1; // Upload always means user approves.
         $dataobject->filename = $file->get_filename();
-        $dataobject->type = PRIVATESTUDENTFOLDER_MODE_UPLOAD;
+        $dataobject->type = OPENBOOK_MODE_UPLOAD;
 
-        return $DB->insert_record('privatestudentfolder_file', $dataobject);
+        return $DB->insert_record('openbook_file', $dataobject);
     }
 }

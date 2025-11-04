@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Access control for mod_privatestudentfolder (capabilities definitions)
+ * Access control for mod_openbook (capabilities definitions)
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = [
-        'mod/privatestudentfolder:view' => [
+        'mod/openbook:view' => [
                 'captype' => 'read',
                 'contextlevel' => CONTEXT_MODULE,
                 'archetypes' => [
@@ -38,7 +38,7 @@ $capabilities = [
                 ],
         ],
 
-        'mod/privatestudentfolder:addinstance' => [
+        'mod/openbook:addinstance' => [
                 'riskbitmask' => RISK_XSS,
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_COURSE,
@@ -49,7 +49,7 @@ $capabilities = [
                 'clonepermissionsfrom' => 'moodle/course:manageactivities',
         ],
 
-        'mod/privatestudentfolder:upload' => [
+        'mod/openbook:upload' => [
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_MODULE,
                 'archetypes' => [
@@ -60,7 +60,7 @@ $capabilities = [
                 ],
         ],
 
-        'mod/privatestudentfolder:approve' => [
+        'mod/openbook:approve' => [
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_MODULE,
                 'archetypes' => [
@@ -70,7 +70,7 @@ $capabilities = [
                 ],
         ],
 
-        'mod/privatestudentfolder:grantextension' => [
+        'mod/openbook:grantextension' => [
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_MODULE,
                 'archetypes' => [
@@ -80,7 +80,7 @@ $capabilities = [
                 ],
         ],
 
-        'mod/privatestudentfolder:manageoverrides' => [
+        'mod/openbook:manageoverrides' => [
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_MODULE,
                 'archetypes' => [
@@ -90,7 +90,7 @@ $capabilities = [
                 ],
         ],
 
-        'mod/privatestudentfolder:receiveteachernotification' => [
+        'mod/openbook:receiveteachernotification' => [
             'captype' => 'read',
             'contextlevel' => CONTEXT_MODULE,
             'archetypes' => [

@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,33 +15,33 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Contains event class for a single mod_privatestudentfolder being viewed
+ * Contains event class for a single mod_openbook being viewed
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_privatestudentfolder\event;
+namespace mod_openbook\event;
 
 /**
  * A file was deleted for this event
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class privatestudentfolder_file_imported extends \core\event\base {
+class openbook_file_imported extends \core\event\base {
     /**
      * Init event objecttable
      */
     protected function init() {
         $this->data['crud'] = 'u';
-        $this->data['objecttable'] = 'privatestudentfolder_file';
+        $this->data['objecttable'] = 'openbook_file';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
     }
 
@@ -55,7 +55,7 @@ class privatestudentfolder_file_imported extends \core\event\base {
     public static function file_added(\stdClass $cm, $do) {
         // Trigger overview event.
         $event = self::create([
-            'objectid'      => (int)$do->privatestudentfolder,
+            'objectid'      => (int)$do->openbook,
             'context'       => \context_module::instance($cm->id),
             'relateduserid' => $do->userid,
             'other'         => (array)$do,
@@ -71,7 +71,7 @@ class privatestudentfolder_file_imported extends \core\event\base {
     public function get_description() {
         return "The " . $this->data['other']['typ'] . " with id '" . $this->data['relateduserid'] .
             "' added a file with id '" . $this->data['other']['fileid'] .
-            "' which was imported to privatestudentfolder with id '" . $this->data['other']['privatestudentfolder'] . "'";
+            "' which was imported to openbook with id '" . $this->data['other']['openbook'] . "'";
     }
 
     /**
@@ -80,7 +80,7 @@ class privatestudentfolder_file_imported extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventprivatestudentfolderfileimported', 'privatestudentfolder');
+        return get_string('eventopenbookfileimported', 'openbook');
     }
 
     /**
@@ -89,8 +89,8 @@ class privatestudentfolder_file_imported extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        $moduleid = get_coursemodule_from_instance('privatestudentfolder', $this->data['other']['privatestudentfolder'])->id;
-        return new \moodle_url("/mod/privatestudentfolder/view.php", ['id'  => $moduleid]);
+        $moduleid = get_coursemodule_from_instance('openbook', $this->data['other']['openbook'])->id;
+        return new \moodle_url("/mod/openbook/view.php", ['id'  => $moduleid]);
     }
 
     /**

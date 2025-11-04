@@ -1,5 +1,5 @@
 {{!
-    This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+    This file is part of mod_openbook for Moodle - http://moodle.org/
 
     Moodle is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,9 +15,9 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template mod_privatestudentfolder/approvaltooltip
+    @template mod_openbook/approvaltooltip
 
-    Private Student Folder's approvaltooltip template.
+    Openbook resource folder's approvaltooltip template.
 
     The purpose of this template is to the contents of the approval tool-tip for group approval.
 
@@ -55,11 +55,11 @@
     }
 
 }}
-<div class="privatestudentfolderoverlay" role="tooltip">
+<div class="openbookoverlay" role="tooltip">
     <table class="table table-sm w-100">
         <tr>
             <th>
-                {{#str}}obtaingroupapproval_title, mod_privatestudentfolder{{/str}}
+                {{#str}}obtaingroupapproval_title, mod_openbook{{/str}}
             </th>
             <td>
                 {{#mode}}
@@ -69,27 +69,27 @@
         </tr>
         {{#status}}
             <tr>
-                <th>{{# str }} status, mod_privatestudentfolder {{/ str }}&nbsp;&mdash;&nbsp;{{# str }} total, mod_privatestudentfolder {{/ str }}: </th>
+                <th>{{# str }} status, mod_openbook {{/ str }}&nbsp;&mdash;&nbsp;{{# str }} total, mod_openbook {{/ str }}: </th>
                 <td>
-                    {{#approved}}<i class="fa fa-check fa-fw text-success" title="{{# str }} approved, mod_privatestudentfolder {{/ str }}"></i>{{!
-                    }}<!-- ({{# str }} approved, mod_privatestudentfolder {{/ str }}) -->{{/approved}}
-                    {{#rejected}}<i class="fa fa-times fa-fw text-danger" title="{{# str }} rejected, mod_privatestudentfolder {{/ str }}"></i>{{!
-                    }}<!-- ({{# str }} rejected, mod_privatestudentfolder {{/ str }}) -->{{/rejected}}
-                    {{#pending}}<i class="fa fa-question fa-fw text-warning" title="{{# str }} pending, mod_privatestudentfolder {{/ str }}"></i>{{!
-                    }}<!-- ({{# str }} pending, mod_privatestudentfolder {{/ str }}) -->{{/pending}}
+                    {{#approved}}<i class="fa fa-check fa-fw text-success" title="{{# str }} approved, mod_openbook {{/ str }}"></i>{{!
+                    }}<!-- ({{# str }} approved, mod_openbook {{/ str }}) -->{{/approved}}
+                    {{#rejected}}<i class="fa fa-times fa-fw text-danger" title="{{# str }} rejected, mod_openbook {{/ str }}"></i>{{!
+                    }}<!-- ({{# str }} rejected, mod_openbook {{/ str }}) -->{{/rejected}}
+                    {{#pending}}<i class="fa fa-question fa-fw text-warning" title="{{# str }} pending, mod_openbook {{/ str }}"></i>{{!
+                    }}<!-- ({{# str }} pending, mod_openbook {{/ str }}) -->{{/pending}}
                 </td>
             </tr>
         {{/status}}
         <tr>
-            <th class="mb-0">{{# str }} status, mod_privatestudentfolder {{/ str }}&nbsp;&mdash;&nbsp;{{!
-                }}{{# str }} details, mod_privatestudentfolder {{/ str }}:</th>
+            <th class="mb-0">{{# str }} status, mod_openbook {{/ str }}&nbsp;&mdash;&nbsp;{{!
+                }}{{# str }} details, mod_openbook {{/ str }}:</th>
             <td></td>
         </tr>
         {{#approved}}
             <tr>
                 <td>{{name}}</td>
-                <td><i class="fa fa-check fa-fw text-success" title="{{# str }} approved, mod_privatestudentfolder {{/ str }}"></i> {{!
-                }}<!-- ({{# str }} approved, mod_privatestudentfolder {{/ str }}) -->
+                <td><i class="fa fa-check fa-fw text-success" title="{{# str }} approved, mod_openbook {{/ str }}"></i> {{!
+                }}<!-- ({{# str }} approved, mod_openbook {{/ str }}) -->
                     {{time}}
                 </td>
             </tr>
@@ -97,8 +97,8 @@
         {{#rejected}}
             <tr>
                 <td>{{name}}</td>
-                <td><i class="fa fa-times fa-fw text-danger" title="{{# str }} rejected, mod_privatestudentfolder {{/ str }}"></i>{{!
-                }}<!-- ({{# str }} rejected, mod_privatestudentfolder {{/ str }}) -->
+                <td><i class="fa fa-times fa-fw text-danger" title="{{# str }} rejected, mod_openbook {{/ str }}"></i>{{!
+                }}<!-- ({{# str }} rejected, mod_openbook {{/ str }}) -->
                     {{time}}
                 </td>
             </tr>
@@ -106,8 +106,8 @@
         {{#pending}}
             <tr>
                 <td>{{name}}</td>
-                <td><i class="fa fa-question fa-fw text-warning" title="{{# str }} pending, mod_privatestudentfolder {{/ str }}"></i>{{!
-                }}<!-- ({{# str }} pending, mod_privatestudentfolder {{/ str }}) -->
+                <td><i class="fa fa-question fa-fw text-warning" title="{{# str }} pending, mod_openbook {{/ str }}"></i>{{!
+                }}<!-- ({{# str }} pending, mod_openbook {{/ str }}) -->
                 </td>
             </tr>
         {{/pending}}

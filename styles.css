@@ -1,5 +1,5 @@
 /**
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,9 +15,9 @@
 // If not, see <http://www.gnu.org/licenses/>.
 */
 /**
- * Styles for mod_privatestudentfolder
+ * Styles for mod_openbook
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -26,52 +26,52 @@
 
 /* General Styles */
 
-#page-mod-privatestudentfolder-view div.availability {
+#page-mod-openbook-view div.availability {
     margin-bottom: 10px;
     margin-left: 10px;
 }
 
-#page-mod-privatestudentfolder-view div.availability div {
+#page-mod-openbook-view div.availability div {
     clear: both;
 }
 
-#page-mod-privatestudentfolder-view div.availability span {
+#page-mod-openbook-view div.availability span {
     display: block;
     float: left;
     min-width: 170px;
 }
 
-#page-mod-privatestudentfolder-view div.assignurl {
+#page-mod-openbook-view div.assignurl {
     margin-bottom: 10px;
     margin-left: 10px;
 }
 
-#page-mod-privatestudentfolder-view div.assignurl div.singlebutton,
-#page-mod-privatestudentfolder-view div.assignurl div.singlebutton form,
-#page-mod-privatestudentfolder-view div.assignurl div.singlebutton form div {
+#page-mod-openbook-view div.assignurl div.singlebutton,
+#page-mod-openbook-view div.assignurl div.singlebutton form,
+#page-mod-openbook-view div.assignurl div.singlebutton form div {
     display: inline;
 }
 
-#page-mod-privatestudentfolder-view div.assignurl div.singlebutton form div {
+#page-mod-openbook-view div.assignurl div.singlebutton form div {
     padding-left: 10px;
 }
 
-#page-mod-privatestudentfolder-view fieldset#id_myfiles table {
+#page-mod-openbook-view fieldset#id_myfiles table {
     margin-left: 8px;
 }
 
-#page-mod-privatestudentfolder-view fieldset#id_myfiles table#myfilestable td {
+#page-mod-openbook-view fieldset#id_myfiles table#myfilestable td {
     padding: 5px;
 }
 
 /* scroll table if page is too small */
-#page-mod-privatestudentfolder-view div#id_allfiles {
+#page-mod-openbook-view div#id_allfiles {
     border: 1px solid #d0d3ca;
     margin: 10px;
     padding: 10px;
 }
 
-#page-mod-privatestudentfolder-view div#id_allfiles div.legend {
+#page-mod-openbook-view div#id_allfiles div.legend {
     background-color: #fff;
     font-weight: bold;
     margin-top: -20px;
@@ -79,182 +79,182 @@
     position: absolute;
 }
 
-.path-mod-privatestudentfolder table.privatestudentfolders .onlinetextpreview {
+.path-mod-openbook table.openbooks .onlinetextpreview {
     padding-left: 0.5rem;
 }
 
 /* .. ie */
-.ie#page-mod-privatestudentfolder-view fieldset#id_allfiles {
+.ie#page-mod-openbook-view fieldset#id_allfiles {
     display: block;
 }
 
 /* end scroll */
 
-#page-mod-privatestudentfolder-view fieldset#id_allfiles div div.no-overflow {
+#page-mod-openbook-view fieldset#id_allfiles div div.no-overflow {
     margin-bottom: 1em;
     padding-bottom: 0;
 }
 
-#page-mod-privatestudentfolder-view fieldset#id_allfiles table#attempts {
+#page-mod-openbook-view fieldset#id_allfiles table#attempts {
     margin-bottom: 0;
 }
 
-#page-mod-privatestudentfolder-view fieldset#id_allfiles table#attempts span.timemodified {
+#page-mod-openbook-view fieldset#id_allfiles table#attempts span.timemodified {
     font-size: 0.9em;
     font-style: italic;
 }
 
-#page-mod-privatestudentfolder-view fieldset#id_allfiles {
+#page-mod-openbook-view fieldset#id_allfiles {
     padding-top: 4px;
 }
 
-#page-mod-privatestudentfolder-view div.mod-privatestudentfolder-download-link {
+#page-mod-openbook-view div.mod-openbook-download-link {
     text-align: right;
 }
 
-#page-mod-privatestudentfolder-view div#id_allfiles table#attempts th.c0,
-#page-mod-privatestudentfolder-view div#id_allfiles table#attempts td.c0 {
+#page-mod-openbook-view div#id_allfiles table#attempts th.c0,
+#page-mod-openbook-view div#id_allfiles table#attempts td.c0 {
     text-align: center;
 }
 
-#page-mod-privatestudentfolder-view table.filetable,
-#page-mod-privatestudentfolder-view table.filetable td,
-#page-mod-privatestudentfolder-view table.filetable tr,
-#page-mod-privatestudentfolder-view table.statustable,
-#page-mod-privatestudentfolder-view table.statustable td,
-#page-mod-privatestudentfolder-view table.statustable tr,
-#page-mod-privatestudentfolder-view table.permissionstable,
-#page-mod-privatestudentfolder-view table.permissionstable td,
-#page-mod-privatestudentfolder-view table.permissionstable tr {
+#page-mod-openbook-view table.filetable,
+#page-mod-openbook-view table.filetable td,
+#page-mod-openbook-view table.filetable tr,
+#page-mod-openbook-view table.statustable,
+#page-mod-openbook-view table.statustable td,
+#page-mod-openbook-view table.statustable tr,
+#page-mod-openbook-view table.permissionstable,
+#page-mod-openbook-view table.permissionstable td,
+#page-mod-openbook-view table.permissionstable tr {
     border-width: 0;
     padding: 1px 3px 1px 1px;
     white-space: nowrap;
     height: 2.5rem !important; /* stylelint-disable-line declaration-no-important */
 }
 
-#page-mod-privatestudentfolder-view table.statustable tbody td,
-#page-mod-privatestudentfolder-view table.permissionstable tbody td,
-#page-mod-privatestudentfolder-view table.filetable tbody td {
+#page-mod-openbook-view table.statustable tbody td,
+#page-mod-openbook-view table.permissionstable tbody td,
+#page-mod-openbook-view table.filetable tbody td {
     background-color: transparent;
 }
 
-#page-mod-privatestudentfolder-view table.statustable td,
-#page-mod-privatestudentfolder-view table.filetable td {
+#page-mod-openbook-view table.statustable td,
+#page-mod-openbook-view table.filetable td {
     height: 30px;
 }
 
-#page-mod-privatestudentfolder-view table.statustable {
+#page-mod-openbook-view table.statustable {
     text-align: center;
     width: 100%;
 }
 
-#page-mod-privatestudentfolder-view table.permissionstable {
+#page-mod-openbook-view table.permissionstable {
     text-align: left;
     width: 100%;
 }
 
-#page-mod-privatestudentfolder-view table.permissionstable select {
+#page-mod-openbook-view table.permissionstable select {
     margin-bottom: 0;
 }
 
-#page-mod-privatestudentfolder-view div.withselection select {
+#page-mod-openbook-view div.withselection select {
     margin-left: 4px;
     margin-right: 4px;
 }
 
-#page-mod-privatestudentfolder-view .visibilitysaver {
+#page-mod-openbook-view .visibilitysaver {
     float: right;
 }
 
-#page-mod-privatestudentfolder-view #dates {
+#page-mod-openbook-view #dates {
     border-width: 0;
 }
 
-#page-mod-privatestudentfolder-view #dates .c0 {
+#page-mod-openbook-view #dates .c0 {
     text-align: left;
 }
 
-#page-mod-privatestudentfolder-view #dates td {
+#page-mod-openbook-view #dates td {
     padding-bottom: 0;
     padding-top: 0;
 }
 
-#page-mod-privatestudentfolder-upload .fstatic,
-#page-mod-privatestudentfolder-upload .fstaticlabel {
+#page-mod-openbook-upload .fstatic,
+#page-mod-openbook-upload .fstaticlabel {
     font-style: italic;
 }
 
-#page-mod-privatestudentfolder-view fieldset#id_myfiles .notice {
+#page-mod-openbook-view fieldset#id_myfiles .notice {
     font-style: italic;
     margin-bottom: 6px;
     padding: 8px;
 }
 
-#page-mod-privatestudentfolder-mod select[name=importfrom] option[disabled] {
+#page-mod-openbook-mod select[name=importfrom] option[disabled] {
     color: #999;
 }
 
-.path-mod-privatestudentfolder .privatestudentfolders table tr:nth-of-type(2n+1),
-.path-mod-privatestudentfolder .privatestudentfolders table tr:hover {
+.path-mod-openbook .openbooks table tr:nth-of-type(2n+1),
+.path-mod-openbook .openbooks table tr:hover {
     background-color: transparent;
 }
 
-.path-mod-privatestudentfolder .statustable .approvaldetails {
+.path-mod-openbook .statustable .approvaldetails {
     display: none;
 }
 
-.path-mod-privatestudentfolder .statustable .approvaldetails img {
+.path-mod-openbook .statustable .approvaldetails img {
     cursor: pointer;
 }
 
-.path-mod-privatestudentfolder .privatestudentfolderoverlay table {
+.path-mod-openbook .openbookoverlay table {
     margin-left: auto;
     margin-right: auto;
 }
 
-.path-mod-privatestudentfolder .privatestudentfolderoverlay table td,
-.path-mod-privatestudentfolder .privatestudentfolderoverlay table th {
+.path-mod-openbook .openbookoverlay table td,
+.path-mod-openbook .openbookoverlay table th {
     padding: 0 5px;
 }
 
-.path-mod-privatestudentfolder .privatestudentfolderoverlay table td,
-.path-mod-privatestudentfolder .privatestudentfolderoverlay table th,
-.path-mod-privatestudentfolder .privatestudentfolderoverlay table tr {
+.path-mod-openbook .openbookoverlay table td,
+.path-mod-openbook .openbookoverlay table th,
+.path-mod-openbook .openbookoverlay table tr {
     border: none;
 }
 
-.path-mod-privatestudentfolder .privatestudentfolderoverlay table td.noentries {
+.path-mod-openbook .openbookoverlay table td.noentries {
     text-align: center;
 }
 
-.path-mod-privatestudentfolder .privatestudentfolderoverlay table td.time {
+.path-mod-openbook .openbookoverlay table td.time {
     text-align: right;
 }
 
-.path-mod-privatestudentfolder .modal .modal-body {
+.path-mod-openbook .modal .modal-body {
     max-width: 100%;
     overflow: auto;
 }
 
-.path-mod-privatestudentfolder table#attempts select.needs-approval {
+.path-mod-openbook table#attempts select.needs-approval {
     border: 0.2rem solid var(--info);
 }
 
-.path-mod-privatestudentfolder table#attempts .needs-approval-asterisk {
+.path-mod-openbook table#attempts .needs-approval-asterisk {
     font-size: 1.2rem;
     display: inline-block;
     margin-left: 0.2rem;
 }
 
-.path-mod-privatestudentfolder #id_myfilescontainer #fgroup_id_uploadgrp .col-form-label {
+.path-mod-openbook #id_myfilescontainer #fgroup_id_uploadgrp .col-form-label {
     display: none !important; /* stylelint-disable-line declaration-no-important */
 }
 
-#page-mod-privatestudentfolder-upload #fitem_id_guideline .form-inline {
+#page-mod-openbook-upload #fitem_id_guideline .form-inline {
     align-items: flex-end !important; /* stylelint-disable-line declaration-no-important */
 }
 
-#page-mod-privatestudentfolder-view.allfilespage .activity-header {
+#page-mod-openbook-view.allfilespage .activity-header {
     display: none;
 }
 

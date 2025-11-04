@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,19 +17,19 @@
 /**
  * Contains class for files table listing all files in upload mode
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_privatestudentfolder\local\allfilestable;
+namespace mod_openbook\local\allfilestable;
 
 /**
  * Table showing all uploaded files
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -44,16 +44,16 @@ class upload extends base {
     public function get_columns() {
         [$columns, $headers, $helpicons] = parent::get_columns();
 
-        if (has_capability('mod/privatestudentfolder:approve', $this->context) && $this->allfilespage) {
+        if (has_capability('mod/openbook:approve', $this->context) && $this->allfilespage) {
             if ($this->obtainstudentapproval) {
                 $columns[] = 'studentapproval';
-                $headers[] = get_string('studentapproval', 'privatestudentfolder');
-                $helpicons[] = new \help_icon('studentapproval', 'privatestudentfolder');
+                $headers[] = get_string('studentapproval', 'openbook');
+                $helpicons[] = new \help_icon('studentapproval', 'openbook');
             }
 
-            $columns[] = 'privatestudentfolderstatus';
-            $headers[] = get_string('privatestudentfolderstatus', 'privatestudentfolder');
-            $helpicons[] = new \help_icon('privatestudentfolderstatus', 'privatestudentfolder');
+            $columns[] = 'openbookstatus';
+            $headers[] = get_string('openbookstatus', 'openbook');
+            $helpicons[] = new \help_icon('openbookstatus', 'openbook');
         }
 
         return [$columns, $headers, $helpicons];

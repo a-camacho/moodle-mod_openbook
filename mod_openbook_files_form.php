@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Contains form class for approving privatestudentfolder files
+ * Contains form class for approving openbook files
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -29,45 +29,45 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
 require_once($CFG->dirroot . '/course/moodleform_mod.php');
-require_once($CFG->dirroot . '/mod/privatestudentfolder/locallib.php');
+require_once($CFG->dirroot . '/mod/openbook/locallib.php');
 
 /**
- * Form for displaying and changing approval for privatestudentfolder files
+ * Form for displaying and changing approval for openbook files
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_privatestudentfolder_files_form extends moodleform {
+class mod_openbook_files_form extends moodleform {
     /**
      * Form definition method_exists
      */
     public function definition() {
         global $DB, $PAGE, $OUTPUT, $USER;
 
-        $privatestudentfolder = &$this->_customdata['privatestudentfolder'];
+        $openbook = &$this->_customdata['openbook'];
 
         $mform = $this->_form;
 
-        $mode = $privatestudentfolder->get_mode();
+        $mode = $openbook->get_mode();
 
-        $privatestudentfolderinstance = $privatestudentfolder->get_instance();
+        $openbookinstance = $openbook->get_instance();
 
         $noticestudentstringid = '';
         $noticeteacherid = '';
         $noticemode = '';
 
-        if ($mode == PRIVATESTUDENTFOLDER_MODE_FILEUPLOAD) {
+        if ($mode == OPENBOOK_MODE_FILEUPLOAD) {
             $noticemode = 'upload';
         } else {
             $noticemode = 'import';
         }
 
         /* Check if files are personal */
-        if ($privatestudentfolderinstance->filesarepersonal) {
-            if ($privatestudentfolderinstance->obtainteacherapproval) {
+        if ($openbookinstance->filesarepersonal) {
+            if ($openbookinstance->obtainteacherapproval) {
                 $noticeteacherid = 'teacherrequired';
             } else {
                 $noticeteacherid = 'teachernotrequired';
@@ -75,9 +75,9 @@ class mod_privatestudentfolder_files_form extends moodleform {
 
             $noticestudentstringid = 'filesarepersonal';
         } else {
-            if ($privatestudentfolderinstance->obtainstudentapproval) {
-                if ($mode == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION) {
-                    if ($privatestudentfolderinstance->groupapproval == PRIVATESTUDENTFOLDER_APPROVAL_ALL) {
+            if ($openbookinstance->obtainstudentapproval) {
+                if ($mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
+                    if ($openbookinstance->groupapproval == OPENBOOK_APPROVAL_ALL) {
                         $noticestudentstringid = 'all';
                     } else {
                         $noticestudentstringid = 'one';
@@ -90,7 +90,7 @@ class mod_privatestudentfolder_files_form extends moodleform {
                 $noticestudentstringid = 'studentnotrequired';
             }
 
-            if ($privatestudentfolderinstance->obtainteacherapproval) {
+            if ($openbookinstance->obtainteacherapproval) {
                 $noticeteacherid = 'teacherrequired';
             } else {
                 $noticeteacherid = 'teachernotrequired';
@@ -99,33 +99,33 @@ class mod_privatestudentfolder_files_form extends moodleform {
 
         $stringid = 'notice_' . $noticemode . '_' . $noticestudentstringid . '_' . $noticeteacherid;
 
-        if ($mode == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION) {
-            $headertext = get_string('mygroupfiles', 'privatestudentfolder');
+        if ($mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
+            $headertext = get_string('mygroupfiles', 'openbook');
         } else {
-            $headertext = get_string('myfiles', 'privatestudentfolder');
+            $headertext = get_string('myfiles', 'openbook');
         }
-        $notice = get_string($stringid, 'privatestudentfolder');
+        $notice = get_string($stringid, 'openbook');
 
-        if ($mode == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION) {
-            $notice = get_string('notice_files_imported_group', 'privatestudentfolder') . ' ' . $notice;
-        } else if ($mode == PRIVATESTUDENTFOLDER_MODE_ASSIGN_IMPORT) {
-            $notice = get_string('notice_files_imported', 'privatestudentfolder') . ' ' . $notice;
-        }
-
-        if ($mode != PRIVATESTUDENTFOLDER_MODE_FILEUPLOAD) {
-            $notice .= '<br />' . get_string('notice_changes_possible_in_original', 'privatestudentfolder');
+        if ($mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
+            $notice = get_string('notice_files_imported_group', 'openbook') . ' ' . $notice;
+        } else if ($mode == OPENBOOK_MODE_ASSIGN_IMPORT) {
+            $notice = get_string('notice_files_imported', 'openbook') . ' ' . $notice;
         }
 
-        $table = $privatestudentfolder->get_filestable();
+        if ($mode != OPENBOOK_MODE_FILEUPLOAD) {
+            $notice .= '<br />' . get_string('notice_changes_possible_in_original', 'openbook');
+        }
+
+        $table = $openbook->get_filestable();
 
         $mform->addElement('header', 'myfiles', $headertext);
         $mform->setExpanded('myfiles');
 
-        $PAGE->requires->js_call_amd('mod_privatestudentfolder/filesform', 'initializer', []);
-        $PAGE->requires->js_call_amd('mod_privatestudentfolder/alignrows', 'initializer', []);
+        $PAGE->requires->js_call_amd('mod_openbook/filesform', 'initializer', []);
+        $PAGE->requires->js_call_amd('mod_openbook/alignrows', 'initializer', []);
 
         $noticehtml = html_writer::start_tag('div', ['class' => 'alert alert-info']);
-        $noticehtml .= get_string('notice', 'privatestudentfolder') . ' ' . $notice;
+        $noticehtml .= get_string('notice', 'openbook') . ' ' . $notice;
         $noticehtml .= html_writer::end_tag('div');
 
         $mform->addElement('html', $noticehtml);
@@ -133,37 +133,37 @@ class mod_privatestudentfolder_files_form extends moodleform {
         // Now we do all the table work and return 0 if there's no files to show!
         $table->init();
 
-        $mode = $privatestudentfolder->get_mode();
+        $mode = $openbook->get_mode();
         $timeremaining = false;
-        $privatestudentfolderinstance = $privatestudentfolder->get_instance();
+        $openbookinstance = $openbook->get_instance();
 
-        $extensionduedate = $privatestudentfolder->user_extensionduedate($USER->id);
-        $override = $privatestudentfolder->override_get_currentuserorgroup();
+        $extensionduedate = $openbook->user_extensionduedate($USER->id);
+        $override = $openbook->override_get_currentuserorgroup();
         if ($override && $override->approvalfromdate) {
             $approvalfromdate = $override->approvalfromdate > 0 ? userdate($override->approvalfromdate) : false;
             $approvaltodate = $override->approvaltodate > 0 ? userdate($override->approvaltodate) : false;
         } else {
-            $approvalfromdate = $privatestudentfolderinstance->approvalfromdate > 0 ?
-                userdate($privatestudentfolderinstance->approvalfromdate) : false;
-            $approvaltodate = $privatestudentfolderinstance->approvaltodate > 0 ?
-                userdate($privatestudentfolderinstance->approvaltodate) : false;
+            $approvalfromdate = $openbookinstance->approvalfromdate > 0 ?
+                userdate($openbookinstance->approvalfromdate) : false;
+            $approvaltodate = $openbookinstance->approvaltodate > 0 ?
+                userdate($openbookinstance->approvaltodate) : false;
         }
 
-        if ($privatestudentfolderinstance->duedate > 0 || ($override && $override->submissionoverride && $override->duedate > 0)) {
+        if ($openbookinstance->duedate > 0 || ($override && $override->submissionoverride && $override->duedate > 0)) {
             if ($override && $override->submissionoverride && $override->duedate > 0) {
                 $timeremainingdiff = $override->duedate - time();
             } else {
-                $timeremainingdiff = $privatestudentfolderinstance->duedate - time();
+                $timeremainingdiff = $openbookinstance->duedate - time();
             }
             if ($timeremainingdiff > 0) {
-                $timeremaining = format_time($privatestudentfolderinstance->duedate - time());
+                $timeremaining = format_time($openbookinstance->duedate - time());
             } else {
-                $timeremaining = get_string('overdue', 'privatestudentfolder');
+                $timeremaining = get_string('overdue', 'openbook');
             }
         }
 
         $extensionduedate = $extensionduedate > 0 ? userdate($extensionduedate) : false;
-        if (!$privatestudentfolderinstance->obtainstudentapproval) {
+        if (!$openbookinstance->obtainstudentapproval) {
             $approvalfromdate = false;
             $approvaltodate = false;
         }
@@ -175,22 +175,22 @@ class mod_privatestudentfolder_files_form extends moodleform {
             'approvalfromdate' => $approvalfromdate,
             'approvaltodate' => $approvaltodate,
             'extensionduedate' => $extensionduedate,
-            'assign' => $privatestudentfolder->get_importlink(),
-            'myfilestitle' => $mode == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION
-                                ? get_string('mygroupfiles', 'privatestudentfolder')
-                                : get_string('myfiles', 'privatestudentfolder'),
+            'assign' => $openbook->get_importlink(),
+            'myfilestitle' => $mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION
+                                ? get_string('mygroupfiles', 'openbook')
+                                : get_string('myfiles', 'openbook'),
         ];
         /* TODO : Add PDF.js link to myfiles table */
-        $myfilestable = $OUTPUT->render_from_template('mod_privatestudentfolder/myfiles', $tablecontext);
+        $myfilestable = $OUTPUT->render_from_template('mod_openbook/myfiles', $tablecontext);
         $myfilestable = $myfilestable;
         $mform->addElement('html', $myfilestable);
 
         // Display submit buttons if necessary.
-        if ($privatestudentfolderinstance->obtainstudentapproval) {
+        if ($openbookinstance->obtainstudentapproval) {
             if (!empty($table) && $table->changepossible()) {
                 $buttonarray = [];
 
-                $onclick = 'return confirm("' . get_string('savestudentapprovalwarning', 'privatestudentfolder') . '")';
+                $onclick = 'return confirm("' . get_string('savestudentapprovalwarning', 'openbook') . '")';
 
                 $buttonarray[] = &$mform->createElement(
                     'submit',
@@ -208,7 +208,7 @@ class mod_privatestudentfolder_files_form extends moodleform {
                 $mform->addGroup($buttonarray, 'submitgrp', '', [' '], false);
             } else {
                 $noticehtml = html_writer::start_tag('div', ['class' => 'alert alert-secondary']);
-                $noticehtml .= get_string('approval_timeover', 'privatestudentfolder');
+                $noticehtml .= get_string('approval_timeover', 'openbook');
                 $noticehtml .= html_writer::end_tag('div');
 
                 $mform->addElement('html', $noticehtml);
@@ -216,26 +216,26 @@ class mod_privatestudentfolder_files_form extends moodleform {
         }
 
         if (
-            $privatestudentfolder->get_instance()->mode == PRIVATESTUDENTFOLDER_MODE_UPLOAD
-            && has_capability('mod/privatestudentfolder:upload', $privatestudentfolder->get_context())
+            $openbook->get_instance()->mode == OPENBOOK_MODE_UPLOAD
+            && has_capability('mod/openbook:upload', $openbook->get_context())
         ) {
-            if ($privatestudentfolder->is_open()) {
+            if ($openbook->is_open()) {
                 $buttonarray = [];
 
                 if (empty($table)) { // This means, there are no files shown!
-                    $label = get_string('add_uploads', 'privatestudentfolder');
+                    $label = get_string('add_uploads', 'openbook');
                 } else {
-                    $label = get_string('edit_uploads', 'privatestudentfolder');
+                    $label = get_string('edit_uploads', 'openbook');
                 }
 
                 $buttonarray[] = &$mform->createElement('submit', 'gotoupload', $label);
                 $mform->addGroup($buttonarray, 'uploadgrp', '', [' '], false);
-            } else if (has_capability('mod/privatestudentfolder:upload', $privatestudentfolder->get_context())) {
-                $mform->addElement('static', 'edittimeover', '', get_string('edit_timeover', 'privatestudentfolder'));
+            } else if (has_capability('mod/openbook:upload', $openbook->get_context())) {
+                $mform->addElement('static', 'edittimeover', '', get_string('edit_timeover', 'openbook'));
             }
         }
 
-        $mform->addElement('hidden', 'id', $privatestudentfolder->get_coursemodule()->id);
+        $mform->addElement('hidden', 'id', $openbook->get_coursemodule()->id);
         $mform->setType('id', PARAM_INT);
 
         $mform->disable_form_change_checker();

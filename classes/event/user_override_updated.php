@@ -15,27 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_privatestudentfolder user override updated event.
+ * The mod_openbook user override updated event.
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_privatestudentfolder\event;
+namespace mod_openbook\event;
 
 /**
- * The mod_privatestudentfolder user override updated event class.
+ * The mod_openbook user override updated event class.
  *
  * @property-read array $other {
  *      Extra information about event.
  *
- *      - int privatestudentfolder: the id of the privatestudentfolder.
+ *      - int openbook: the id of the openbook.
  * }
  *
- * @package    mod_privatestudentfolder
+ * @package    mod_openbook
  * @since      Moodle 3.2
  * @copyright  2016 Ilya Tregubov
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -45,7 +45,7 @@ class user_override_updated extends \core\event\base {
      * Init method.
      */
     protected function init() {
-        $this->data['objecttable'] = 'privatestudentfolder_overrides';
+        $this->data['objecttable'] = 'openbook_overrides';
         $this->data['crud'] = 'u';
         $this->data['edulevel'] = self::LEVEL_TEACHING;
     }
@@ -56,7 +56,7 @@ class user_override_updated extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventoverrideupdated', 'mod_privatestudentfolder');
+        return get_string('eventoverrideupdated', 'mod_openbook');
     }
 
     /**
@@ -65,7 +65,7 @@ class user_override_updated extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The user with id '$this->userid' updated the override with id '$this->objectid' for the privatestudentfolder " .
+        return "The user with id '$this->userid' updated the override with id '$this->objectid' for the openbook " .
             "with course module id '$this->contextinstanceid' for the user with id '{$this->relateduserid}'.";
     }
 
@@ -75,7 +75,7 @@ class user_override_updated extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/privatestudentfolder/overrides_edit.php', ['id' => $this->objectid]);
+        return new \moodle_url('/mod/openbook/overrides_edit.php', ['id' => $this->objectid]);
     }
 
     /**
@@ -91,8 +91,8 @@ class user_override_updated extends \core\event\base {
             throw new \coding_exception('The \'relateduserid\' must be set.');
         }
 
-        if (!isset($this->other['privatestudentfolder'])) {
-            throw new \coding_exception('The \'privatestudentfolder\' value must be set in other.');
+        if (!isset($this->other['openbook'])) {
+            throw new \coding_exception('The \'openbook\' value must be set in other.');
         }
     }
 
@@ -100,7 +100,7 @@ class user_override_updated extends \core\event\base {
      * Get objectid mapping
      */
     public static function get_objectid_mapping() {
-        return ['db' => 'privatestudentfolder_overrides', 'restore' => 'privatestudentfolder_override'];
+        return ['db' => 'openbook_overrides', 'restore' => 'openbook_override'];
     }
 
     /**
@@ -108,7 +108,7 @@ class user_override_updated extends \core\event\base {
      */
     public static function get_other_mapping() {
         $othermapped = [];
-        $othermapped['privatestudentfolder'] = ['db' => 'privatestudentfolder', 'restore' => 'privatestudentfolder'];
+        $othermapped['openbook'] = ['db' => 'openbook', 'restore' => 'openbook'];
 
         return $othermapped;
     }

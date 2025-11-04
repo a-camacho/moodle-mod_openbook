@@ -1,4 +1,4 @@
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 /**
  * JS showing detailed infos about user's approval status for group approvals in a modal window
  *
- * @module        mod_privatestudentfolder/groupapprovalstatus
+ * @module        mod_openbook/groupapprovalstatus
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -24,13 +24,13 @@
  */
 
 /**
- * @module mod_privatestudentfolder/groupapprovalstatus
+ * @module mod_openbook/groupapprovalstatus
  */
 define(['jquery', 'core/modal_factory', 'core/str', 'core/templates', 'core/log'], function($, ModalFactory, str, templates, log) {
 
     /**
      * @constructor
-     * @alias module:mod_privatestudentfolder/groupapprovalstatus
+     * @alias module:mod_openbook/groupapprovalstatus
      */
     var Groupapprovalstatus = function() {
         this.id = '';
@@ -39,7 +39,7 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates', 'core/log'
     var instance = new Groupapprovalstatus();
 
     /**
-     * Initialises the JavaScript for privatestudentfolder's group approval status tooltips
+     * Initialises the JavaScript for openbook's group approval status tooltips
      *
      *
      * @param {Object} config The configuration
@@ -48,7 +48,7 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates', 'core/log'
         instance.id = config.id;
         instance.mode = config.mode;
 
-        log.info('Initialize groupapprovalstatus JS!', 'mod_privatestudentfolder');
+        log.info('Initialize groupapprovalstatus JS!', 'mod_openbook');
 
         // Prepare modal object!
         if (!instance.modal) {
@@ -58,12 +58,12 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates', 'core/log'
             });
         }
 
-        str.get_string('filedetails', 'mod_privatestudentfolder').done(function(s) {
-            log.info('Done loading strings...', 'mod_privatestudentfolder');
+        str.get_string('filedetails', 'mod_openbook').done(function(s) {
+            log.info('Done loading strings...', 'mod_openbook');
             instance.modalpromise.done(function(modal) {
-                log.info('Done preparing modal', 'mod_privatestudentfolder');
+                log.info('Done preparing modal', 'mod_openbook');
                 instance.modal = modal;
-                $('.path-mod-privatestudentfolder .statustable .approvaldetails *').click(function(e) {
+                $('.path-mod-openbook .statustable .approvaldetails *').click(function(e) {
                     e.stopPropagation();
                     var element = $(e.target);
 
@@ -118,7 +118,7 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates', 'core/log'
                     };
 
                     // This will call the function to load and render our template.
-                    var promise = templates.render('mod_privatestudentfolder/approvaltooltip', context);
+                    var promise = templates.render('mod_openbook/approvaltooltip', context);
 
                     // How we deal with promise objects is by adding callbacks.
                     promise.done(function(source) {
@@ -133,10 +133,10 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core/templates', 'core/log'
                     });
                 });
                 // Everything is prepared, fade the symbols in!
-                $('.path-mod-privatestudentfolder .statustable .approvaldetails').fadeIn('slow');
+                $('.path-mod-openbook .statustable .approvaldetails').fadeIn('slow');
             });
         }).fail(function(ex) {
-            log.error('Error getting strings: ' + ex, 'mod_privatestudentfolder');
+            log.error('Error getting strings: ' + ex, 'mod_openbook');
         });
     };
 

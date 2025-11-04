@@ -1,5 +1,5 @@
 {{!
-    This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+    This file is part of mod_openbook for Moodle - http://moodle.org/
 
     Moodle is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,15 +15,15 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template mod_privatestudentfolder/overrides
+    @template mod_openbook/overrides
 
-    Private Student Folder's overrides template.
+    Openbook resource folder's overrides template.
 
     The purpose of this template is to the contents of the overrides.
     
     Example context (json):
     {
-        "newoverrideurl": "https://example.com/mod/privatestudentfolder/overrides_edit.php?add=1",
+        "newoverrideurl": "https://example.com/mod/openbook/overrides_edit.php?add=1",
         "addoverridetitle": "Add new override",
         "usergroupcoltitle": "User / Group",
         "overridesempty": false,
@@ -33,16 +33,16 @@
                 "fullname": "Alice Dupont",
                 "submissionoverride": "Submission deadline extended by 3 days",
                 "approvaloverride": "Requires approval from supervisor",
-                "editurl": "https://example.com/mod/privatestudentfolder/overrides_edit.php?id=12",
-                "deleteurl": "https://example.com/mod/privatestudentfolder/overrides_delete.php?id=12"
+                "editurl": "https://example.com/mod/openbook/overrides_edit.php?id=12",
+                "deleteurl": "https://example.com/mod/openbook/overrides_delete.php?id=12"
             },
             {
                 "userurl": "https://example.com/group/view.php?id=5",
                 "fullname": "Group A",
                 "submissionoverride": "Extended deadline",
                 "approvaloverride": "Auto-approved",
-                "editurl": "https://example.com/mod/privatestudentfolder/overrides_edit.php?id=13",
-                "deleteurl": "https://example.com/mod/privatestudentfolder/overrides_delete.php?id=13"
+                "editurl": "https://example.com/mod/openbook/overrides_edit.php?id=13",
+                "deleteurl": "https://example.com/mod/openbook/overrides_delete.php?id=13"
             }
         ]
     }
@@ -60,7 +60,7 @@
         <tbody>
             {{#overridesempty}}
                 <tr>
-                    <td colspan="99">{{#str}}overrides:empty,privatestudentfolder{{/str}}</td>
+                    <td colspan="99">{{#str}}overrides:empty,openbook{{/str}}</td>
                 </tr>
             {{/overridesempty}}
             {{^overridesempty}}

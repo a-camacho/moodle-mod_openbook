@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Generator file for mod_privatestudentfolder's PHPUnit tests
+ * Generator file for mod_openbook's PHPUnit tests
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @category      test
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -26,18 +26,18 @@
  */
 
 /**
- * privatestudentfolder module data generator class
+ * openbook module data generator class
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @category      test
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_privatestudentfolder_generator extends testing_module_generator {
+class mod_openbook_generator extends testing_module_generator {
     /**
-     * Generator method creating a mod_privatestudentfolder instance.
+     * Generator method creating a mod_openbook instance.
      *
      * @param stdClass|array|null $record Optional named array or stdClass containing instance settings.
      * @param array|null $options Optional general options for course module. Can be merged into $record.
@@ -49,7 +49,7 @@ class mod_privatestudentfolder_generator extends testing_module_generator {
         $timecreated = time();
 
         $defaultsettings = [
-                'name' => 'privatestudentfolder',
+                'name' => 'openbook',
                 'intro' => 'Introtext',
                 'introformat' => 1,
                 'alwaysshowdescription' => 1,
@@ -58,11 +58,11 @@ class mod_privatestudentfolder_generator extends testing_module_generator {
                 'duedate' => $timecreated + 604800, // 1 week later!
                 'allowsubmissionsfromdate' => $timecreated,
                 'cutoffdate' => 0,
-                'mode' => 0, // Equals PRIVATESTUDENTFOLDER_MODE_UPLOAD!
+                'mode' => 0, // Equals OPENBOOK_MODE_UPLOAD!
                 'importfrom' => -1,
                 'autoimport' => 1,
                 'obtainstudentapproval' => 1,
-                'groupapproval' => 0, // Equals PRIVATESTUDENTFOLDER_APPROVAL_ALL!
+                'groupapproval' => 0, // Equals OPENBOOK_APPROVAL_ALL!
                 'maxfiles' => 5,
                 'maxbytes' => 2,
                 'allowedfiletypes' => '',

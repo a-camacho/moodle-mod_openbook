@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 /**
  * File containing upload form class.
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -30,9 +30,9 @@ global $CFG;
 require_once($CFG->libdir . '/formslib.php'); // Putting this is as a safety as i got a class not found error.
 
 /**
- * Form to upload files for mod_privatestudentfolder
+ * Form to upload files for mod_openbook
  */
-class mod_privatestudentfolder_upload_form extends moodleform {
+class mod_openbook_upload_form extends moodleform {
     /**
      * Definition of file upload format
      */
@@ -40,34 +40,34 @@ class mod_privatestudentfolder_upload_form extends moodleform {
         $mform = $this->_form;
 
         $currententry = $this->_customdata['current'];
-        $privatestudentfolder = $this->_customdata['privatestudentfolder'];
+        $openbook = $this->_customdata['openbook'];
 
         $attachmentoptions = $this->_customdata['attachmentoptions'];
 
-        if ($privatestudentfolder->get_instance()->obtainteacherapproval) {
-            $text = get_string('published_aftercheck', 'privatestudentfolder');
+        if ($openbook->get_instance()->obtainteacherapproval) {
+            $text = get_string('published_aftercheck', 'openbook');
         } else {
-            $text = get_string('published_immediately', 'privatestudentfolder');
+            $text = get_string('published_immediately', 'openbook');
         }
 
-        $mform->addElement('header', 'myfiles', get_string('myfiles', 'privatestudentfolder'));
+        $mform->addElement('header', 'myfiles', get_string('myfiles', 'openbook'));
 
-        $mform->addElement('static', 'guideline', get_string('guideline', 'privatestudentfolder'), $text);
+        $mform->addElement('static', 'guideline', get_string('guideline', 'openbook'), $text);
 
         $mform->addElement(
             'filemanager',
             'attachment_filemanager',
-            get_string('myfiles', 'privatestudentfolder'),
+            get_string('myfiles', 'openbook'),
             null,
             $attachmentoptions,
         );
 
         // Add notice of allowed file types if they're restricted!
         if (!empty($attachmentoptions['accepted_types']) && $attachmentoptions['accepted_types'] !== '*') {
-            $text = html_writer::tag('p', get_string('filesofthesetypes', 'privatestudentfolder'));
+            $text = html_writer::tag('p', get_string('filesofthesetypes', 'openbook'));
             $text .= html_writer::start_tag('ul');
 
-            $typesets = $privatestudentfolder->get_configured_typesets();
+            $typesets = $openbook->get_configured_typesets();
             foreach ($typesets as $type) {
                 $a = new stdClass();
                 $extensions = file_get_typegroup('extension', $type);
@@ -98,7 +98,7 @@ class mod_privatestudentfolder_upload_form extends moodleform {
         $mform->setType('cmid', PARAM_INT);
 
         // Buttons.
-        $this->add_action_buttons(true, get_string('save_changes', 'privatestudentfolder'));
+        $this->add_action_buttons(true, get_string('save_changes', 'openbook'));
         $this->set_data($currententry);
     }
 }

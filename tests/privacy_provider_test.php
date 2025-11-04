@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit Tests for mod/privatestudentfolder's privacy providers!
+ * Unit Tests for mod/openbook's privacy providers!
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -26,21 +26,21 @@
 
 // phpcs:disable moodle.PHPUnit.TestCaseNames.UnexpectedLevel2NS
 
-namespace mod_privatestudentfolder\local\tests;
+namespace mod_openbook\local\tests;
 
-use mod_privatestudentfolder\privacy\provider;
+use mod_openbook\privacy\provider;
 use context_module;
 use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/mod/privatestudentfolder/locallib.php');
+require_once($CFG->dirroot . '/mod/openbook/locallib.php');
 
 /**
- * Unit Tests for mod/privatestudentfolder's privacy providers! TODO: finish these unit tests here!
+ * Unit Tests for mod/openbook's privacy providers! TODO: finish these unit tests here!
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -67,23 +67,23 @@ final class privacy_provider_test extends base {
     private $user3;
     /** @var stdClass */
     private $teacher1;
-    /** @var privatestudentfolder */
+    /** @var openbook */
     private $pubupload;
-    /** @var privatestudentfolder */
+    /** @var openbook */
     private $pubupload2;
     /** @var \testable_assign */
     private $assign;
     /** @var \testable_assign */
     private $assign2;
-    /** @var privatestudentfolder */
+    /** @var openbook */
     private $pubimport;
     /** @var \testable_assign */
     private $teamassign;
     /** @var \testable_assign */
     private $teamassign2;
-    /** @var privatestudentfolder */
+    /** @var openbook */
     private $pubteamimport;
-    /** @var privatestudentfolder */
+    /** @var openbook */
     private $pubteamimport2;
 
     /**
@@ -128,8 +128,8 @@ final class privacy_provider_test extends base {
         self::getDataGenerator()->create_group_member((object)['userid' => $this->user2->id, 'groupid' => $this->group12->id]);
         self::getDataGenerator()->create_group_member((object)['userid' => $this->user2->id, 'groupid' => $this->group22->id]);
 
-        // Create multiple privatestudentfolder instances.
-        // Private Student Folder with uploads.
+        // Create multiple openbook instances.
+        // Openbook resource folder with uploads.
         $this->pubupload = $this->create_instance([
                 'name' => 'Pub Upload 1',
                 'course' => $this->course1,
@@ -145,15 +145,15 @@ final class privacy_provider_test extends base {
         $this->assign2 = $this->create_assign($this->course1, ['submissiondrafts' => false,
                                                                'assignsubmission_onlinetext_enabled' => true, ]);
 
-        // Private Student Folder with imports.
+        // Openbook resource folder with imports.
         $this->pubimport = $this->create_instance([
                 'name' => 'Pub Import 1',
                 'course' => $this->course1,
-                'mode' => PRIVATESTUDENTFOLDER_MODE_IMPORT,
+                'mode' => OPENBOOK_MODE_IMPORT,
                 'importfrom' => $this->assign->get_instance()->id,
         ]);
 
-        // Private Student Folder with import from teamsubmission.
+        // Openbook resource folder with import from teamsubmission.
         $this->teamassign = $this->create_assign($this->course1, [
                 'name' => 'Teamassign 1',
                 'teamsubmission' => true,
@@ -169,7 +169,7 @@ final class privacy_provider_test extends base {
         $this->pubteamimport = $this->create_instance([
                 'name' => 'Teamimport 1',
                 'course' => $this->course1,
-                'mode' => PRIVATESTUDENTFOLDER_MODE_IMPORT,
+                'mode' => OPENBOOK_MODE_IMPORT,
                 'importfrom' => $this->teamassign->get_instance()->id,
                 'requireallteammemberssubmit' => false,
                 'preventsubmissionnotingroup' => false,
@@ -177,7 +177,7 @@ final class privacy_provider_test extends base {
         $this->pubteamimport2 = $this->create_instance([
                 'name' => 'Teamimport 2',
                 'course' => $this->course2,
-                'mode' => PRIVATESTUDENTFOLDER_MODE_IMPORT,
+                'mode' => OPENBOOK_MODE_IMPORT,
                 'importfrom' => $this->teamassign2->get_instance()->id,
                 'requireallteammemberssubmit' => false,
                 'preventsubmissionnotingroup' => false,
@@ -187,7 +187,7 @@ final class privacy_provider_test extends base {
     /**
      * Test that getting the contexts for a user works.
      *
-     * @covers \mod_privatestudentfolder\privacy\provider::get_contexts_for_userid
+     * @covers \mod_openbook\privacy\provider::get_contexts_for_userid
      * @throws \coding_exception
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -209,13 +209,13 @@ final class privacy_provider_test extends base {
             'upload-no-1.txt',
             'THis is the first upload here!'
         );
-        // User 3 also submits to general assign & uploads in general privatestudentfolder!
+        // User 3 also submits to general assign & uploads in general openbook!
         $this->add_submission($this->user3, $this->assign2, 'Textsubmission for assign2 by user3!', true);
         $this->create_upload(
             $this->user3->id,
             $this->pubupload2->get_instance()->id,
             'upload-no-2.txt',
-            'This is another upload in another privatestudentfolder'
+            'This is another upload in another openbook'
         );
 
         // Then we check, if user 1 appears only in pubimport1, pubupload1 and pubteamimport1!
@@ -247,7 +247,7 @@ final class privacy_provider_test extends base {
     /**
      * Test returning a list of user IDs related to a context.
      *
-     * @covers \mod_privatestudentfolder\privacy\provider::get_users_in_context
+     * @covers \mod_openbook\privacy\provider::get_users_in_context
      * @throws \coding_exception
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -263,36 +263,36 @@ final class privacy_provider_test extends base {
             'This is the first upload here!'
         );
 
-        $uploadcm = get_coursemodule_from_instance('privatestudentfolder', $this->pubupload->get_instance()->id);
+        $uploadcm = get_coursemodule_from_instance('openbook', $this->pubupload->get_instance()->id);
         $uploadctx = context_module::instance($uploadcm->id);
-        $userlist = new \core_privacy\local\request\userlist($uploadctx, 'privatestudentfolder');
+        $userlist = new \core_privacy\local\request\userlist($uploadctx, 'openbook');
         provider::get_users_in_context($userlist);
         $userids = $userlist->get_userids();
         self::assertTrue(in_array($this->user1->id, $userids));
         self::assertFalse(in_array($this->user2->id, $userids));
         self::assertFalse(in_array($this->user3->id, $userids));
 
-        $upload2cm = get_coursemodule_from_instance('privatestudentfolder', $this->pubupload2->get_instance()->id);
+        $upload2cm = get_coursemodule_from_instance('openbook', $this->pubupload2->get_instance()->id);
         $upload2ctx = context_module::instance($upload2cm->id);
-        $userlist2 = new \core_privacy\local\request\userlist($upload2ctx, 'privatestudentfolder');
+        $userlist2 = new \core_privacy\local\request\userlist($upload2ctx, 'openbook');
         provider::get_users_in_context($userlist2);
         $userids2 = $userlist2->get_userids();
         self::assertFalse(in_array($this->user1->id, $userids2));
         self::assertFalse(in_array($this->user2->id, $userids2));
         self::assertFalse(in_array($this->user3->id, $userids2));
 
-        $importcm = get_coursemodule_from_instance('privatestudentfolder', $this->pubimport->get_instance()->id);
+        $importcm = get_coursemodule_from_instance('openbook', $this->pubimport->get_instance()->id);
         $importctx = context_module::instance($importcm->id);
-        $importuserlist = new \core_privacy\local\request\userlist($importctx, 'privatestudentfolder');
+        $importuserlist = new \core_privacy\local\request\userlist($importctx, 'openbook');
         provider::get_users_in_context($importuserlist);
         $importuserids = $importuserlist->get_userids();
         self::assertTrue(in_array($this->user1->id, $importuserids));
         self::assertFalse(in_array($this->user2->id, $importuserids));
         self::assertFalse(in_array($this->user3->id, $importuserids));
 
-        $teamcm = get_coursemodule_from_instance('privatestudentfolder', $this->pubteamimport->get_instance()->id);
+        $teamcm = get_coursemodule_from_instance('openbook', $this->pubteamimport->get_instance()->id);
         $teamctx = context_module::instance($teamcm->id);
-        $teamuserlist = new \core_privacy\local\request\userlist($teamctx, 'privatestudentfolder');
+        $teamuserlist = new \core_privacy\local\request\userlist($teamctx, 'openbook');
         provider::get_users_in_context($teamuserlist);
         $teamuserids = $teamuserlist->get_userids();
         self::assertTrue(in_array($this->user1->id, $teamuserids));
@@ -305,7 +305,7 @@ final class privacy_provider_test extends base {
     /**
      * Test that a student with multiple submissions and grades is returned with the correct data.
      *
-     * @covers \mod_privatestudentfolder\privacy\provider::export_user_data_student
+     * @covers \mod_openbook\privacy\provider::export_user_data_student
      * @return void
      */
     public function test_export_user_data_student(): void {
@@ -318,7 +318,7 @@ final class privacy_provider_test extends base {
     /**
      * Tests the data returned for a teacher.
      *
-     * @covers \mod_privatestudentfolder\privacy\provider::export_user_data_teacher
+     * @covers \mod_openbook\privacy\provider::export_user_data_teacher
      * @return void
      */
     public function test_export_user_data_teacher(): void {
@@ -331,7 +331,7 @@ final class privacy_provider_test extends base {
     /**
      * A test for deleting all user data for a given context.
      *
-     * @covers \mod_privatestudentfolder\privacy\provider::delete_data_for_all_users_in_context
+     * @covers \mod_openbook\privacy\provider::delete_data_for_all_users_in_context
      * @return void
      */
     public function test_delete_data_for_all_users_in_context(): void {
@@ -344,7 +344,7 @@ final class privacy_provider_test extends base {
     /**
      * A test for deleting all user data for one user.
      *
-     * @covers \mod_privatestudentfolder\privacy\provider::delete_data_for_user
+     * @covers \mod_openbook\privacy\provider::delete_data_for_user
      * @return void
      */
     public function test_delete_data_for_user(): void {
@@ -357,7 +357,7 @@ final class privacy_provider_test extends base {
     /**
      * A test for deleting all user data for a bunch of users.
      *
-     * @covers \mod_privatestudentfolder\privacy\provider::delete_data_for_users
+     * @covers \mod_openbook\privacy\provider::delete_data_for_users
      * @return void
      * @throws \coding_exception
      * @throws \dml_exception
@@ -388,95 +388,95 @@ final class privacy_provider_test extends base {
         self::assertEquals(
             2,
             $DB->count_records(
-                'privatestudentfolder_file',
-                ['privatestudentfolder' => $this->pubimport->get_instance()->id]
+                'openbook_file',
+                ['openbook' => $this->pubimport->get_instance()->id]
             )
         );
         self::assertEquals(
             2,
             $DB->count_records(
-                'privatestudentfolder_file',
-                ['privatestudentfolder' => $this->pubteamimport->get_instance()->id]
+                'openbook_file',
+                ['openbook' => $this->pubteamimport->get_instance()->id]
             )
         );
         self::assertEquals(
             2,
             $DB->count_records(
-                'privatestudentfolder_file',
-                ['privatestudentfolder' => $this->pubupload->get_instance()->id]
+                'openbook_file',
+                ['openbook' => $this->pubupload->get_instance()->id]
             )
         );
 
         $userlist = new \core_privacy\local\request\approved_userlist(
             $this->pubimport->get_context(),
-            'privatestudentfolder',
+            'openbook',
             [$this->user1->id]
         );
         provider::delete_data_for_users($userlist);
         self::assertEquals(
             1,
             $DB->count_records(
-                'privatestudentfolder_file',
-                ['privatestudentfolder' => $this->pubimport->get_instance()->id]
+                'openbook_file',
+                ['openbook' => $this->pubimport->get_instance()->id]
             )
         );
         self::assertEquals(
             2,
             $DB->count_records(
-                'privatestudentfolder_file',
-                ['privatestudentfolder' => $this->pubteamimport->get_instance()->id]
+                'openbook_file',
+                ['openbook' => $this->pubteamimport->get_instance()->id]
             )
         );
         self::assertEquals(
             2,
             $DB->count_records(
-                'privatestudentfolder_file',
-                ['privatestudentfolder' => $this->pubupload->get_instance()->id]
+                'openbook_file',
+                ['openbook' => $this->pubupload->get_instance()->id]
             )
         );
         $userlist = new \core_privacy\local\request\approved_userlist(
             $this->pubupload->get_context(),
-            'privatestudentfolder',
+            'openbook',
             [$this->user1->id]
         );
         provider::delete_data_for_users($userlist);
         self::assertEquals(
             1,
             $DB->count_records(
-                'privatestudentfolder_file',
-                ['privatestudentfolder' => $this->pubimport->get_instance()->id]
+                'openbook_file',
+                ['openbook' => $this->pubimport->get_instance()->id]
             )
         );
         self::assertEquals(
             2,
             $DB->count_records(
-                'privatestudentfolder_file',
-                ['privatestudentfolder' => $this->pubteamimport->get_instance()->id]
+                'openbook_file',
+                ['openbook' => $this->pubteamimport->get_instance()->id]
             )
         );
         self::assertEquals(
             1,
             $DB->count_records(
-                'privatestudentfolder_file',
-                ['privatestudentfolder' => $this->pubupload->get_instance()->id]
+                'openbook_file',
+                ['openbook' => $this->pubupload->get_instance()->id]
             )
         );
 
         $userlist = new \core_privacy\local\request\approved_userlist(
             $this->pubteamimport->get_context(),
-            'privatestudentfolder',
+            'openbook',
             [$this->user1->id, $this->user2->id, $this->user3->id]
         );
         provider::delete_data_for_users($userlist);
         $userlist = new \core_privacy\local\request\approved_userlist(
             $this->pubupload->get_context(),
-            'privatestudentfolder',
+            'openbook',
             [$this->user1->id, $this->user2->id, $this->user3->id]
         );
         provider::delete_data_for_users($userlist);
         $userlist = new \core_privacy\local\request\approved_userlist(
             $this->pubimport->get_context(),
-            'privatestudentfolder',
+            'openbook',
             [$this->user1->id, $this->user2->id, $this->user3->id]
         );
         provider::delete_data_for_users($userlist);
@@ -484,22 +484,22 @@ final class privacy_provider_test extends base {
         self::assertEquals(
             0,
             $DB->count_records(
-                'privatestudentfolder_file',
-                ['privatestudentfolder' => $this->pubimport->get_instance()->id]
+                'openbook_file',
+                ['openbook' => $this->pubimport->get_instance()->id]
             )
         );
         self::assertEquals(
             2,
             $DB->count_records(
-                'privatestudentfolder_file',
-                ['privatestudentfolder' => $this->pubteamimport->get_instance()->id]
+                'openbook_file',
+                ['openbook' => $this->pubteamimport->get_instance()->id]
             )
         );
         self::assertEquals(
             0,
             $DB->count_records(
-                'privatestudentfolder_file',
-                ['privatestudentfolder' => $this->pubupload->get_instance()->id],
+                'openbook_file',
+                ['openbook' => $this->pubupload->get_instance()->id],
             )
         );
     }

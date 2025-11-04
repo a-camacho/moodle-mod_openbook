@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Contains much of the logic needed for mod_privatestudentfolder
+ * Contains much of the logic needed for mod_openbook
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -26,46 +26,46 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-define('PRIVATESTUDENTFOLDER_MODE_UPLOAD', 0);
-define('PRIVATESTUDENTFOLDER_MODE_IMPORT', 1);
+define('OPENBOOK_MODE_UPLOAD', 0);
+define('OPENBOOK_MODE_IMPORT', 1);
 // Used in DB to mark online-text-files!
-define('PRIVATESTUDENTFOLDER_MODE_ONLINETEXT', 2);
+define('OPENBOOK_MODE_ONLINETEXT', 2);
 
-define('PRIVATESTUDENTFOLDER_APPROVAL_GROUPAUTOMATIC', -1);
-define('PRIVATESTUDENTFOLDER_APPROVAL_ALL', 0);
-define('PRIVATESTUDENTFOLDER_APPROVAL_SINGLE', 1);
+define('OPENBOOK_APPROVAL_GROUPAUTOMATIC', -1);
+define('OPENBOOK_APPROVAL_ALL', 0);
+define('OPENBOOK_APPROVAL_SINGLE', 1);
 
-define('PRIVATESTUDENTFOLDER_EVENT_TYPE_DUE', 'due');
+define('OPENBOOK_EVENT_TYPE_DUE', 'due');
 
-define('PRIVATESTUDENTFOLDER_FILTER_NOFILTER', 'nofilter');
-define('PRIVATESTUDENTFOLDER_FILTER_ALLFILES', 'allfiles');
-define('PRIVATESTUDENTFOLDER_FILTER_APPROVED', 'approved');
-define('PRIVATESTUDENTFOLDER_FILTER_REJECTED', 'rejected');
-define('PRIVATESTUDENTFOLDER_FILTER_APPROVALREQUIRED', 'approvalrequired');
-define('PRIVATESTUDENTFOLDER_FILTER_NOFILES', 'nofiles');
+define('OPENBOOK_FILTER_NOFILTER', 'nofilter');
+define('OPENBOOK_FILTER_ALLFILES', 'allfiles');
+define('OPENBOOK_FILTER_APPROVED', 'approved');
+define('OPENBOOK_FILTER_REJECTED', 'rejected');
+define('OPENBOOK_FILTER_APPROVALREQUIRED', 'approvalrequired');
+define('OPENBOOK_FILTER_NOFILES', 'nofiles');
 
-define('PRIVATESTUDENTFOLDER_MODE_FILEUPLOAD', 'fileupload');
-define('PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION', 'teamsubmission');
-define('PRIVATESTUDENTFOLDER_MODE_ASSIGN_IMPORT', 'import');
+define('OPENBOOK_MODE_FILEUPLOAD', 'fileupload');
+define('OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION', 'teamsubmission');
+define('OPENBOOK_MODE_ASSIGN_IMPORT', 'import');
 
-define('PRIVATESTUDENTFOLDER_NOTIFY_NONE', 0);
-define('PRIVATESTUDENTFOLDER_NOTIFY_TEACHER', 1);
-define('PRIVATESTUDENTFOLDER_NOTIFY_STUDENT', 2);
-define('PRIVATESTUDENTFOLDER_NOTIFY_ALL', 3);
-define('PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE', 'status');
-define('PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE', 'file');
+define('OPENBOOK_NOTIFY_NONE', 0);
+define('OPENBOOK_NOTIFY_TEACHER', 1);
+define('OPENBOOK_NOTIFY_STUDENT', 2);
+define('OPENBOOK_NOTIFY_ALL', 3);
+define('OPENBOOK_NOTIFY_STATUSCHANGE', 'status');
+define('OPENBOOK_NOTIFY_FILECHANGE', 'file');
 
-require_once($CFG->dirroot . '/mod/privatestudentfolder/mod_privatestudentfolder_allfiles_form.php');
+require_once($CFG->dirroot . '/mod/openbook/mod_openbook_allfiles_form.php');
 
 /**
- * privatestudentfolder class contains much logic used in mod_privatestudentfolder
+ * openbook class contains much logic used in mod_openbook
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class privatestudentfolder {
+class openbook {
     /** @var object instance */
     protected $instance;
     /** @var object context */
@@ -109,24 +109,24 @@ class privatestudentfolder {
             $this->context = context_module::instance($cm->id);
         }
 
-        $this->instance = $DB->get_record("privatestudentfolder", ["id" => $cm->instance]);
+        $this->instance = $DB->get_record("openbook", ["id" => $cm->instance]);
 
         // phpcs:disable Squiz.PHP.CommentedOutCode
         // phpcs:disable moodle.Commenting.InlineComment
         // $this->instance->obtainteacherapproval = !$this->instance->obtainteacherapproval;
 
-        if ($this->instance->mode == PRIVATESTUDENTFOLDER_MODE_IMPORT) {
+        if ($this->instance->mode == OPENBOOK_MODE_IMPORT) {
             $cond = ['id' => $this->instance->importfrom];
             $this->requiregroup = $DB->get_field('assign', 'preventsubmissionnotingroup', $cond);
             $this->teamsubmission = $DB->get_field('assign', 'teamsubmission', $cond);
         }
 
-        if ($this->get_instance()->mode == PRIVATESTUDENTFOLDER_MODE_UPLOAD) {
-            $this->mode = PRIVATESTUDENTFOLDER_MODE_FILEUPLOAD;
+        if ($this->get_instance()->mode == OPENBOOK_MODE_UPLOAD) {
+            $this->mode = OPENBOOK_MODE_FILEUPLOAD;
         } else if ($this->teamsubmission) {
-            $this->mode = PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION;
+            $this->mode = OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION;
         } else {
-            $this->mode = PRIVATESTUDENTFOLDER_MODE_ASSIGN_IMPORT;
+            $this->mode = OPENBOOK_MODE_ASSIGN_IMPORT;
         }
     }
 
@@ -155,20 +155,20 @@ class privatestudentfolder {
         if ($this->show_intro()) {
             if ($this->instance->intro) {
                 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
-                echo format_module_intro('privatestudentfolder', $this->instance, $this->coursemodule->id);
+                echo format_module_intro('openbook', $this->instance, $this->coursemodule->id);
                 echo $OUTPUT->box_end();
             }
         } else {
             if ($this->alwaysshowdescription) {
                 $message = get_string(
                     'allowsubmissionsfromdatesummary',
-                    'privatestudentfolder',
+                    'openbook',
                     userdate($this->instance->allowsubmissionsfromdate)
                 );
             } else {
                 $message = get_string(
                     'allowsubmissionsanddescriptionfromdatesummary',
-                    'privatestudentfolder',
+                    'openbook',
                     userdate($this->instance->allowsubmissionsfromdate)
                 );
             }
@@ -183,34 +183,34 @@ class privatestudentfolder {
         global $USER, $OUTPUT;
 
         // Display availability dates.
-        $textsuffix = ($this->instance->mode == PRIVATESTUDENTFOLDER_MODE_IMPORT) ? "_import" : "_upload";
+        $textsuffix = ($this->instance->mode == OPENBOOK_MODE_IMPORT) ? "_import" : "_upload";
 
         echo $OUTPUT->box_start('generalbox boxaligncenter', 'dates');
         echo '<table>';
         if ($this->instance->allowsubmissionsfromdate) {
-            echo '<tr><td class="c0">' . get_string('allowsubmissionsfromdate' . $textsuffix, 'privatestudentfolder') . ':</td>';
+            echo '<tr><td class="c0">' . get_string('allowsubmissionsfromdate' . $textsuffix, 'openbook') . ':</td>';
             echo '    <td class="c1">' . userdate($this->instance->allowsubmissionsfromdate) . '</td></tr>';
         }
         if ($this->instance->duedate) {
-            echo '<tr><td class="c0">' . get_string('duedate' . $textsuffix, 'privatestudentfolder') . ':</td>';
+            echo '<tr><td class="c0">' . get_string('duedate' . $textsuffix, 'openbook') . ':</td>';
             echo '    <td class="c1">' . userdate($this->instance->duedate) . '</td></tr>';
         }
 
         $extensionduedate = $this->user_extensionduedate($USER->id);
 
         if ($extensionduedate) {
-            echo '<tr><td class="c0">' . get_string('extensionto', 'privatestudentfolder') . ':</td>';
+            echo '<tr><td class="c0">' . get_string('extensionto', 'openbook') . ':</td>';
             echo '    <td class="c1">' . userdate($extensionduedate) . '</td></tr>';
         }
 
         $override = $this->override_get_currentuserorgroup();
         if ($override) {
             if ($override->approvaloverride) {
-                echo '<tr><td class="c0">' . get_string('approvaloverride', 'privatestudentfolder') . ':</td>';
+                echo '<tr><td class="c0">' . get_string('approvaloverride', 'openbook') . ':</td>';
                 echo '    <td class="c1">' . $override->approvaloverride . '</td></tr>';
             }
             if ($override->submissionoverride) {
-                echo '<tr><td class="c0">' . get_string('submissionoverride', 'privatestudentfolder') . ':</td>';
+                echo '<tr><td class="c0">' . get_string('submissionoverride', 'openbook') . ':</td>';
                 echo '    <td class="c1">' . $override->submissionoverride . '</td></tr>';
             }
         }
@@ -227,7 +227,7 @@ class privatestudentfolder {
     public function get_importlink() {
         global $DB, $OUTPUT;
 
-        if ($this->instance->mode == PRIVATESTUDENTFOLDER_MODE_IMPORT) {
+        if ($this->instance->mode == OPENBOOK_MODE_IMPORT) {
             $context = new stdClass();
 
             if ($this->get_instance()->importfrom == -1) {
@@ -255,7 +255,7 @@ class privatestudentfolder {
                     $context->notfound = true;
                 }
             }
-            return $OUTPUT->render_from_template('mod_privatestudentfolder/partial_assignlink', $context);
+            return $OUTPUT->render_from_template('mod_openbook/partial_assignlink', $context);
         }
         return null;
     }
@@ -269,22 +269,22 @@ class privatestudentfolder {
     public function display_uploadlink() {
         global $OUTPUT;
 
-        if ($this->instance->mode == PRIVATESTUDENTFOLDER_MODE_UPLOAD) {
-            if (has_capability('mod/privatestudentfolder:upload', $this->context)) {
+        if ($this->instance->mode == OPENBOOK_MODE_UPLOAD) {
+            if (has_capability('mod/openbook:upload', $this->context)) {
                 if ($this->is_open()) {
                     $url = new moodle_url(
-                        '/mod/privatestudentfolder/upload.php',
+                        '/mod/openbook/upload.php',
                         ['id' => $this->instance->id, 'cmid' => $this->coursemodule->id]
                     );
-                    $label = get_string('edit_uploads', 'privatestudentfolder');
+                    $label = get_string('edit_uploads', 'openbook');
                     $editbutton = $OUTPUT->single_button($url, $label);
 
                     return $editbutton;
                 } else {
-                    return get_string('edit_timeover', 'privatestudentfolder');
+                    return get_string('edit_timeover', 'openbook');
                 }
             } else {
-                return get_string('edit_notcapable', 'privatestudentfolder');
+                return get_string('edit_notcapable', 'openbook');
             }
         }
 
@@ -300,8 +300,8 @@ class privatestudentfolder {
     public function user_extensionduedate($uid) {
         global $DB;
 
-        $extensionduedate = $DB->get_field('privatestudentfolder_extduedates', 'extensionduedate', [
-                'privatestudentfolder' => $this->get_instance()->id,
+        $extensionduedate = $DB->get_field('openbook_extduedates', 'extensionduedate', [
+                'openbook' => $this->get_instance()->id,
                 'userid' => $uid,
         ]);
 
@@ -336,7 +336,7 @@ class privatestudentfolder {
     public function is_open() {
         global $USER;
 
-        if (!has_capability('mod/privatestudentfolder:upload', $this->get_context())) {
+        if (!has_capability('mod/openbook:upload', $this->get_context())) {
             return false;
         }
 
@@ -508,13 +508,13 @@ class privatestudentfolder {
         $currentgroup = groups_get_activity_group($this->get_coursemodule(), true);
 
         // Get all ppl that are allowed to submit assignments.
-        [$esql, $params] = get_enrolled_sql($this->context, 'mod/privatestudentfolder:view', $currentgroup);
+        [$esql, $params] = get_enrolled_sql($this->context, 'mod/openbook:view', $currentgroup);
 
         $allfilespage = $ignoreallfilespage || $this->allfilespage;
 
         if (
-            $allfilespage && (has_capability('mod/privatestudentfolder:approve', $this->context)
-                || has_capability('mod/privatestudentfolder:grantextension', $this->context))
+            $allfilespage && (has_capability('mod/openbook:approve', $this->context)
+                || has_capability('mod/openbook:grantextension', $this->context))
         ) {
             // We can skip the approval-checks for teachers!
             $sql = 'SELECT u.id FROM {user} u ' .
@@ -523,9 +523,9 @@ class privatestudentfolder {
         } else {
             $sql = 'SELECT u.id FROM {user} u ' .
                     'LEFT JOIN (' . $esql . ') eu ON eu.id=u.id ' .
-                    'LEFT JOIN {privatestudentfolder_file} files ON (u.id = files.userid) ' .
+                    'LEFT JOIN {openbook_file} files ON (u.id = files.userid) ' .
                     'WHERE u.deleted = 0 AND eu.id=u.id ' . $customusers .
-                    'AND files.privatestudentfolder = ' . $this->get_instance()->id . ' ';
+                    'AND files.openbook = ' . $this->get_instance()->id . ' ';
 
             $where = '';
             if ($this->get_instance()->obtainteacherapproval == 1) {
@@ -545,7 +545,7 @@ class privatestudentfolder {
             }   // No else {}
                 // Student and teacher have approved.
                 // $where = 'files.teacherapproval = 1 AND files.studentapproval = 1';
-            /*if ($this->get_instance()->mode == PRIVATESTUDENTFOLDER_MODE_UPLOAD) {
+            /*if ($this->get_instance()->mode == OPENBOOK_MODE_UPLOAD) {
                 // Mode upload.
             } else {
                 // phpcs:disable moodle.Commenting.TodoComment
@@ -598,13 +598,13 @@ class privatestudentfolder {
         if ($ignoreallfilespage) {
             $this->allfilespage = true;
         }
-        $uniqueid = \mod_privatestudentfolder\local\allfilestable\base::get_table_uniqueid($this->instance->id);
-        if ($mode == PRIVATESTUDENTFOLDER_MODE_FILEUPLOAD) {
-            $table = new \mod_privatestudentfolder\local\allfilestable\upload($uniqueid . $this->coursemodule->id, $this, $filter);
-        } else if ($mode == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION) {
-            $table = new \mod_privatestudentfolder\local\allfilestable\group($uniqueid, $this, $filter);
+        $uniqueid = \mod_openbook\local\allfilestable\base::get_table_uniqueid($this->instance->id);
+        if ($mode == OPENBOOK_MODE_FILEUPLOAD) {
+            $table = new \mod_openbook\local\allfilestable\upload($uniqueid . $this->coursemodule->id, $this, $filter);
+        } else if ($mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
+            $table = new \mod_openbook\local\allfilestable\group($uniqueid, $this, $filter);
         } else {
-            $table = new \mod_privatestudentfolder\local\allfilestable\import($uniqueid, $this, $filter);
+            $table = new \mod_openbook\local\allfilestable\import($uniqueid, $this, $filter);
         }
         $this->allfilespage = $oldallfilespage;
         return $table;
@@ -616,12 +616,12 @@ class privatestudentfolder {
     public function get_filestable() {
         global $DB;
         $mode = $this->get_mode();
-        if ($mode == PRIVATESTUDENTFOLDER_MODE_FILEUPLOAD) {
-            $table = new \mod_privatestudentfolder\local\filestable\upload($this);
-        } else if ($mode == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION) {
-            $table = new \mod_privatestudentfolder\local\filestable\group($this);
+        if ($mode == OPENBOOK_MODE_FILEUPLOAD) {
+            $table = new \mod_openbook\local\filestable\upload($this);
+        } else if ($mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
+            $table = new \mod_openbook\local\filestable\group($this);
         } else {
-            $table = new \mod_privatestudentfolder\local\filestable\import($this);
+            $table = new \mod_openbook\local\filestable\import($this);
         }
         return $table;
     }
@@ -642,18 +642,18 @@ class privatestudentfolder {
         if ($updatepref) {
             $perpage = optional_param('perpage', 10, PARAM_INT);
             $perpage = ($perpage < 0) ? 10 : $perpage;
-            set_user_preference('mod-privatestudentfolder-perpage-' . $this->instance->id, $perpage);
+            set_user_preference('mod-openbook-perpage-' . $this->instance->id, $perpage);
         }
 
         // Next we get perpage param from database!
-        $perpage = get_user_preferences('mod-privatestudentfolder-perpage-' . $this->instance->id, 10);
+        $perpage = get_user_preferences('mod-openbook-perpage-' . $this->instance->id, 10);
 
-        $filter = optional_param('filter', PRIVATESTUDENTFOLDER_FILTER_NOFILTER, PARAM_ALPHANUMEXT);
+        $filter = optional_param('filter', OPENBOOK_FILTER_NOFILTER, PARAM_ALPHANUMEXT);
 
         $page = optional_param('page', 0, PARAM_INT);
 
         $formattrs = [];
-        $formattrs['action'] = new moodle_url('/mod/privatestudentfolder/view.php', ['allfilespage' => $this->allfilespage]);
+        $formattrs['action'] = new moodle_url('/mod/openbook/view.php', ['allfilespage' => $this->allfilespage]);
         $formattrs['id'] = 'fastg';
         $formattrs['method'] = 'post';
         $formattrs['class'] = 'mform';
@@ -669,17 +669,17 @@ class privatestudentfolder {
                 html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'filter', 'value' => $filter]);
 
         $output .= html_writer::start_tag('fieldset', ['class' => 'clearfix collapsible', 'id' => 'id_allfiles']);
-        $allfiles = get_string('allfiles', 'privatestudentfolder');
-        $publicfiles = get_string('publicfiles', 'privatestudentfolder');
-        $myownfiles = get_string('myownfiles', 'privatestudentfolder');
-        $title = (has_capability('mod/privatestudentfolder:approve', $context)  && $this->allfilespage) ? $allfiles : $publicfiles;
+        $allfiles = get_string('allfiles', 'openbook');
+        $publicfiles = get_string('publicfiles', 'openbook');
+        $myownfiles = get_string('myownfiles', 'openbook');
+        $title = (has_capability('mod/openbook:approve', $context)  && $this->allfilespage) ? $allfiles : $publicfiles;
         $output .= html_writer::tag('legend', $title, ['class' => 'ftoggler h3']);
         $output .= html_writer::start_div('fcontainer clearfix mb-3');
 
-        $f = groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/privatestudentfolder/view.php?id=' . $cm->id, true);
+        $f = groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/openbook/view.php?id=' . $cm->id, true);
 
         /* Download all file submissions button */
-        $mf = new mod_privatestudentfolder_allfiles_form(null, ['form' => $f]);
+        $mf = new mod_openbook_allfiles_form(null, ['form' => $f]);
         $output .= $mf->render();
 
         $table = $this->get_allfilestable($filter);
@@ -694,17 +694,17 @@ class privatestudentfolder {
 
         /* Download all file submissions button */
         $link = html_writer::link(
-            new moodle_url('/mod/privatestudentfolder/view.php', [
+            new moodle_url('/mod/openbook/view.php', [
                 'id' => $this->coursemodule->id,
                 'action' => 'zip',
                 'allfilespage' => $this->allfilespage,
             ]),
-            get_string('downloadall', 'privatestudentfolder'),
+            get_string('downloadall', 'openbook'),
             ['class' => 'btn btn-secondary mb-2 btn-sm']
         );
 
         if (!$norowsfound && !$nofilesfound) {
-            $output .= html_writer::tag('div', $link, ['class' => 'mod-privatestudentfolder-download-link']);
+            $output .= html_writer::tag('div', $link, ['class' => 'mod-openbook-download-link']);
         }
 
         if ($perpage == 0) {
@@ -714,20 +714,20 @@ class privatestudentfolder {
         $output .= $tableoutput;
 
         $options = [];
-        $options['zipusers'] = get_string('zipusers', 'privatestudentfolder');
+        $options['zipusers'] = get_string('zipusers', 'openbook');
 
-        if (has_capability('mod/privatestudentfolder:approve', $context) && $table->totalfiles() > 0  && $this->allfilespage) {
+        if (has_capability('mod/openbook:approve', $context) && $table->totalfiles() > 0  && $this->allfilespage) {
             if ($this->get_instance()->obtainteacherapproval) {
-                $options['approveusers'] = get_string('approveusers', 'privatestudentfolder');
-                $options['rejectusers'] = get_string('rejectusers', 'privatestudentfolder');
+                $options['approveusers'] = get_string('approveusers', 'openbook');
+                $options['rejectusers'] = get_string('rejectusers', 'openbook');
             }
 
             if ($this->get_instance()->obtainstudentapproval) {
-                $options['resetstudentapproval'] = get_string('resetstudentapproval', 'privatestudentfolder');
+                $options['resetstudentapproval'] = get_string('resetstudentapproval', 'openbook');
             }
         }
-        if (has_capability('mod/privatestudentfolder:grantextension', $this->get_context()) && $this->allfilespage) {
-            $options['grantextension'] = get_string('grantextension', 'privatestudentfolder');
+        if (has_capability('mod/openbook:grantextension', $this->get_context()) && $this->allfilespage) {
+            $options['grantextension'] = get_string('grantextension', 'openbook');
         }
 
         if (count($options) > 0 && !$norowsfound && !$nofilesfound) {
@@ -736,29 +736,29 @@ class privatestudentfolder {
             if ($CFG->version >= 2024041400) {
                 $marginstartclass = "ms-1";
             }
-            if (has_capability('mod/privatestudentfolder:approve', $context) && $this->allfilespage) {
+            if (has_capability('mod/openbook:approve', $context) && $this->allfilespage) {
                 $buttons = html_writer::empty_tag('input', [
                         'type' => 'reset',
                         'name' => 'resetvisibility',
-                        'value' => get_string('reset', 'privatestudentfolder'),
+                        'value' => get_string('reset', 'openbook'),
                         'class' => 'visibilitysaver btn btn-secondary ' . $marginstartclass,
                 ]);
 
                 if (
-                    $this->get_instance()->mode == PRIVATESTUDENTFOLDER_MODE_IMPORT &&
+                    $this->get_instance()->mode == OPENBOOK_MODE_IMPORT &&
                         $this->get_instance()->obtainstudentapproval
                 ) {
                     $buttons .= html_writer::empty_tag('input', [
                             'type' => 'submit',
                             'name' => 'savevisibility',
-                            'value' => get_string('saveapproval', 'privatestudentfolder'),
+                            'value' => get_string('saveapproval', 'openbook'),
                             'class' => 'visibilitysaver btn btn-primary',
                     ]);
                 } else {
                     $buttons .= html_writer::empty_tag('input', [
                             'type' => 'submit',
                             'name' => 'savevisibility',
-                            'value' => get_string('saveteacherapproval', 'privatestudentfolder'),
+                            'value' => get_string('saveteacherapproval', 'openbook'),
                             'class' => 'visibilitysaver btn btn-primary',
                     ]);
                 }
@@ -767,12 +767,12 @@ class privatestudentfolder {
             }
 
             $output .= html_writer::start_div('withselection col-7') .
-                 html_writer::span(get_string('withselected', 'privatestudentfolder')) .
+                 html_writer::span(get_string('withselected', 'openbook')) .
                  html_writer::select($options, 'action') .
                  html_writer::empty_tag('input', [
                     'type' => 'submit',
                     'name' => 'submitgo',
-                    'value' => get_string('go', 'privatestudentfolder'),
+                    'value' => get_string('go', 'openbook'),
                     'class' => 'btn btn-primary',
                  ]) . html_writer::end_div() .
                  html_writer::div($buttons, 'col');
@@ -801,7 +801,7 @@ class privatestudentfolder {
 
         // Mini form for setting user preference.
         $formaction = new moodle_url(
-            '/mod/privatestudentfolder/view.php',
+            '/mod/openbook/view.php',
             [
                 'id' => $this->coursemodule->id,
                 'allfilespage' => $this->allfilespage,
@@ -816,9 +816,9 @@ class privatestudentfolder {
         $mform->addElement('hidden', 'updatepref');
         $mform->setDefault('updatepref', 1);
 
-        $mform->addElement('header', 'qgprefs', get_string('optionalsettings', 'privatestudentfolder'));
+        $mform->addElement('header', 'qgprefs', get_string('optionalsettings', 'openbook'));
 
-        $mform->addElement('select', 'perpage', get_string('entiresperpage', 'privatestudentfolder'), [
+        $mform->addElement('select', 'perpage', get_string('entiresperpage', 'openbook'), [
             0 => get_string('all'),
             3 => 3,
             10 => 10,
@@ -828,40 +828,40 @@ class privatestudentfolder {
         ], $attributes);
         $mform->setDefault('perpage', $perpage);
 
-        if (has_capability('mod/privatestudentfolder:approve', $context) && $this->allfilespage) {
+        if (has_capability('mod/openbook:approve', $context) && $this->allfilespage) {
             $filteroptions = [
-                PRIVATESTUDENTFOLDER_FILTER_NOFILTER => get_string(
-                    'filter:' . PRIVATESTUDENTFOLDER_FILTER_NOFILTER,
-                    'privatestudentfolder'
+                OPENBOOK_FILTER_NOFILTER => get_string(
+                    'filter:' . OPENBOOK_FILTER_NOFILTER,
+                    'openbook'
                 ),
-                PRIVATESTUDENTFOLDER_FILTER_ALLFILES => get_string(
-                    'filter:' . PRIVATESTUDENTFOLDER_FILTER_ALLFILES,
-                    'privatestudentfolder'
+                OPENBOOK_FILTER_ALLFILES => get_string(
+                    'filter:' . OPENBOOK_FILTER_ALLFILES,
+                    'openbook'
                 ),
             ];
             if ($this->get_instance()->obtainteacherapproval || $this->get_instance()->obtainstudentapproval) {
                 $filteroptions += [
-                    PRIVATESTUDENTFOLDER_FILTER_APPROVED => get_string(
-                        'filter:' . PRIVATESTUDENTFOLDER_FILTER_APPROVED,
-                        'privatestudentfolder'
+                    OPENBOOK_FILTER_APPROVED => get_string(
+                        'filter:' . OPENBOOK_FILTER_APPROVED,
+                        'openbook'
                     ),
-                    PRIVATESTUDENTFOLDER_FILTER_REJECTED => get_string(
-                        'filter:' . PRIVATESTUDENTFOLDER_FILTER_REJECTED,
-                        'privatestudentfolder'
+                    OPENBOOK_FILTER_REJECTED => get_string(
+                        'filter:' . OPENBOOK_FILTER_REJECTED,
+                        'openbook'
                     ),
-                    PRIVATESTUDENTFOLDER_FILTER_APPROVALREQUIRED => get_string(
-                        'filter:' . PRIVATESTUDENTFOLDER_FILTER_APPROVALREQUIRED,
-                        'privatestudentfolder'
+                    OPENBOOK_FILTER_APPROVALREQUIRED => get_string(
+                        'filter:' . OPENBOOK_FILTER_APPROVALREQUIRED,
+                        'openbook'
                     ),
                 ];
             }
             $filteroptions += [
-                PRIVATESTUDENTFOLDER_FILTER_NOFILES => get_string(
-                    'filter:' . PRIVATESTUDENTFOLDER_FILTER_NOFILES,
-                    'privatestudentfolder'
+                OPENBOOK_FILTER_NOFILES => get_string(
+                    'filter:' . OPENBOOK_FILTER_NOFILES,
+                    'openbook'
                 ),
             ];
-            $mform->addElement('select', 'filter', get_string('filter', 'privatestudentfolder'), $filteroptions, $attributes);
+            $mform->addElement('select', 'filter', get_string('filter', 'openbook'), $filteroptions, $attributes);
             $mform->setDefault('filter', $filter);
         }
         $mform->disable_form_change_checker();
@@ -881,19 +881,19 @@ class privatestudentfolder {
         global $DB;
 
         $conditions = [];
-        $conditions['privatestudentfolder'] = $this->get_instance()->id;
+        $conditions['openbook'] = $this->get_instance()->id;
         $conditions['fileid'] = $fileid;
 
-        $filepermissions = $DB->get_record('privatestudentfolder_file', $conditions);
+        $filepermissions = $DB->get_record('openbook_file', $conditions);
 
         $haspermission = false;
 
         if ($filepermissions) {
             if ($userid != 0) {
-                if ($this->get_instance()->mode == PRIVATESTUDENTFOLDER_MODE_UPLOAD && $filepermissions->userid == $userid) {
+                if ($this->get_instance()->mode == OPENBOOK_MODE_UPLOAD && $filepermissions->userid == $userid) {
                     // Everyone is allowed to view their own files.
                     $haspermission = true;
-                } else if ($this->get_instance()->mode == PRIVATESTUDENTFOLDER_MODE_IMPORT) {
+                } else if ($this->get_instance()->mode == OPENBOOK_MODE_IMPORT) {
                     // If it's a team-submission, we have to check for the group membership!
                     $teamsubmission = $this->teamsubmission;
                     if (!empty($teamsubmission)) {
@@ -921,7 +921,7 @@ class privatestudentfolder {
                     && (!$obtainstudentapproval || $studentapproval == 1)
                 );
             /*
-            if ($this->get_instance()->mode == PRIVATESTUDENTFOLDER_MODE_UPLOAD) {
+            if ($this->get_instance()->mode == OPENBOOK_MODE_UPLOAD) {
                 // Mode upload.
                 if ($this->get_instance()->obtainteacherapproval) {
                     // Need teacher approval.
@@ -956,7 +956,7 @@ class privatestudentfolder {
      * Sets group approval for the specified user and returns current cumulated group approval!
      *
      * @param null|int $approval 0 if rejected, 1 if approved and 'null' if not set!
-     * @param int $pubfileid ID of privatestudentfolder file entry in DB
+     * @param int $pubfileid ID of openbook file entry in DB
      * @param int $userid ID of user to set approval/rejection for
      * @return array cumulated approval for specified file, approving and needed count
      * @throws coding_exception
@@ -972,8 +972,8 @@ class privatestudentfolder {
 
         $approvalforgroupapproval = $approval == 1 ? 1 : 0; // $approval == 2 => $approvalforgroupapproval = 0...
 
-        $record = $DB->get_record('privatestudentfolder_groupapproval', ['fileid' => $pubfileid, 'userid' => $userid]);
-        $filerec = $DB->get_record('privatestudentfolder_file', ['id' => $pubfileid]);
+        $record = $DB->get_record('openbook_groupapproval', ['fileid' => $pubfileid, 'userid' => $userid]);
+        $filerec = $DB->get_record('openbook_file', ['id' => $pubfileid]);
         if (!empty($record)) {
             if ($record->approval === $approvalforgroupapproval) {
                 // Nothing changed, return!
@@ -981,7 +981,7 @@ class privatestudentfolder {
             }
             $record->approval = $approvalforgroupapproval;
             $record->timemodified = time();
-            $DB->update_record('privatestudentfolder_groupapproval', $record);
+            $DB->update_record('openbook_groupapproval', $record);
         } else {
             $record = new stdClass();
             $record->fileid = $pubfileid;
@@ -989,7 +989,7 @@ class privatestudentfolder {
             $record->approval = $approvalforgroupapproval;
             $record->timecreated = time();
             $record->timemodified = $record->timecreated;
-            $record->id = $DB->insert_record('privatestudentfolder_groupapproval', $record);
+            $record->id = $DB->insert_record('openbook_groupapproval', $record);
         }
 
         // Calculate new cumulated studentapproval for caching in file table!
@@ -1002,14 +1002,14 @@ class privatestudentfolder {
             [$usersql, $userparams] = $DB->get_in_or_equal(array_keys($groupmembers), SQL_PARAMS_NAMED, 'user');
             $select = "fileid = :fileid AND approval = :approval AND userid " . $usersql;
             $params = ['fileid' => $pubfileid, 'approval' => 0] + $userparams;
-            if ($DB->record_exists_select('privatestudentfolder_groupapproval', $select, $params)) {
+            if ($DB->record_exists_select('openbook_groupapproval', $select, $params)) {
                 // If anyone rejected it's rejected, no matter what!
                 $approval = 2; // 2 is rejected...
             } else {
-                if ($this->get_instance()->groupapproval == PRIVATESTUDENTFOLDER_APPROVAL_SINGLE) {
+                if ($this->get_instance()->groupapproval == OPENBOOK_APPROVAL_SINGLE) {
                     // If only one has to approve, we check for that!
                     $params['approval'] = 1;
-                    if ($DB->record_exists_select('privatestudentfolder_groupapproval', $select, $params)) {
+                    if ($DB->record_exists_select('openbook_groupapproval', $select, $params)) {
                         $approval = 1;
                     } else {
                         $approval = 0;
@@ -1019,7 +1019,7 @@ class privatestudentfolder {
                     $select = "fileid = :fileid AND approval IS NULL AND userid " . $usersql;
                     $params = ['fileid' => $pubfileid] + $userparams;
                     $approving = $DB->count_records_sql("SELECT count(DISTINCT userid)
-                                                           FROM {privatestudentfolder_groupapproval}
+                                                           FROM {openbook_groupapproval}
                                                           WHERE fileid = :fileid AND approval = 1 AND userid " . $usersql, $params);
                     $stats['approving'] = $approving;
                     $stats['needed'] = count($userparams);
@@ -1038,7 +1038,7 @@ class privatestudentfolder {
 
         // Update approval value and return it!
         $filerec->studentapproval = $approval;
-        $DB->update_record('privatestudentfolder_file', $filerec);
+        $DB->update_record('openbook_file', $filerec);
         $stats['approval'] = $approval;
         return $stats;
     }
@@ -1054,11 +1054,11 @@ class privatestudentfolder {
 
         if (empty($conditions)) {
             static $conditions = [];
-            $conditions['privatestudentfolder'] = $this->get_instance()->id;
+            $conditions['openbook'] = $this->get_instance()->id;
         }
         $conditions['fileid'] = $file->get_id();
 
-        $teacherapproval = $DB->get_field('privatestudentfolder_file', 'teacherapproval', $conditions);
+        $teacherapproval = $DB->get_field('openbook_file', 'teacherapproval', $conditions);
         $obtainteacherapproval = $this->get_instance()->obtainteacherapproval;
         if (!$obtainteacherapproval) {
             return 1;
@@ -1078,11 +1078,11 @@ class privatestudentfolder {
 
         if (empty($conditions)) {
             static $conditions = [];
-            $conditions['privatestudentfolder'] = $this->get_instance()->id;
+            $conditions['openbook'] = $this->get_instance()->id;
         }
         $conditions['fileid'] = $file->get_id();
 
-        $studentapproval = $DB->get_field('privatestudentfolder_file', 'studentapproval', $conditions);
+        $studentapproval = $DB->get_field('openbook_file', 'studentapproval', $conditions);
 
         // $studentapproval = (!is_null($studentapproval)) ? $studentapproval + 1 : null;
 
@@ -1103,7 +1103,7 @@ class privatestudentfolder {
             $availabilityinfo = new \core_availability\info_module($modinfo->get_cm($this->coursemodule->id));
         }
 
-        if ($this->mode != PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION) {
+        if ($this->mode != OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
             throw new coding_exception('Cannot be called if files get uploaded or teamsubmission is deactivated!');
         }
 
@@ -1137,17 +1137,17 @@ class privatestudentfolder {
     /**
      * Gets group approval for the specified file!
      *
-     * @param int $pubfileid ID of privatestudentfolder file entry in DB
+     * @param int $pubfileid ID of openbook file entry in DB
      * @return array cumulated approval for specified file and array with approval details
      */
     public function group_approval($pubfileid) {
         global $DB;
 
-        if ($this->mode != PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION) {
+        if ($this->mode != OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
             throw new coding_exception('Cannot be called if files get uploaded or teamsubmission is deactivated!');
         }
 
-        $filerec = $DB->get_record('privatestudentfolder_file', ['id' => $pubfileid]);
+        $filerec = $DB->get_record('openbook_file', ['id' => $pubfileid]);
 
         // Get group members!
         $groupmembers = $this->get_submissionmembers($filerec->userid);
@@ -1156,7 +1156,7 @@ class privatestudentfolder {
         if (!empty($groupmembers)) {
             [$usersql, $userparams] = $DB->get_in_or_equal(array_keys($groupmembers), SQL_PARAMS_NAMED, 'user');
             $sql = "SELECT u.*, ga.approval, ga.timemodified AS approvaltime, ga.userid, ga.fileid
-                      FROM {privatestudentfolder_groupapproval} ga
+                      FROM {openbook_groupapproval} ga
                  JOIN {user} u ON u.id = ga.userid
                      WHERE  ga.fileid = :fileid AND u.id " . $usersql;
             $params = ['fileid' => $filerec->id] + $userparams;
@@ -1168,15 +1168,15 @@ class privatestudentfolder {
                     $allconfirmed = false;
                     break;
                 }
-                if ($groupapproval == PRIVATESTUDENTFOLDER_APPROVAL_SINGLE && $gd->approval == 1) {
+                if ($groupapproval == OPENBOOK_APPROVAL_SINGLE && $gd->approval == 1) {
                     $studentapproval = 1;
-                } else if ($groupapproval == PRIVATESTUDENTFOLDER_APPROVAL_ALL) {
+                } else if ($groupapproval == OPENBOOK_APPROVAL_ALL) {
                     if ($gd->approval != 1) {
                         $allconfirmed = false;
                     }
                 }
             }
-            if ($groupapproval == PRIVATESTUDENTFOLDER_APPROVAL_ALL && $allconfirmed) {
+            if ($groupapproval == OPENBOOK_APPROVAL_ALL && $allconfirmed) {
                 $studentapproval = 1;
             }
         } else {
@@ -1195,13 +1195,13 @@ class privatestudentfolder {
         global $DB, $USER;
 
         $conditions = [];
-        $conditions['privatestudentfolder'] = $this->get_instance()->id;
+        $conditions['openbook'] = $this->get_instance()->id;
         $conditions['fileid'] = $fileid;
-        $record = $DB->get_record('privatestudentfolder_file', $conditions);
+        $record = $DB->get_record('openbook_file', $conditions);
 
         $allowed = false;
 
-        if (has_capability('mod/privatestudentfolder:approve', $this->get_context())) {
+        if (has_capability('mod/openbook:approve', $this->get_context())) {
             // Teachers has to see the files to know if they can allow them.
             $allowed = true;
         } else if ($this->has_filepermission($fileid, $USER->id)) {
@@ -1213,7 +1213,7 @@ class privatestudentfolder {
             $fs = get_file_storage();
             $file = $fs->get_file_by_id($fileid);
             $itemid = $file->get_itemid();
-            if ($record->type == PRIVATESTUDENTFOLDER_MODE_ONLINETEXT) {
+            if ($record->type == OPENBOOK_MODE_ONLINETEXT) {
                 global $CFG;
 
                 if ($this->get_instance()->importfrom == -1) {
@@ -1244,7 +1244,7 @@ class privatestudentfolder {
                     // We can send the file directly, if it has no resources!
                     send_file($file, $filename, null, 0, false, true, $file->get_mimetype(), false);
                 } else {
-                    $zipfile = tempnam($CFG->dataroot . '/temp/', 'privatestudentfolder_');
+                    $zipfile = tempnam($CFG->dataroot . '/temp/', 'openbook_');
                     if ($zipper->archive_to_pathname($filesforzipping, $zipfile)) {
                         send_temp_file($zipfile, $zipname); // Send file and delete after sending.
                     }
@@ -1254,7 +1254,7 @@ class privatestudentfolder {
             }
             die();
         } else {
-            throw new \moodle_exception('You are not allowed to see this file', 'mod_privatestudentfolder');
+            throw new \moodle_exception('You are not allowed to see this file', 'mod_openbook');
         }
     }
 
@@ -1269,7 +1269,7 @@ class privatestudentfolder {
 
         $cm = $this->get_coursemodule();
 
-        $canapprove = has_capability('mod/privatestudentfolder:approve', $this->get_context());
+        $canapprove = has_capability('mod/openbook:approve', $this->get_context());
         if ($this->get_instance()->importfrom == -1) {
             $teamsubmission = false;
         } else {
@@ -1277,7 +1277,7 @@ class privatestudentfolder {
         }
 
         $conditions = [];
-        $conditions['privatestudentfolder'] = $this->get_instance()->id;
+        $conditions['openbook'] = $this->get_instance()->id;
 
         $filesforzipping = [];
         $fs = get_file_storage();
@@ -1306,7 +1306,7 @@ class privatestudentfolder {
         // Get all files from each user/group.
         foreach ($uploaders as $uploader) {
             $conditions['userid'] = $uploader;
-            $records = $DB->get_records('privatestudentfolder_file', $conditions);
+            $records = $DB->get_records('openbook_file', $conditions);
 
             if (!$teamsubmission) {
                 // Get user firstname/lastname.
@@ -1335,7 +1335,7 @@ class privatestudentfolder {
                     if (key_exists($fileforzipname, $filesforzipping)) {
                         throw new coding_exception('Can\'t overwrite ' . $fileforzipname . '!');
                     }
-                    if ($record->type == PRIVATESTUDENTFOLDER_MODE_ONLINETEXT) {
+                    if ($record->type == OPENBOOK_MODE_ONLINETEXT) {
                         $this->add_onlinetext_to_zipfiles($filesforzipping, $file, $itemname, $fileforzipname, $fs, $itemunique);
                     } else {
                         // Save file name to array for zipping.
@@ -1359,7 +1359,7 @@ class privatestudentfolder {
     private function pack_files($filesforzipping) {
         global $CFG;
         // Create path for new zip file.
-        $tempzip = tempnam($CFG->dataroot . '/temp/', 'privatestudentfolder_');
+        $tempzip = tempnam($CFG->dataroot . '/temp/', 'openbook_');
         // Zip files.
         $zipper = new zip_packer();
         if ($zipper->archive_to_pathname($filesforzipping, $tempzip)) {
@@ -1395,7 +1395,7 @@ class privatestudentfolder {
         // First we get all ressources!
         $resources = $fs->get_directory_files(
             $this->get_context()->id,
-            'mod_privatestudentfolder',
+            'mod_openbook',
             'attachment',
             $file->get_itemid(),
             '/resources/',
@@ -1435,8 +1435,8 @@ class privatestudentfolder {
 
         [$usersql, $params] = $DB->get_in_or_equal($userorgroupids, SQL_PARAMS_NAMED, 'user');
         $params['pubid'] = $this->instance->id;
-        $select = ' privatestudentfolder=:pubid AND userid ' . $usersql;
-        $records = $DB->get_records_select('privatestudentfolder_file', $select, $params);
+        $select = ' openbook=:pubid AND userid ' . $usersql;
+        $records = $DB->get_records_select('openbook_file', $select, $params);
         $files = [];
 
         foreach ($records as $record) {
@@ -1458,7 +1458,7 @@ class privatestudentfolder {
 
         foreach ($files as $fileid => $newfileaction) {
             $x = $DB->get_record(
-                'privatestudentfolder_file',
+                'openbook_file',
                 ['fileid' => $fileid],
                 $fields = "fileid,userid,teacherapproval,id,studentapproval,filename"
             );
@@ -1498,7 +1498,7 @@ class privatestudentfolder {
                     if (
                         $oldstudentapproval != 1 &&
                         $oldstudentapproval != 2 &&
-                        $this->mode != PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION
+                        $this->mode != OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION
                     ) {
                         continue 2;
                     }
@@ -1512,12 +1512,12 @@ class privatestudentfolder {
 
             $user = $DB->get_record('user', ['id' => $x->userid]);
             $group = false;
-            if ($this->mode == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION) {
+            if ($this->mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
                 $group = $x->userid;
             }
 
             $dataforlog = new stdClass();
-            $dataforlog->privatestudentfolder = $this->instance->id;
+            $dataforlog->openbook = $this->instance->id;
             $dataforlog->approval = $logstatus;
             $dataforlog->userid = $USER->id;
             if ($user && !empty($user->id)) {
@@ -1528,7 +1528,7 @@ class privatestudentfolder {
             $dataforlog->fileid = $fileid;
 
             try {
-                \mod_privatestudentfolder\event\privatestudentfolder_approval_changed::approval_changed(
+                \mod_openbook\event\openbook_approval_changed::approval_changed(
                     $this->coursemodule,
                     $dataforlog
                 )->trigger();
@@ -1537,13 +1537,13 @@ class privatestudentfolder {
             }
 
             if ($teacherapprove || $teacherreject) {
-                $DB->set_field('privatestudentfolder_file', 'teacherapproval', $newteacherapproval, ['fileid' => $fileid]);
+                $DB->set_field('openbook_file', 'teacherapproval', $newteacherapproval, ['fileid' => $fileid]);
             } else { // Reset student approval.
-                $DB->set_field('privatestudentfolder_file', 'studentapproval', 0, ['fileid' => $fileid]);
-                if ($this->mode == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION) {
-                    $groupapprovals = $DB->get_records('privatestudentfolder_groupapproval', ['fileid' => $x->id]);
+                $DB->set_field('openbook_file', 'studentapproval', 0, ['fileid' => $fileid]);
+                if ($this->mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
+                    $groupapprovals = $DB->get_records('openbook_groupapproval', ['fileid' => $x->id]);
                     foreach ($groupapprovals as $groupapproval) {
-                        $DB->set_field('privatestudentfolder_groupapproval', 'approval', null, ['id' => $groupapproval->id]);
+                        $DB->set_field('openbook_groupapproval', 'approval', null, ['id' => $groupapproval->id]);
                     }
                 }
             }
@@ -1562,7 +1562,7 @@ class privatestudentfolder {
     public function importfiles() {
         global $DB;
 
-        if ($this->instance->mode == PRIVATESTUDENTFOLDER_MODE_IMPORT) {
+        if ($this->instance->mode == OPENBOOK_MODE_IMPORT) {
             $assign = $DB->get_record('assign', ['id' => $this->instance->importfrom]);
             $assignmoduleid = $DB->get_field('modules', 'id', ['name' => 'assign']);
             $assigncm = $DB->get_record('course_modules', [
@@ -1620,16 +1620,16 @@ class privatestudentfolder {
             }
 
             $conditions = [];
-            $conditions['privatestudentfolder'] = $this->get_instance()->id;
+            $conditions['openbook'] = $this->get_instance()->id;
             if (empty($assignment->get_instance()->teamsubmission)) {
                 $conditions['userid'] = $submission->userid;
             } else {
                 $conditions['userid'] = $submission->groupid;
             }
             // We look for regular imported files here!
-            $conditions['type'] = PRIVATESTUDENTFOLDER_MODE_IMPORT;
+            $conditions['type'] = OPENBOOK_MODE_IMPORT;
 
-            $oldpubfiles = $DB->get_records('privatestudentfolder_file', $conditions);
+            $oldpubfiles = $DB->get_records('openbook_file', $conditions);
 
             foreach ($oldpubfiles as $oldpubfile) {
                 if (in_array($oldpubfile->filesourceid, $assignfileids)) {
@@ -1637,27 +1637,27 @@ class privatestudentfolder {
                     unset($assignfileids[$oldpubfile->filesourceid]);
                 } else {
                     // File has been removed from assign.
-                    // Remove from privatestudentfolder (file and db entry).
+                    // Remove from openbook (file and db entry).
                     if ($file = $fs->get_file_by_id($oldpubfile->fileid)) {
                         $file->delete();
                     }
 
                     $conditions['id'] = $oldpubfile->id;
-                    $dataobject = $DB->get_record('privatestudentfolder_file', ['id' => $conditions['id']]);
+                    $dataobject = $DB->get_record('openbook_file', ['id' => $conditions['id']]);
                     $cm = $this->coursemodule;
-                    \mod_privatestudentfolder\event\privatestudentfolder_file_deleted::create_from_object(
+                    \mod_openbook\event\openbook_file_deleted::create_from_object(
                         $cm,
                         $dataobject
                     )->trigger();
-                    $DB->delete_records('privatestudentfolder_file', $conditions);
+                    $DB->delete_records('openbook_file', $conditions);
                 }
             }
 
-            // Add new files to privatestudentfolder.
+            // Add new files to openbook.
             foreach ($assignfileids as $assignfileid) {
                 $newfilerecord = new stdClass();
                 $newfilerecord->contextid = $this->get_context()->id;
-                $newfilerecord->component = 'mod_privatestudentfolder';
+                $newfilerecord->component = 'mod_openbook';
                 $newfilerecord->filearea = 'attachment';
                 if (empty($assignment->get_instance()->teamsubmission)) {
                     $newfilerecord->itemid = $submission->userid;
@@ -1669,7 +1669,7 @@ class privatestudentfolder {
                     $newfile = $fs->create_file_from_storedfile($newfilerecord, $assignfiles[$assignfileid]);
 
                     $dataobject = new stdClass();
-                    $dataobject->privatestudentfolder = $this->get_instance()->id;
+                    $dataobject->openbook = $this->get_instance()->id;
                     $importtype = 'user';
                     if (empty($assignment->get_instance()->teamsubmission)) {
                         $dataobject->userid = $submission->userid;
@@ -1682,18 +1682,18 @@ class privatestudentfolder {
                     $dataobject->filesourceid = $assignfileid;
                     $dataobject->filename = $newfile->get_filename();
                     $dataobject->contenthash = "666";
-                    $dataobject->type = PRIVATESTUDENTFOLDER_MODE_IMPORT;
+                    $dataobject->type = OPENBOOK_MODE_IMPORT;
 
-                    $dataobject->id = $DB->insert_record('privatestudentfolder_file', $dataobject);
+                    $dataobject->id = $DB->insert_record('openbook_file', $dataobject);
                     $dataobject->typ = $importtype;
-                    \mod_privatestudentfolder\event\privatestudentfolder_file_imported::file_added(
+                    \mod_openbook\event\openbook_file_imported::file_added(
                         $assigncm,
                         $dataobject
                     )->trigger();
 
                     if ($this->get_instance()->notifyfilechange != 0) {
                         $cm = get_coursemodule_from_instance(
-                            'privatestudentfolder',
+                            'openbook',
                             $this->get_instance()->id,
                             0,
                             false,
@@ -1718,7 +1718,7 @@ class privatestudentfolder {
      * @throws coding_exception
      */
     protected function import_assign_onlinetexts($assigncm, $assigncontext) {
-        if ($this->get_instance()->mode != PRIVATESTUDENTFOLDER_MODE_IMPORT) {
+        if ($this->get_instance()->mode != OPENBOOK_MODE_IMPORT) {
             return;
         }
 
@@ -1730,14 +1730,14 @@ class privatestudentfolder {
      *
      * @param stdClass $assigncm Assign's coursemodule object
      * @param stdClass $assigncontext Assign's context object
-     * @param int $privatestudentfolderid Private Student Folder's instance ID
-     * @param int $contextid Private Student Folder's context ID
+     * @param int $openbookid Openbook resource folder's instance ID
+     * @param int $contextid Openbook resource folder's context ID
      * @param int $submissionid (optional) If set, only process this submission, else process all submissions
      */
     public static function update_assign_onlinetext(
         $assigncm,
         $assigncontext,
-        $privatestudentfolderid,
+        $openbookid,
         $contextid,
         $submissionid = 0
     ) {
@@ -1749,8 +1749,8 @@ class privatestudentfolder {
         $assigncourse = $DB->get_record('course', ['id' => $assigncm->course]);
         $assignment = new assign($assigncontext, $assigncm, $assigncourse);
         $teamsubmission = $assignment->get_instance()->teamsubmission;
-        $cm = get_coursemodule_from_instance('privatestudentfolder', $privatestudentfolderid, 0, false, MUST_EXIST);
-        $privatestudentfolder = new privatestudentfolder($cm);
+        $cm = get_coursemodule_from_instance('openbook', $openbookid, 0, false, MUST_EXIST);
+        $openbook = new openbook($cm);
 
         $currentonlinetexts = [];
         if (!empty($submissionid)) {
@@ -1761,9 +1761,9 @@ class privatestudentfolder {
         } else {
             $records = $DB->get_records('assignsubmission_onlinetext', ['assignment' => $assigncm->instance]);
             $currentonlinetexts = $DB->get_records(
-                'privatestudentfolder_file',
-                ['privatestudentfolder' => $privatestudentfolderid,
-                                                    'type' => PRIVATESTUDENTFOLDER_MODE_ONLINETEXT]
+                'openbook_file',
+                ['openbook' => $openbookid,
+                                                    'type' => OPENBOOK_MODE_ONLINETEXT]
             );
         }
         $filename = get_string('onlinetextfilename', 'assignsubmission_onlinetext');
@@ -1786,7 +1786,7 @@ class privatestudentfolder {
             foreach ($fsfiles as $file) {
                 $filerecord = new \stdClass();
                 $filerecord->contextid = $contextid;
-                $filerecord->component = 'mod_privatestudentfolder';
+                $filerecord->component = 'mod_openbook';
                 $filerecord->filearea = 'attachment';
                 $filerecord->itemid = $itemid;
                 $filerecord->filepath = '/resources/';
@@ -1815,7 +1815,7 @@ class privatestudentfolder {
             // Now we delete old resource-files, which are no longer present!
             $resources = $fs->get_directory_files(
                 $contextid,
-                'mod_privatestudentfolder',
+                'mod_openbook',
                 'attachment',
                 $itemid,
                 '/resources/',
@@ -1845,14 +1845,14 @@ class privatestudentfolder {
             $submissioncontent = '<!DOCTYPE html><html>' . $head . '<body>' . $formattedtext . '</body></html>';
 
             // Does the file exist... let's check it!
-            $pathhash = $fs->get_pathname_hash($contextid, 'mod_privatestudentfolder', 'attachment', $itemid, '/', $filename);
+            $pathhash = $fs->get_pathname_hash($contextid, 'mod_openbook', 'attachment', $itemid, '/', $filename);
 
             $conditions = [
-                    'privatestudentfolder' => $privatestudentfolderid,
+                    'openbook' => $openbookid,
                     'userid' => $itemid,
-                    'type' => PRIVATESTUDENTFOLDER_MODE_ONLINETEXT,
+                    'type' => OPENBOOK_MODE_ONLINETEXT,
             ];
-            $pubfile = $DB->get_record('privatestudentfolder_file', $conditions, '*', IGNORE_MISSING);
+            $pubfile = $DB->get_record('openbook_file', $conditions, '*', IGNORE_MISSING);
             if ($pubfile && isset($currentonlinetexts[$pubfile->id])) {
                 unset($currentonlinetexts[$pubfile->id]);
             }
@@ -1862,11 +1862,11 @@ class privatestudentfolder {
                 if (empty($formattedtext)) {
                     // The onlinetext was empty, delete the file!
                     if ($pubfile) {
-                        \mod_privatestudentfolder\event\privatestudentfolder_file_deleted::create_from_object(
+                        \mod_openbook\event\openbook_file_deleted::create_from_object(
                             $assigncm,
                             $pubfile
                         )->trigger();
-                        $DB->delete_records('privatestudentfolder_file', $conditions);
+                        $DB->delete_records('openbook_file', $conditions);
                     }
                     $file->delete();
                 } else if (
@@ -1895,7 +1895,7 @@ class privatestudentfolder {
                 // We gotta create a new one!
                 $newfilerecord = new stdClass();
                 $newfilerecord->contextid = $contextid;
-                $newfilerecord->component = 'mod_privatestudentfolder';
+                $newfilerecord->component = 'mod_openbook';
                 $newfilerecord->filearea = 'attachment';
                 $newfilerecord->itemid = $itemid;
                 $newfilerecord->filename = $filename;
@@ -1904,8 +1904,8 @@ class privatestudentfolder {
                 if (!$pubfile) {
                     $pubfile = new stdClass();
                     $pubfile->userid = $itemid;
-                    $pubfile->type = PRIVATESTUDENTFOLDER_MODE_ONLINETEXT;
-                    $pubfile->privatestudentfolder = $privatestudentfolderid;
+                    $pubfile->type = OPENBOOK_MODE_ONLINETEXT;
+                    $pubfile->openbook = $openbookid;
                 }
                 // The file has been updated, so we set the new time.
                 $pubfile->timecreated = time();
@@ -1917,23 +1917,23 @@ class privatestudentfolder {
                     $dataobject->typ = $importtype;
                     $dataobject->itemid = $itemid;
                     $dataobject->update = true;
-                    \mod_privatestudentfolder\event\privatestudentfolder_file_imported::file_added(
+                    \mod_openbook\event\openbook_file_imported::file_added(
                         $assigncm,
                         $dataobject
                     )->trigger();
-                    $DB->update_record('privatestudentfolder_file', $pubfile);
+                    $DB->update_record('openbook_file', $pubfile);
                 } else {
                     $dataobject = $pubfile;
-                    $dataobject->id = $DB->insert_record('privatestudentfolder_file', $pubfile);
+                    $dataobject->id = $DB->insert_record('openbook_file', $pubfile);
                     $dataobject->typ = $importtype;
                     $dataobject->itemid = $itemid;
-                    \mod_privatestudentfolder\event\privatestudentfolder_file_imported::file_added(
+                    \mod_openbook\event\openbook_file_imported::file_added(
                         $assigncm,
                         $dataobject
                     )->trigger();
                 }
 
-                if ($privatestudentfolder->get_instance()->notifyfilechange != 0) {
+                if ($openbook->get_instance()->notifyfilechange != 0) {
                     self::send_notification_filechange($cm, $dataobject);
                 }
             }
@@ -1944,11 +1944,11 @@ class privatestudentfolder {
             $resource = $fs->get_file_by_id($pubfile->fileid);
             if ($resource && $resource->get_itemid() == $pubfile->userid) {
                 $resource->delete();
-                \mod_privatestudentfolder\event\privatestudentfolder_file_deleted::create_from_object(
+                \mod_openbook\event\openbook_file_deleted::create_from_object(
                     $assigncm,
                     $pubfile
                 )->trigger();
-                $DB->delete_records('privatestudentfolder_file', ['id' => $pubfile->id]);
+                $DB->delete_records('openbook_file', ['id' => $pubfile->id]);
             }
         }
     }
@@ -1958,9 +1958,9 @@ class privatestudentfolder {
      * @param stdClass $cm coursemodule
      * @param object $userfrom who cahnged the approval status
      * @param string $newstatus whats the new status
-     * @param object $pubfile the privatestudentfolder-file on which the status change took place
-     * @param string $pubid id of the privatestudentfolder
-     * @param null|privatestudentfolder $privatestudentfolder the privatestudentfolder instance
+     * @param object $pubfile the openbook-file on which the status change took place
+     * @param string $pubid id of the openbook
+     * @param null|openbook $openbook the openbook instance
      * @throws coding_exception
      */
     public static function send_notification_statuschange(
@@ -1969,23 +1969,23 @@ class privatestudentfolder {
         $newstatus,
         $pubfile,
         $pubid,
-        $privatestudentfolder = null
+        $openbook = null
     ) {
         global $CFG, $DB;
         $sm = get_string_manager();
 
-        if (!$privatestudentfolder) {
-            $privatestudentfolder = new privatestudentfolder($cm);
+        if (!$openbook) {
+            $openbook = new openbook($cm);
         }
 
-        $notifyfilechange = $privatestudentfolder->get_instance()->notifyfilechange;
+        $notifyfilechange = $openbook->get_instance()->notifyfilechange;
         $receivers = [];
-        if ($notifyfilechange == PRIVATESTUDENTFOLDER_NOTIFY_TEACHER || $notifyfilechange == PRIVATESTUDENTFOLDER_NOTIFY_ALL) {
-            $receivers = $privatestudentfolder->get_graders($userfrom);
+        if ($notifyfilechange == OPENBOOK_NOTIFY_TEACHER || $notifyfilechange == OPENBOOK_NOTIFY_ALL) {
+            $receivers = $openbook->get_graders($userfrom);
         }
-        if ($notifyfilechange == PRIVATESTUDENTFOLDER_NOTIFY_STUDENT || $notifyfilechange == PRIVATESTUDENTFOLDER_NOTIFY_ALL) {
-            if ($privatestudentfolder->get_mode() == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION) {
-                $usersingroup = $privatestudentfolder->get_submissionmembers($pubfile->userid);
+        if ($notifyfilechange == OPENBOOK_NOTIFY_STUDENT || $notifyfilechange == OPENBOOK_NOTIFY_ALL) {
+            if ($openbook->get_mode() == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
+                $usersingroup = $openbook->get_submissionmembers($pubfile->userid);
                 $receivers += $usersingroup;
             } else {
                 $student = $DB->get_record('user', ['id' => $pubfile->userid]);
@@ -1994,45 +1994,45 @@ class privatestudentfolder {
         }
         if (!empty($receivers)) {
             foreach ($receivers as $receiver) {
-                $strsubmitted = $sm->get_string('approvalchange', 'privatestudentfolder', null, $receiver->lang);
+                $strsubmitted = $sm->get_string('approvalchange', 'openbook', null, $receiver->lang);
                 $info = new stdClass();
                 $info->username = fullname($userfrom);
-                $info->privatestudentfolder = format_string($cm->name, true);
-                $info->url = $CFG->wwwroot . '/mod/privatestudentfolder/view.php?id=' . $pubid;
+                $info->openbook = format_string($cm->name, true);
+                $info->url = $CFG->wwwroot . '/mod/openbook/view.php?id=' . $pubid;
                 $info->id = $pubid;
                 $info->filename = $pubfile->filename;
                 $info->apstatus = $sm->get_string(
                     'status:approved' . $newstatus,
-                    'mod_privatestudentfolder',
+                    'mod_openbook',
                     null,
                     $receiver->lang
                 );
                 $info->dayupdated = userdate(time(), $sm->get_string('strftimedate', 'core_langconfig', null, $receiver->lang));
                 $info->timeupdated = userdate(time(), $sm->get_string('strftimetime24', 'core_langconfig', null, $receiver->lang));
 
-                if (!isset(self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE])) {
-                    self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE] = [];
+                if (!isset(self::$pendingnotifications[OPENBOOK_NOTIFY_STATUSCHANGE])) {
+                    self::$pendingnotifications[OPENBOOK_NOTIFY_STATUSCHANGE] = [];
                 }
                 if (
                     !isset(
-                        self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id]
+                        self::$pendingnotifications[OPENBOOK_NOTIFY_STATUSCHANGE][$cm->id]
                     )
                 ) {
-                    self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id] = [];
+                    self::$pendingnotifications[OPENBOOK_NOTIFY_STATUSCHANGE][$cm->id] = [];
                 }
 
                 $includeheader = !isset(
-                    self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id]
+                    self::$pendingnotifications[OPENBOOK_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id]
                 );
                 $postsubject = $strsubmitted . ': ' . $cm->name;
-                $posttext = $privatestudentfolder->email_statuschange_text($info, $receiver->lang, $includeheader);
-                $posthtml = $privatestudentfolder->email_statuschange_html($info, $receiver->lang, $includeheader);
+                $posttext = $openbook->email_statuschange_text($info, $receiver->lang, $includeheader);
+                $posthtml = $openbook->email_statuschange_html($info, $receiver->lang, $includeheader);
 
                 // TODO maybe add check here is receiver is the same as user from. Unless already checked in get_graders
-                if (!isset(self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id])) {
+                if (!isset(self::$pendingnotifications[OPENBOOK_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id])) {
                     $message = new \core\message\message();
-                    $message->component = 'mod_privatestudentfolder';
-                    $message->name = 'privatestudentfolder_updates';
+                    $message->component = 'mod_openbook';
+                    $message->name = 'openbook_updates';
                     $message->courseid = $cm->course;
                     $message->userfrom = core_user::get_noreply_user();
                     $message->userto = $receiver;
@@ -2043,13 +2043,13 @@ class privatestudentfolder {
                     $message->smallmessage = $postsubject;
                     $message->notification = 1;
                     $message->contexturl = $info->url;
-                    $message->contexturlname = $info->privatestudentfolder;
-                    self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id] = $message;
+                    $message->contexturlname = $info->openbook;
+                    self::$pendingnotifications[OPENBOOK_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id] = $message;
                 }
 
-                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id]->fullmessage .=
+                self::$pendingnotifications[OPENBOOK_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id]->fullmessage .=
                     $posttext;
-                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id]->fullmessagehtml .=
+                self::$pendingnotifications[OPENBOOK_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id]->fullmessagehtml .=
                     $posthtml;
             }
         }
@@ -2060,38 +2060,38 @@ class privatestudentfolder {
      * @param object $cm course module
      * @param object $file the file
      * @param stdClass|null $user the user
-     * @param stdClass|null $privatestudentfolder object the privatestudentfolder, if available
+     * @param stdClass|null $openbook object the openbook, if available
      * @throws coding_exception
      */
-    public static function send_notification_filechange($cm, $file, $user = null, $privatestudentfolder = null) {
+    public static function send_notification_filechange($cm, $file, $user = null, $openbook = null) {
         global $CFG, $USER, $DB;
         $sm = get_string_manager();
         if (!$user) {
             $user = $USER;
         }
-        if (!$privatestudentfolder) {
-            $privatestudentfolder = new privatestudentfolder($cm);
+        if (!$openbook) {
+            $openbook = new openbook($cm);
         }
 
-        $stridentifier = $privatestudentfolder->get_instance()->mode == PRIVATESTUDENTFOLDER_MODE_UPLOAD
+        $stridentifier = $openbook->get_instance()->mode == OPENBOOK_MODE_UPLOAD
             ? 'filechange_upload'
             : 'filechange_import';
         $assignname = null;
-        if ($privatestudentfolder->get_instance()->mode != PRIVATESTUDENTFOLDER_MODE_UPLOAD) {
-            $assign = $DB->get_record('assign', ['id' => $privatestudentfolder->get_instance()->importfrom]);
+        if ($openbook->get_instance()->mode != OPENBOOK_MODE_UPLOAD) {
+            $assign = $DB->get_record('assign', ['id' => $openbook->get_instance()->importfrom]);
             if ($assign) {
                 $assignname = $assign->name;
             }
         }
 
-        $notifyfilechange = $privatestudentfolder->get_instance()->notifyfilechange;
+        $notifyfilechange = $openbook->get_instance()->notifyfilechange;
         $receivers = [];
-        if ($notifyfilechange == PRIVATESTUDENTFOLDER_NOTIFY_TEACHER || $notifyfilechange == PRIVATESTUDENTFOLDER_NOTIFY_ALL) {
-            $receivers = $privatestudentfolder->get_graders($user);
+        if ($notifyfilechange == OPENBOOK_NOTIFY_TEACHER || $notifyfilechange == OPENBOOK_NOTIFY_ALL) {
+            $receivers = $openbook->get_graders($user);
         }
-        if ($notifyfilechange == PRIVATESTUDENTFOLDER_NOTIFY_STUDENT || $notifyfilechange == PRIVATESTUDENTFOLDER_NOTIFY_ALL) {
-            if ($privatestudentfolder->get_mode() == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION) {
-                $usersingroup = $privatestudentfolder->get_submissionmembers($file->userid);
+        if ($notifyfilechange == OPENBOOK_NOTIFY_STUDENT || $notifyfilechange == OPENBOOK_NOTIFY_ALL) {
+            if ($openbook->get_mode() == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
+                $usersingroup = $openbook->get_submissionmembers($file->userid);
                 $receivers += $usersingroup;
             } else {
                 $student = $DB->get_record('user', ['id' => $file->userid]);
@@ -2102,40 +2102,40 @@ class privatestudentfolder {
             foreach ($receivers as $receiver) {
                 $strsubmitted = $sm->get_string(
                     'email:' . $stridentifier . ':subject',
-                    'privatestudentfolder',
+                    'openbook',
                     null,
                     $receiver->lang
                 );
                 $info = new stdClass();
                 $info->username = fullname($user);
-                $info->privatestudentfolder = format_string($privatestudentfolder->get_instance()->name, true);
-                $info->url = $CFG->wwwroot . '/mod/privatestudentfolder/view.php?id=' . $cm->id;
+                $info->openbook = format_string($openbook->get_instance()->name, true);
+                $info->url = $CFG->wwwroot . '/mod/openbook/view.php?id=' . $cm->id;
                 $info->id = $cm->id;
                 $info->filename = $file->filename;
                 $info->assign = $assignname;
                 $info->dayupdated = userdate(time(), $sm->get_string('strftimedate', 'core_langconfig', null, $receiver->lang));
                 $info->timeupdated = userdate(time(), $sm->get_string('strftimetime24', 'core_langconfig', null, $receiver->lang));
 
-                if (!isset(self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE])) {
-                    self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE] = [];
+                if (!isset(self::$pendingnotifications[OPENBOOK_NOTIFY_FILECHANGE])) {
+                    self::$pendingnotifications[OPENBOOK_NOTIFY_FILECHANGE] = [];
                 }
-                if (!isset(self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE][$cm->id])) {
-                    self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE][$cm->id] = [];
+                if (!isset(self::$pendingnotifications[OPENBOOK_NOTIFY_FILECHANGE][$cm->id])) {
+                    self::$pendingnotifications[OPENBOOK_NOTIFY_FILECHANGE][$cm->id] = [];
                 }
 
                 $includeheader = !isset(
-                    self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE][$cm->id][$receiver->id]
+                    self::$pendingnotifications[OPENBOOK_NOTIFY_FILECHANGE][$cm->id][$receiver->id]
                 );
-                $postsubject = $strsubmitted . ': ' . $info->privatestudentfolder;
-                $posttext = $privatestudentfolder->email_filechange_text($info, $receiver->lang, $stridentifier, $includeheader);
-                $posthtml = $privatestudentfolder->email_filechange_html($info, $receiver->lang, $stridentifier, $includeheader);
+                $postsubject = $strsubmitted . ': ' . $info->openbook;
+                $posttext = $openbook->email_filechange_text($info, $receiver->lang, $stridentifier, $includeheader);
+                $posthtml = $openbook->email_filechange_html($info, $receiver->lang, $stridentifier, $includeheader);
 
                 // TODO maybe add check here is receiver is the same as user from. Unless already checked in get_graders
 
-                if (!isset(self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE][$cm->id][$receiver->id])) {
+                if (!isset(self::$pendingnotifications[OPENBOOK_NOTIFY_FILECHANGE][$cm->id][$receiver->id])) {
                     $message = new \core\message\message();
-                    $message->component = 'mod_privatestudentfolder';
-                    $message->name = 'privatestudentfolder_updates';
+                    $message->component = 'mod_openbook';
+                    $message->name = 'openbook_updates';
                     $message->courseid = $cm->course;
                     $message->userfrom = core_user::get_noreply_user();
                     $message->userto = $receiver;
@@ -2146,12 +2146,12 @@ class privatestudentfolder {
                     $message->smallmessage = $postsubject;
                     $message->notification = 1;
                     $message->contexturl = $info->url;
-                    $message->contexturlname = $info->privatestudentfolder;
-                    self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE][$cm->id][$receiver->id] = $message;
+                    $message->contexturlname = $info->openbook;
+                    self::$pendingnotifications[OPENBOOK_NOTIFY_FILECHANGE][$cm->id][$receiver->id] = $message;
                 }
-                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE][$cm->id][$receiver->id]->fullmessage .=
+                self::$pendingnotifications[OPENBOOK_NOTIFY_FILECHANGE][$cm->id][$receiver->id]->fullmessage .=
                     $posttext;
-                self::$pendingnotifications[PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE][$cm->id][$receiver->id]->fullmessagehtml .=
+                self::$pendingnotifications[OPENBOOK_NOTIFY_FILECHANGE][$cm->id][$receiver->id]->fullmessagehtml .=
                     $posthtml;
 
                 // message_send($message);
@@ -2167,17 +2167,17 @@ class privatestudentfolder {
         foreach (self::$pendingnotifications as $type => $cms) {
             foreach ($cms as $cmid => $users) {
                 foreach ($users as $userid => $message) {
-                    if ($type == PRIVATESTUDENTFOLDER_NOTIFY_FILECHANGE) {
+                    if ($type == OPENBOOK_NOTIFY_FILECHANGE) {
                         $footertext = $sm->get_string(
                             'email:filechange:footer',
-                            'privatestudentfolder',
+                            'openbook',
                             null,
                             $message->userto->lang
                         );
                         $message->fullmessage .= PHP_EOL . strip_tags($footertext);
                         $message->fullmessagehtml .= $sm->get_string(
                             'email:filechange:footer',
-                            'privatestudentfolder',
+                            'openbook',
                             null,
                             $message->userto->lang
                         );
@@ -2199,20 +2199,20 @@ class privatestudentfolder {
      * Format file content of imported onlinetexts to be rendered as preview.
      *
      * @param int $itemid User's or group's ID
-     * @param int $privatestudentfolderid Private Student Folder instance's database ID
-     * @param int $contextid Private Student Folder instance's context ID
+     * @param int $openbookid Openbook resource folder instance's database ID
+     * @param int $contextid Openbook resource folder instance's context ID
      * @return string formatted HTML snippet ready to be output
      */
-    public static function export_onlinetext_for_preview($itemid, $privatestudentfolderid, $contextid) {
+    public static function export_onlinetext_for_preview($itemid, $openbookid, $contextid) {
         global $DB;
 
         // Get file data/record!
         $conditions = [
-                'privatestudentfolder' => $privatestudentfolderid,
+                'openbook' => $openbookid,
                 'userid' => $itemid,
-                'type' => PRIVATESTUDENTFOLDER_MODE_ONLINETEXT,
+                'type' => OPENBOOK_MODE_ONLINETEXT,
         ];
-        if (!$pubfile = $DB->get_record('privatestudentfolder_file', $conditions, '*')) {
+        if (!$pubfile = $DB->get_record('openbook_file', $conditions, '*')) {
             return '';
         }
 
@@ -2223,7 +2223,7 @@ class privatestudentfolder {
         // Correct ressources filepaths for onine-view!
         $resources = $fs->get_directory_files(
             $contextid,
-            'mod_privatestudentfolder',
+            'mod_openbook',
             'attachment',
             $itemid,
             '/resources/',
@@ -2241,7 +2241,7 @@ class privatestudentfolder {
             $content,
             'pluginfile.php',
             $contextid,
-            'mod_privatestudentfolder',
+            'mod_openbook',
             'attachment',
             $itemid
         );
@@ -2261,7 +2261,7 @@ class privatestudentfolder {
     // Allowed file-types have been changed in Moodle 3.3 (and form element will probably change in Moodle 3.4 again)!
 
     /**
-     * Get the type sets configured for this privatestudentfolder.
+     * Get the type sets configured for this openbook.
      * Adapted from assignsubmission_file!
      *
      * @return array('groupname', 'mime/type', ...)
@@ -2336,7 +2336,7 @@ class privatestudentfolder {
         // Get potential graders!
         $potgraders = get_enrolled_users(
             $this->context,
-            'mod/privatestudentfolder:receiveteachernotification',
+            'mod/openbook:receiveteachernotification',
             0,
             'u.*',
             null,
@@ -2395,12 +2395,12 @@ class privatestudentfolder {
         $posttext = '';
         if ($includeheader) {
             $posttext .= format_string($this->course->shortname) . ' -> ' .
-                $sm->get_string('modulenameplural', 'privatestudentfolder', null, $lang) . ' -> ' .
-                format_string($info->privatestudentfolder) . "\n";
+                $sm->get_string('modulenameplural', 'openbook', null, $lang) . ' -> ' .
+                format_string($info->openbook) . "\n";
             $posttext .= strip_tags(
                 $sm->get_string(
                     'email:' . $stridentifier . ':header',
-                    'privatestudentfolder',
+                    'openbook',
                     $info,
                     $lang
                 )
@@ -2428,11 +2428,11 @@ class privatestudentfolder {
             $posthtml .= '<p><span style="font-family: sans-serif; ">' .
                 '<a href="' . $CFG->wwwroot . '/course/view.php?id=' . $this->course->id . '">' .
                 format_string($this->course->shortname) . '</a> ->' .
-                '<a href="' . $CFG->wwwroot . '/mod/privatestudentfolder/view.php?id=' .
-                $info->id . '">' . $sm->get_string('modulenameplural', 'privatestudentfolder', null, $lang) . '</a> ->' .
-                '<a href="' . $CFG->wwwroot . '/mod/privatestudentfolder/view.php?id=' . $info->id . '">' .
-                format_string($info->privatestudentfolder) . '</a></span></p>';
-            $posthtml .= '' . $sm->get_string('email:' . $stridentifier . ':header', 'privatestudentfolder', $info, $lang) . '';
+                '<a href="' . $CFG->wwwroot . '/mod/openbook/view.php?id=' .
+                $info->id . '">' . $sm->get_string('modulenameplural', 'openbook', null, $lang) . '</a> ->' .
+                '<a href="' . $CFG->wwwroot . '/mod/openbook/view.php?id=' . $info->id . '">' .
+                format_string($info->openbook) . '</a></span></p>';
+            $posthtml .= '' . $sm->get_string('email:' . $stridentifier . ':header', 'openbook', $info, $lang) . '';
         }
         $posthtml .= '<li>' . $info->filename . '</li>';
 
@@ -2452,12 +2452,12 @@ class privatestudentfolder {
         $posttext = '';
         if ($includeheader) {
             $posttext .= format_string($this->course->shortname) . ' -> ' .
-                $sm->get_string('modulenameplural', 'privatestudentfolder', null, $lang) . ' -> ' .
-                format_string($info->privatestudentfolder) . "\n";
+                $sm->get_string('modulenameplural', 'openbook', null, $lang) . ' -> ' .
+                format_string($info->openbook) . "\n";
             $posttext .= "---------------------------------------------------------------------\n";
-            $posttext .= strip_tags($sm->get_string('email:statuschange:header', 'privatestudentfolder', $info, $lang)) . "\n";
+            $posttext .= strip_tags($sm->get_string('email:statuschange:header', 'openbook', $info, $lang)) . "\n";
         }
-        $posttext .= strip_tags($sm->get_string('email:statuschange:filename', 'privatestudentfolder', $info, $lang)) . "\n";
+        $posttext .= strip_tags($sm->get_string('email:statuschange:filename', 'openbook', $info, $lang)) . "\n";
         return $posttext;
     }
 
@@ -2477,19 +2477,19 @@ class privatestudentfolder {
             $posthtml .= '<p><span style="font-family: sans-serif; ">' .
                 '<a href="' . $CFG->wwwroot . '/course/view.php?id=' . $this->course->id . '">' .
                 format_string($this->course->shortname) . '</a> ->' .
-                '<a href="' . $CFG->wwwroot . '/mod/privatestudentfolder/view.php?id=' .
-                $info->id . '">' . $sm->get_string('modulenameplural', 'privatestudentfolder', null, $lang) . '</a> ->' .
-                '<a href="' . $CFG->wwwroot . '/mod/privatestudentfolder/view.php?id=' . $info->id . '">' .
-                format_string($info->privatestudentfolder) . '</a></span></p>';
-            $posthtml .= '' . $sm->get_string('email:statuschange:header', 'privatestudentfolder', $info, $lang);
+                '<a href="' . $CFG->wwwroot . '/mod/openbook/view.php?id=' .
+                $info->id . '">' . $sm->get_string('modulenameplural', 'openbook', null, $lang) . '</a> ->' .
+                '<a href="' . $CFG->wwwroot . '/mod/openbook/view.php?id=' . $info->id . '">' .
+                format_string($info->openbook) . '</a></span></p>';
+            $posthtml .= '' . $sm->get_string('email:statuschange:header', 'openbook', $info, $lang);
         }
-        $posthtml .= $sm->get_string('email:statuschange:filename', 'privatestudentfolder', $info, $lang);
+        $posthtml .= $sm->get_string('email:statuschange:filename', 'openbook', $info, $lang);
 
         return $posthtml;
     }
 
     /**
-     * Handles calendar events for privatestudentfolders with a due date
+     * Handles calendar events for openbooks with a due date
      * This will create, update and delete an event when necessary
      */
     public function update_calendar_event() {
@@ -2498,13 +2498,13 @@ class privatestudentfolder {
 
         $instance = $this->get_instance();
 
-        // Check whether the privatestudentfolder already has a event.
-        $result = $DB->get_record('event', ['modulename' => 'privatestudentfolder', 'instance' => $instance->id]);
+        // Check whether the openbook already has a event.
+        $result = $DB->get_record('event', ['modulename' => 'openbook', 'instance' => $instance->id]);
 
         if ($result) {
-            // Check whether the privatestudentfolder still has a due date, if not delete the event.
+            // Check whether the openbook still has a due date, if not delete the event.
             if ($instance->duedate == null || $instance->duedate == 0) {
-                $DB->delete_records('event', ['modulename' => 'privatestudentfolder', 'instance' => $instance->id]);
+                $DB->delete_records('event', ['modulename' => 'openbook', 'instance' => $instance->id]);
             } else {
                 $result->name = $instance->name;
                 $result->timestart = $instance->duedate;
@@ -2514,16 +2514,16 @@ class privatestudentfolder {
             }
         } else if ($instance->duedate != null && $instance->duedate != 0) {
             $event = new stdClass();
-            $event->eventtype = PRIVATESTUDENTFOLDER_EVENT_TYPE_DUE;
+            $event->eventtype = OPENBOOK_EVENT_TYPE_DUE;
             $event->type = CALENDAR_EVENT_TYPE_ACTION; // Necessary to enable this event in block_myoverview.
             $event->name = $instance->name;
             $event->description = "";
             $event->courseid = $instance->course;
             $event->groupid = 0;
             $event->userid = 0;
-            $event->modulename = 'privatestudentfolder';
+            $event->modulename = 'openbook';
             $event->instance = $instance->id;
-            $event->visible = instance_is_visible('privatestudentfolder', $this->instance);
+            $event->visible = instance_is_visible('openbook', $this->instance);
             $event->timestart = $instance->duedate;
             $event->timesort = $instance->duedate; // Necessary for block_myoverview.
             $event->timeduration = 0;
@@ -2539,22 +2539,22 @@ class privatestudentfolder {
         global $DB;
         $context = new stdClass();
 
-        $editurl = new moodle_url('/mod/privatestudentfolder/overrides_edit.php', ['id' => $this->coursemodule->id]);
-        $deleteurl = new moodle_url('/mod/privatestudentfolder/overrides_delete.php', ['id' => $this->coursemodule->id]);
+        $editurl = new moodle_url('/mod/openbook/overrides_edit.php', ['id' => $this->coursemodule->id]);
+        $deleteurl = new moodle_url('/mod/openbook/overrides_delete.php', ['id' => $this->coursemodule->id]);
 
         $context->newoverrideurl = (new moodle_url($editurl, ['overrideid' => -1]))->out(false);
 
-        $overrides = $DB->get_records('privatestudentfolder_overrides', ['privatestudentfolder' => $this->instance->id]);
+        $overrides = $DB->get_records('openbook_overrides', ['openbook' => $this->instance->id]);
         $context->overridesempty = count($overrides) == 0;
         $context->overrides = [];
-        $isgroupmode = $this->mode == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION;
+        $isgroupmode = $this->mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION;
         $context->isgroupmode = $isgroupmode;
         if ($isgroupmode) {
             $context->usergroupcoltitle = get_string('group');
-            $context->addoverridetitle = get_string('override:add:group', 'mod_privatestudentfolder');
+            $context->addoverridetitle = get_string('override:add:group', 'mod_openbook');
         } else {
             $context->usergroupcoltitle = get_string('user');
-            $context->addoverridetitle = get_string('override:add:user', 'mod_privatestudentfolder');
+            $context->addoverridetitle = get_string('override:add:user', 'mod_openbook');
         }
 
         $userurl = new moodle_url('/user/view.php', ['course' => $this->course->id]);
@@ -2588,7 +2588,7 @@ class privatestudentfolder {
         $override->submissionoverride = null;
         $override->approvaloverride = null;
         if (
-            $this->mode == PRIVATESTUDENTFOLDER_MODE_FILEUPLOAD &&
+            $this->mode == OPENBOOK_MODE_FILEUPLOAD &&
             ($override->allowsubmissionsfromdate > 0 || $override->duedate > 0)
         ) {
             $fromto = (object)[
@@ -2596,11 +2596,11 @@ class privatestudentfolder {
                 'to' => userdate($override->duedate),
             ];
             if ($override->allowsubmissionsfromdate > 0 && $override->duedate > 0) {
-                $override->submissionoverride = get_string('override:submission:fromto', 'mod_privatestudentfolder', $fromto);
+                $override->submissionoverride = get_string('override:submission:fromto', 'mod_openbook', $fromto);
             } else if ($override->allowsubmissionsfromdate > 0) {
-                $override->submissionoverride = get_string('override:submission:from', 'mod_privatestudentfolder', $fromto);
+                $override->submissionoverride = get_string('override:submission:from', 'mod_openbook', $fromto);
             } else if ($override->duedate > 0) {
-                $override->submissionoverride = get_string('override:submission:to', 'mod_privatestudentfolder', $fromto);
+                $override->submissionoverride = get_string('override:submission:to', 'mod_openbook', $fromto);
             }
         }
         if (
@@ -2612,11 +2612,11 @@ class privatestudentfolder {
                 'to' => userdate($override->approvaltodate),
             ];
             if ($override->approvalfromdate > 0 && $override->approvaltodate > 0) {
-                $override->approvaloverride = get_string('override:approval:fromto', 'mod_privatestudentfolder', $fromto);
+                $override->approvaloverride = get_string('override:approval:fromto', 'mod_openbook', $fromto);
             } else if ($override->approvalfromdate > 0) {
-                $override->approvaloverride = get_string('override:approval:from', 'mod_privatestudentfolder', $fromto);
+                $override->approvaloverride = get_string('override:approval:from', 'mod_openbook', $fromto);
             } else if ($override->approvaltodate > 0) {
-                $override->approvaloverride = get_string('override:approval:to', 'mod_privatestudentfolder', $fromto);
+                $override->approvaloverride = get_string('override:approval:to', 'mod_openbook', $fromto);
             }
         }
         return $override;
@@ -2642,41 +2642,41 @@ class privatestudentfolder {
         }
         if ($formdata->overrideid != -1) {
             $override = $DB->get_record(
-                'privatestudentfolder_overrides',
+                'openbook_overrides',
                 [
                     'id' => $formdata->overrideid,
-                    'privatestudentfolder' => $this->instance->id,
+                    'openbook' => $this->instance->id,
                 ]
             );
             unset($formdata->id);
             unset($formdata->overrideid);
             if (!$override) {
-                $formdata->privatestudentfolder = $this->instance->id;
-                $overrideresult->overrideid = $DB->insert_record('privatestudentfolder_overrides', $formdata);
+                $formdata->openbook = $this->instance->id;
+                $overrideresult->overrideid = $DB->insert_record('openbook_overrides', $formdata);
                 $overrideresult->newoverride = true;
             } else {
                 $formdata->id = $override->id;
-                $formdata->privatestudentfolder = $this->instance->id;
-                $DB->update_record('privatestudentfolder_overrides', $formdata);
+                $formdata->openbook = $this->instance->id;
+                $DB->update_record('openbook_overrides', $formdata);
                 $overrideresult->overrideid = $override->id;
             }
         } else {
             $override = $DB->get_record(
-                'privatestudentfolder_overrides',
-                ['privatestudentfolder' => $this->instance->id,
+                'openbook_overrides',
+                ['openbook' => $this->instance->id,
                                             'userid' => $formdata->userid,
                                             'groupid' => $formdata->groupid]
             );
             unset($formdata->id);
             unset($formdata->overrideid);
             if (!$override) {
-                $formdata->privatestudentfolder = $this->instance->id;
-                $overrideresult->overrideid = $DB->insert_record('privatestudentfolder_overrides', $formdata);
+                $formdata->openbook = $this->instance->id;
+                $overrideresult->overrideid = $DB->insert_record('openbook_overrides', $formdata);
                 $overrideresult->newoverride = true;
             } else {
                 $formdata->id = $override->id;
-                $formdata->privatestudentfolder = $this->instance->id;
-                $DB->update_record('privatestudentfolder_overrides', $formdata);
+                $formdata->openbook = $this->instance->id;
+                $DB->update_record('openbook_overrides', $formdata);
                 $overrideresult->overrideid = $override->id;
             }
         }
@@ -2691,10 +2691,10 @@ class privatestudentfolder {
     public function override_get($overrideid) {
         global $DB;
         $override = $DB->get_record(
-            'privatestudentfolder_overrides',
+            'openbook_overrides',
             [
                 'id' => $overrideid,
-                'privatestudentfolder' => $this->instance->id,
+                'openbook' => $this->instance->id,
             ]
         );
         if ($override) {
@@ -2711,14 +2711,14 @@ class privatestudentfolder {
     public function override_delete($overrideid) {
         global $DB;
         $override = $DB->get_record(
-            'privatestudentfolder_overrides',
+            'openbook_overrides',
             [
                 'id' => $overrideid,
-                'privatestudentfolder' => $this->instance->id,
+                'openbook' => $this->instance->id,
             ]
         );
         if ($override) {
-            $DB->delete_records('privatestudentfolder_overrides', ['id' => $overrideid]);
+            $DB->delete_records('openbook_overrides', ['id' => $overrideid]);
             return true;
         }
         return false;
@@ -2738,10 +2738,10 @@ class privatestudentfolder {
             return $formdata;
         }
         $override = $DB->get_record(
-            'privatestudentfolder_overrides',
+            'openbook_overrides',
             [
                 'id' => $overrideid,
-                'privatestudentfolder' => $this->instance->id,
+                'openbook' => $this->instance->id,
             ]
         );
         if ($override) {
@@ -2758,23 +2758,23 @@ class privatestudentfolder {
     public function override_get_currentuserorgroup() {
         global $DB, $USER;
         $override = null;
-        if ($this->mode == PRIVATESTUDENTFOLDER_MODE_ASSIGN_TEAMSUBMISSION) {
+        if ($this->mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
             $groups = groups_get_all_groups($this->course->id, $USER->id);
             if (!empty($groups)) {
                 $group = reset($groups);
                 $override = $DB->get_record(
-                    'privatestudentfolder_overrides',
+                    'openbook_overrides',
                     [
-                        'privatestudentfolder' => $this->instance->id,
+                        'openbook' => $this->instance->id,
                         'groupid' => $group->id,
                     ]
                 );
             }
         } else {
             $override = $DB->get_record(
-                'privatestudentfolder_overrides',
+                'openbook_overrides',
                 [
-                    'privatestudentfolder' => $this->instance->id,
+                    'openbook' => $this->instance->id,
                     'userid' => $USER->id,
                 ]
             );
@@ -2800,7 +2800,7 @@ class privatestudentfolder {
     }
 
     /**
-     * Reset all studentapproval values to 0 for all files in this privatestudentfolder instance.
+     * Reset all studentapproval values to 0 for all files in this openbook instance.
      *
      * @return bool Number of records updated.
      */
@@ -2808,18 +2808,18 @@ class privatestudentfolder {
         global $DB, $USER;
 
         $sql = "SELECT fileid, userid, teacherapproval, id, studentapproval, filename
-                FROM {privatestudentfolder_file}
-                WHERE privatestudentfolder = :privatestudentfolder
+                FROM {openbook_file}
+                WHERE openbook = :openbook
                 AND studentapproval != 1";
-        $params = ['privatestudentfolder' => $this->instance->id];
+        $params = ['openbook' => $this->instance->id];
         $files = $DB->get_records_sql($sql, $params);
 
         foreach ($files as $file) {
             $user = $DB->get_record('user', ['id' => $file->userid]);
 
             $dataforlog = new stdClass();
-            $dataforlog->privatestudentfolder = $this->instance->id;
-            $dataforlog->approval = PRIVATESTUDENTFOLDER_APPROVAL_ALL;
+            $dataforlog->openbook = $this->instance->id;
+            $dataforlog->approval = OPENBOOK_APPROVAL_ALL;
             $dataforlog->userid = $USER->id;
             if ($user && !empty($user->id)) {
                 $dataforlog->reluser = $user->id;
@@ -2829,7 +2829,7 @@ class privatestudentfolder {
             $dataforlog->fileid = $file->fileid;
 
             try {
-                \mod_privatestudentfolder\event\privatestudentfolder_approval_changed::approval_changed(
+                \mod_openbook\event\openbook_approval_changed::approval_changed(
                     $this->coursemodule,
                     $dataforlog
                 )->trigger();
@@ -2838,7 +2838,7 @@ class privatestudentfolder {
             }
 
             $DB->set_field(
-                'privatestudentfolder_file',
+                'openbook_file',
                 'studentapproval',
                 0,
                 ['id' => $file->id]
@@ -2866,7 +2866,7 @@ class privatestudentfolder {
      * @param array $options additional options affecting the file serving
      * @return bool false if the file not found, just send the file otherwise and do not return anything
      */
-    public function mod_privatestudentfolder_pluginfile(
+    public function mod_openbook_pluginfile(
         $course,
         $cm,
         $context,

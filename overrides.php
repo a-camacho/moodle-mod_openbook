@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Displays a single mod_privatestudentfolder instance
+ * Displays a single mod_openbook instance
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -25,12 +25,12 @@
  */
 
 require_once('../../config.php');
-require_once($CFG->dirroot . '/mod/privatestudentfolder/locallib.php');
+require_once($CFG->dirroot . '/mod/openbook/locallib.php');
 
 $id = required_param('id', PARAM_INT); // Course Module ID.
 
-$url = new moodle_url('/mod/privatestudentfolder/overrides.php', ['id' => $id]);
-$cm = get_coursemodule_from_id('privatestudentfolder', $id, 0, false, MUST_EXIST);
+$url = new moodle_url('/mod/openbook/overrides.php', ['id' => $id]);
+$cm = get_coursemodule_from_id('openbook', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
 
 require_login($course, true, $cm);
@@ -38,11 +38,11 @@ $PAGE->set_url($url);
 
 $context = context_module::instance($cm->id);
 
-require_capability('mod/privatestudentfolder:manageoverrides', $context);
+require_capability('mod/openbook:manageoverrides', $context);
 
-$privatestudentfolder = new privatestudentfolder($cm, $course, $context);
+$openbook = new openbook($cm, $course, $context);
 
-$pagetitle = strip_tags($course->shortname . ': ' . format_string($privatestudentfolder->get_instance()->name));
+$pagetitle = strip_tags($course->shortname . ': ' . format_string($openbook->get_instance()->name));
 
 // Print the page header.
 $PAGE->set_pagelayout('admin');
@@ -54,7 +54,7 @@ $activityheader->set_attrs([
     'description' => '',
     'hidecompletion' => true,
     'title' => $activityheader->is_title_allowed() ? format_string(
-        $privatestudentfolder->get_instance()->name,
+        $openbook->get_instance()->name,
         true,
         ['context' => $context]
     ) : "",
@@ -64,11 +64,11 @@ echo $OUTPUT->header();
 
 echo $OUTPUT->heading(get_string('overrides', 'mod_assign'), 2);
 
-$privatestudentfolderinstance = $privatestudentfolder->get_instance();
-$templatecontext = $privatestudentfolder->overrides_export_for_template();
+$openbookinstance = $openbook->get_instance();
+$templatecontext = $openbook->overrides_export_for_template();
 
-$mode = $privatestudentfolder->get_mode();
+$mode = $openbook->get_mode();
 
-echo $OUTPUT->render_from_template('mod_privatestudentfolder/overrides', $templatecontext);
+echo $OUTPUT->render_from_template('mod_openbook/overrides', $templatecontext);
 
 echo $OUTPUT->footer();

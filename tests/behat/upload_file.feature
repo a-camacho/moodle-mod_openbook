@@ -1,5 +1,5 @@
-@mod @mod_privatestudentfolder @_file_upload
-Feature: Upload file in privatestudentfolder
+@mod @mod_openbook @_file_upload
+Feature: Upload file in openbook
 
   Background:
     Given the following "users" exist:
@@ -15,17 +15,17 @@ Feature: Upload file in privatestudentfolder
       | student1 | C1     | student        |
     And the following "activities" exist:
       | activity             | course | name | maxbytes | filesarepersonal |
-      | privatestudentfolder | C1     | PVS1 | 8388608  | 0                |
+      | openbook | C1     | PVS1 | 8388608  | 0                |
 
   @javascript
-  Scenario: Click on Give Approval button in privatestudentfolder instance in course1
-    Given I am on the "PVS1" "privatestudentfolder activity" page logged in as teacher1
+  Scenario: Click on Give Approval button in openbook instance in course1
+    Given I am on the "PVS1" "openbook activity" page logged in as teacher1
     And I click on "Give approval" "link"
     Then I should see "File submissions"
 
   @javascript @_file_upload
-  Scenario: Upload file as student in a privatestudentfolder instance and get automatic teacher approval teacher
-    When I am on the "PVS1" "privatestudentfolder activity editing" page logged in as teacher1
+  Scenario: Upload file as student in a openbook instance and get automatic teacher approval teacher
+    When I am on the "PVS1" "openbook activity editing" page logged in as teacher1
     And I expand all fieldsets
     And I set the field with xpath "//*[@id='id_allowsubmissionsfromdate_enabled']" to "0"
     And I set the field with xpath "//*[@id='id_duedate_enabled']" to "0"
@@ -33,14 +33,14 @@ Feature: Upload file in privatestudentfolder
       | Files are personal | Yes (files are personal) |
       | Teacher approval   | Automatic                |
     And I press "Save and display"
-    And I am on the "PVS1" "privatestudentfolder activity" page logged in as student1
+    And I am on the "PVS1" "openbook activity" page logged in as student1
     And I click on "Edit/upload files" "button"
-    And I upload "mod/privatestudentfolder/tests/fixtures/empty.txt" file to "Own files" filemanager
+    And I upload "mod/openbook/tests/fixtures/empty.txt" file to "Own files" filemanager
     And I press "Save changes"
     And I should see "empty.txt"
     And I log out
-    And I am on the "PVS1" "privatestudentfolder activity" page logged in as teacher1
+    And I am on the "PVS1" "openbook activity" page logged in as teacher1
     And I should see "empty.txt"
     And I log out
-    And I am on the "PVS1" "privatestudentfolder activity" page logged in as student1
+    And I am on the "PVS1" "openbook activity" page logged in as student1
     Then I should see "empty.txt"

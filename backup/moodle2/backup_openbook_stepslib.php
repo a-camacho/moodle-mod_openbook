@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_privatestudentfolder for Moodle - http://moodle.org/
+// This file is part of mod_openbook for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * backup/moodle2/backup_privatestudentfolder_stepslieb.php
+ * backup/moodle2/backup_openbook_stepslieb.php
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
@@ -25,17 +25,17 @@
  */
 
 /**
- * Class used to design mod_privatestudentfolders data structure to back up
+ * Class used to design mod_openbooks data structure to back up
  *
- * @package       mod_privatestudentfolder
+ * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
  * @author        Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @copyright     2025 University of Geneva {@link http://www.unige.ch}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class backup_privatestudentfolder_activity_structure_step extends backup_activity_structure_step {
+class backup_openbook_activity_structure_step extends backup_activity_structure_step {
     /**
-     * Define the structure for the privatestudentfolder activity
+     * Define the structure for the openbook activity
      *
      * @return backup_nested_element
      */
@@ -45,7 +45,7 @@ class backup_privatestudentfolder_activity_structure_step extends backup_activit
         $userinfo = $this->get_setting_value('userinfo');
 
         // Define each element separated.
-        $privatestudentfolder = new backup_nested_element('privatestudentfolder', ['id'], [
+        $openbook = new backup_nested_element('openbook', ['id'], [
                 'name',
                 'intro',
                 'introformat',
@@ -77,13 +77,13 @@ class backup_privatestudentfolder_activity_structure_step extends backup_activit
 
         $extduedate = new backup_nested_element('extduedate', ['id'], [
                 'userid',
-                'privatestudentfolder',
+                'openbook',
                 'extensionduedate',
         ]);
 
         $overrides = new backup_nested_element('overrides');
         $override = new backup_nested_element('override', ['id'], [
-                'privatestudentfolder',
+                'openbook',
                 'userid',
                 'groupid',
                 'allowsubmissionsfromdate',
@@ -106,23 +106,23 @@ class backup_privatestudentfolder_activity_structure_step extends backup_activit
         ]);
 
         // Define sources.
-        $privatestudentfolder->set_source_table('privatestudentfolder', ['id' => backup::VAR_ACTIVITYID]);
+        $openbook->set_source_table('openbook', ['id' => backup::VAR_ACTIVITYID]);
 
         if ($userinfo) {
             // Build the tree.
-            $privatestudentfolder->add_child($extduedates);
+            $openbook->add_child($extduedates);
             $extduedates->add_child($extduedate);
-            $privatestudentfolder->add_child($overrides);
+            $openbook->add_child($overrides);
             $overrides->add_child($override);
-            $privatestudentfolder->add_child($files);
+            $openbook->add_child($files);
             $files->add_child($file);
 
-            $extduedate->set_source_table('privatestudentfolder_extduedates', ['privatestudentfolder' => backup::VAR_PARENTID]);
-            $override->set_source_table('privatestudentfolder_overrides', ['privatestudentfolder' => backup::VAR_PARENTID]);
+            $extduedate->set_source_table('openbook_extduedates', ['openbook' => backup::VAR_PARENTID]);
+            $override->set_source_table('openbook_overrides', ['openbook' => backup::VAR_PARENTID]);
 
-            $file->set_source_table('privatestudentfolder_file', ['privatestudentfolder' => backup::VAR_PARENTID]);
+            $file->set_source_table('openbook_file', ['openbook' => backup::VAR_PARENTID]);
 
-            $file->annotate_files('mod_privatestudentfolder', 'attachment', null);
+            $file->annotate_files('mod_openbook', 'attachment', null);
 
             // Define id annotations.
             $extduedate->annotate_ids('user', 'userid');
@@ -132,11 +132,11 @@ class backup_privatestudentfolder_activity_structure_step extends backup_activit
 
             // Define file annotations.
             // This file area hasn't itemid.
-            $privatestudentfolder->annotate_files('mod_privatestudentfolder', 'attachment', null);
+            $openbook->annotate_files('mod_openbook', 'attachment', null);
         }
 
-        // Return the root element (privatestudentfolder), wrapped into standard activity structure.
+        // Return the root element (openbook), wrapped into standard activity structure.
 
-        return $this->prepare_activity_structure($privatestudentfolder);
+        return $this->prepare_activity_structure($openbook);
     }
 }
