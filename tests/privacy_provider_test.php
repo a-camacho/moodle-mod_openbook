@@ -68,23 +68,9 @@ final class privacy_provider_test extends base {
     /** @var stdClass */
     private $teacher1;
     /** @var openbook */
-    private $pubupload;
+    private $openbookupload;
     /** @var openbook */
-    private $pubupload2;
-    /** @var \testable_assign */
-    private $assign;
-    /** @var \testable_assign */
-    private $assign2;
-    /** @var openbook */
-    private $pubimport;
-    /** @var \testable_assign */
-    private $teamassign;
-    /** @var \testable_assign */
-    private $teamassign2;
-    /** @var openbook */
-    private $pubteamimport;
-    /** @var openbook */
-    private $pubteamimport2;
+    private $openbookupload2;
 
     /**
      * Set up the common parts of the tests!
@@ -130,57 +116,13 @@ final class privacy_provider_test extends base {
 
         // Create multiple openbook instances.
         // Openbook resource folder with uploads.
-        $this->pubupload = $this->create_instance([
-                'name' => 'Pub Upload 1',
+        $this->openbookupload = $this->create_instance([
+                'name' => 'Openbook Upload 1',
                 'course' => $this->course1,
         ]);
-        $this->pubupload2 = $this->create_instance([
-                'name' => 'Pub Upload 2',
+        $this->openbookupload2 = $this->create_instance([
+                'name' => 'Openbook Upload 2',
                 'course' => $this->course1,
-        ]);
-
-        // Assign to import from.
-        $this->assign = $this->create_assign($this->course1, ['submissiondrafts' => false,
-                                                              'assignsubmission_onlinetext_enabled' => true, ]);
-        $this->assign2 = $this->create_assign($this->course1, ['submissiondrafts' => false,
-                                                               'assignsubmission_onlinetext_enabled' => true, ]);
-
-        // Openbook resource folder with imports.
-        $this->pubimport = $this->create_instance([
-                'name' => 'Pub Import 1',
-                'course' => $this->course1,
-                'mode' => OPENBOOK_MODE_IMPORT,
-                'importfrom' => $this->assign->get_instance()->id,
-        ]);
-
-        // Openbook resource folder with import from teamsubmission.
-        $this->teamassign = $this->create_assign($this->course1, [
-                'name' => 'Teamassign 1',
-                'teamsubmission' => true,
-                'submissiondrafts' => false,
-                'assignsubmission_onlinetext_enabled' => true,
-        ]);
-        $this->teamassign2 = $this->create_assign($this->course2, [
-                'name' => 'Teamassign 2',
-                'teamsubmission' => true,
-                'submissiondrafts' => false,
-                'assignsubmission_onlinetext_enabled' => true,
-        ]);
-        $this->pubteamimport = $this->create_instance([
-                'name' => 'Teamimport 1',
-                'course' => $this->course1,
-                'mode' => OPENBOOK_MODE_IMPORT,
-                'importfrom' => $this->teamassign->get_instance()->id,
-                'requireallteammemberssubmit' => false,
-                'preventsubmissionnotingroup' => false,
-        ]);
-        $this->pubteamimport2 = $this->create_instance([
-                'name' => 'Teamimport 2',
-                'course' => $this->course2,
-                'mode' => OPENBOOK_MODE_IMPORT,
-                'importfrom' => $this->teamassign2->get_instance()->id,
-                'requireallteammemberssubmit' => false,
-                'preventsubmissionnotingroup' => false,
         ]);
     }
 
@@ -195,25 +137,20 @@ final class privacy_provider_test extends base {
     public function test_get_contexts_for_userid(): void {
         // The user will be in these contexts.
         $usercontextids = [
-            $this->pubimport->get_context()->id,
-            $this->pubupload->get_context()->id,
-            $this->pubteamimport->get_context()->id,
+            $this->openbookupload->get_context()->id,
         ];
 
-        // User 1 submits to assign1 and teamassign1 and uploads in pubupload1!
-        $this->add_submission($this->user1, $this->assign, 'Textsubmission in assign1 by user1!', true);
-        $this->add_submission($this->user1, $this->teamassign, 'Textsubmission in teamassign1 by user1!', true);
+        // User 1 uploads in openbookupload1!
         $this->create_upload(
             $this->user1->id,
-            $this->pubupload->get_instance()->id,
+            $this->openbookupload->get_instance()->id,
             'upload-no-1.txt',
-            'THis is the first upload here!'
+            'This is the first upload here!'
         );
-        // User 3 also submits to general assign & uploads in general openbook!
-        $this->add_submission($this->user3, $this->assign2, 'Textsubmission for assign2 by user3!', true);
+        // User 3 also uploads in general openbook!
         $this->create_upload(
             $this->user3->id,
-            $this->pubupload2->get_instance()->id,
+            $this->openbookupload2->get_instance()->id,
             'upload-no-2.txt',
             'This is another upload in another openbook'
         );
@@ -224,16 +161,6 @@ final class privacy_provider_test extends base {
         $this->assertEquals(count($usercontextids), count($contextlist->get_contextids()));
         // There should be no difference between the contexts.
         $this->assertEmpty(array_diff($usercontextids, $contextlist->get_contextids()));
-
-        // User 3 is in a group with user 1 and submits to teamassign2!
-        $this->add_submission(
-            $this->user3,
-            $this->teamassign2,
-            'Another text submission, but this time valid for the whole group!'
-        );
-
-        // Now user 1 is also in pubteamimport2!
-        $usercontextids[] = $this->pubteamimport2->get_context()->id;
 
         $contextlist = provider::get_contexts_for_userid($this->user1->id);
         $this->assertEquals(count($usercontextids), count($contextlist->get_contextids()));
@@ -253,17 +180,15 @@ final class privacy_provider_test extends base {
      * @throws \moodle_exception
      */
     public function test_get_users_in_context(): void {
-        // User 1 submits to assign1 and teamassign1 and uploads in pubupload1!
-        $this->add_submission($this->user1, $this->assign, 'Textsubmission in assign1 by user1!', true);
-        $this->add_submission($this->user1, $this->teamassign, 'Textsubmission in teamassign1 by user1!', true);
+        // User 1 uploads in openbookupload1!
         $this->create_upload(
             $this->user1->id,
-            $this->pubupload->get_instance()->id,
+            $this->openbookupload->get_instance()->id,
             'upload-no-1.txt',
             'This is the first upload here!'
         );
 
-        $uploadcm = get_coursemodule_from_instance('openbook', $this->pubupload->get_instance()->id);
+        $uploadcm = get_coursemodule_from_instance('openbook', $this->openbookupload->get_instance()->id);
         $uploadctx = context_module::instance($uploadcm->id);
         $userlist = new \core_privacy\local\request\userlist($uploadctx, 'openbook');
         provider::get_users_in_context($userlist);
@@ -272,7 +197,7 @@ final class privacy_provider_test extends base {
         self::assertFalse(in_array($this->user2->id, $userids));
         self::assertFalse(in_array($this->user3->id, $userids));
 
-        $upload2cm = get_coursemodule_from_instance('openbook', $this->pubupload2->get_instance()->id);
+        $upload2cm = get_coursemodule_from_instance('openbook', $this->openbookupload2->get_instance()->id);
         $upload2ctx = context_module::instance($upload2cm->id);
         $userlist2 = new \core_privacy\local\request\userlist($upload2ctx, 'openbook');
         provider::get_users_in_context($userlist2);
@@ -281,24 +206,7 @@ final class privacy_provider_test extends base {
         self::assertFalse(in_array($this->user2->id, $userids2));
         self::assertFalse(in_array($this->user3->id, $userids2));
 
-        $importcm = get_coursemodule_from_instance('openbook', $this->pubimport->get_instance()->id);
-        $importctx = context_module::instance($importcm->id);
-        $importuserlist = new \core_privacy\local\request\userlist($importctx, 'openbook');
-        provider::get_users_in_context($importuserlist);
-        $importuserids = $importuserlist->get_userids();
-        self::assertTrue(in_array($this->user1->id, $importuserids));
-        self::assertFalse(in_array($this->user2->id, $importuserids));
-        self::assertFalse(in_array($this->user3->id, $importuserids));
-
-        $teamcm = get_coursemodule_from_instance('openbook', $this->pubteamimport->get_instance()->id);
-        $teamctx = context_module::instance($teamcm->id);
-        $teamuserlist = new \core_privacy\local\request\userlist($teamctx, 'openbook');
-        provider::get_users_in_context($teamuserlist);
-        $teamuserids = $teamuserlist->get_userids();
-        self::assertTrue(in_array($this->user1->id, $teamuserids));
-        self::assertFalse(in_array($this->user2->id, $teamuserids));
-        self::assertTrue(in_array($this->user3->id, $teamuserids));
-
+        // phpcs:disable moodle.Commenting.TodoComment
         // TODO: check for extended due dates and groupapprovals!
     }
 
@@ -366,20 +274,16 @@ final class privacy_provider_test extends base {
     public function test_delete_data_for_users(): void {
         global $DB;
 
-        // User 1 submits to assign1 and teamassign1 and uploads in pubupload1!
-        $this->add_submission($this->user1, $this->assign, 'Textsubmission in assign1 by user1!', true);
-        $this->add_submission($this->user2, $this->assign, 'Textsubmission in assign1 by user2!', true);
-        $this->add_submission($this->user1, $this->teamassign, 'Textsubmission in teamassign1 by user1!', true);
-        $this->add_submission($this->user2, $this->teamassign, 'Textsubmission in teamassign1 by user2!', true);
+        // User 1 uploads in openbookupload1!
         $this->create_upload(
             $this->user1->id,
-            $this->pubupload->get_instance()->id,
+            $this->openbookupload->get_instance()->id,
             'upload-no-1.txt',
             'This is the first upload here!'
         );
         $this->create_upload(
             $this->user2->id,
-            $this->pubupload->get_instance()->id,
+            $this->openbookupload->get_instance()->id,
             'upload-no-2.txt',
             'This is the second upload here!'
         );
@@ -389,26 +293,12 @@ final class privacy_provider_test extends base {
             2,
             $DB->count_records(
                 'openbook_file',
-                ['openbook' => $this->pubimport->get_instance()->id]
-            )
-        );
-        self::assertEquals(
-            2,
-            $DB->count_records(
-                'openbook_file',
-                ['openbook' => $this->pubteamimport->get_instance()->id]
-            )
-        );
-        self::assertEquals(
-            2,
-            $DB->count_records(
-                'openbook_file',
-                ['openbook' => $this->pubupload->get_instance()->id]
+                ['openbook' => $this->openbookupload->get_instance()->id]
             )
         );
 
         $userlist = new \core_privacy\local\request\approved_userlist(
-            $this->pubimport->get_context(),
+            $this->openbookupload->get_context(),
             'openbook',
             [$this->user1->id]
         );
@@ -417,89 +307,21 @@ final class privacy_provider_test extends base {
             1,
             $DB->count_records(
                 'openbook_file',
-                ['openbook' => $this->pubimport->get_instance()->id]
+                ['openbook' => $this->openbookupload->get_instance()->id]
             )
-        );
-        self::assertEquals(
-            2,
-            $DB->count_records(
-                'openbook_file',
-                ['openbook' => $this->pubteamimport->get_instance()->id]
-            )
-        );
-        self::assertEquals(
-            2,
-            $DB->count_records(
-                'openbook_file',
-                ['openbook' => $this->pubupload->get_instance()->id]
-            )
-        );
-        $userlist = new \core_privacy\local\request\approved_userlist(
-            $this->pubupload->get_context(),
-            'openbook',
-            [$this->user1->id]
         );
         provider::delete_data_for_users($userlist);
-        self::assertEquals(
-            1,
-            $DB->count_records(
-                'openbook_file',
-                ['openbook' => $this->pubimport->get_instance()->id]
-            )
-        );
-        self::assertEquals(
-            2,
-            $DB->count_records(
-                'openbook_file',
-                ['openbook' => $this->pubteamimport->get_instance()->id]
-            )
-        );
-        self::assertEquals(
-            1,
-            $DB->count_records(
-                'openbook_file',
-                ['openbook' => $this->pubupload->get_instance()->id]
-            )
-        );
-
         $userlist = new \core_privacy\local\request\approved_userlist(
-            $this->pubteamimport->get_context(),
+            $this->openbookupload->get_context(),
             'openbook',
             [$this->user1->id, $this->user2->id, $this->user3->id]
         );
         provider::delete_data_for_users($userlist);
-        $userlist = new \core_privacy\local\request\approved_userlist(
-            $this->pubupload->get_context(),
-            'openbook',
-            [$this->user1->id, $this->user2->id, $this->user3->id]
-        );
-        provider::delete_data_for_users($userlist);
-        $userlist = new \core_privacy\local\request\approved_userlist(
-            $this->pubimport->get_context(),
-            'openbook',
-            [$this->user1->id, $this->user2->id, $this->user3->id]
-        );
-        provider::delete_data_for_users($userlist);
-
         self::assertEquals(
             0,
             $DB->count_records(
                 'openbook_file',
-                ['openbook' => $this->pubimport->get_instance()->id]
-            )
-        );
-        self::assertEquals(
-            2,
-            $DB->count_records(
-                'openbook_file',
-                ['openbook' => $this->pubteamimport->get_instance()->id]
-            )
-        );
-        self::assertEquals(
-            0,
-            $DB->count_records(
-                'openbook_file',
-                ['openbook' => $this->pubupload->get_instance()->id],
+                ['openbook' => $this->openbookupload->get_instance()->id],
             )
         );
     }

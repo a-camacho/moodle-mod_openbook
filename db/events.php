@@ -26,25 +26,4 @@
 defined('MOODLE_INTERNAL') || die();
 
 $observers = [
-        [
-                'eventname' => 'mod_assign\event\assessable_submitted',
-                'callback' => 'mod_openbook\observer::import_assessable',
-                'includefile' => '/mod/openbook/classes/observer.php',
-                'priority' => 0,
-                'internal' => true,
-        ],
-        [
-                'eventname' => 'mod_assign\event\submission_removed',
-                'callback' => 'mod_openbook\observer::import_assessable',
-                'includefile' => '/mod/openbook/classes/observer.php',
-                'priority' => 0,
-                'internal' => true,
-        ],
-        [
-                'eventname' => 'core\event\course_module_created',
-                'callback' => 'mod_openbook\observer::course_module_created',
-                'includefile' => '/mod/openbook/classes/observer.php',
-                'priority' => 0,
-                'internal' => true,
-        ],
 ];
