@@ -93,6 +93,8 @@ function openbook_supports($feature) {
         case FEATURE_IDNUMBER:
             return true;
         case FEATURE_MOD_PURPOSE:
+            return MOD_PURPOSE_CONTENT;
+        case FEATURE_MOD_OTHERPURPOSE:
             return MOD_PURPOSE_COLLABORATION;
         default:
             return null;
