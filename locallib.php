@@ -700,7 +700,7 @@ class openbook {
                 'allfilespage' => $this->allfilespage,
             ]),
             get_string('downloadall', 'openbook'),
-            ['class' => 'btn btn-secondary mb-2 btn-sm']
+            ['class' => 'btn btn-secondary mb-2']
         );
 
         if (!$norowsfound && !$nofilesfound) {

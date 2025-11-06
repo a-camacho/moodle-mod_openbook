@@ -98,7 +98,7 @@ $string['filesarepersonal_yes'] = 'Yes (files are personal)';
 $string['filesarepersonal_no'] = 'No (files can be shared between students)';
 $string['filesarepersonal_admin'] = 'Files are personal';
 $string['filesarepersonal_admin_desc'] = 'This setting determines the default visibility setting for student files.';
-$string['filesarepersonal_help'] = 'This option determines if submitted files remain private to the owner: <br><ul><li><strong>Yes</strong> - files are private and personal.</li><li><strong>No</strong> - Files can be shared between students, if they are aproved by needed parties.</li></ul>';
+$string['filesarepersonal_help'] = 'This option determines if submitted files remain private to the owner: <br><ul><li><strong>Yes</strong> - files are private and personal.</li><li><strong>No</strong> - Files can be shared between students, if they are approved by needed parties.</li></ul>';
 
 $string['openpdffilesinpdfjs'] = 'Enable PDF.js';
 $string['openpdffilesinpdfjs_yes'] = 'Yes';
@@ -211,7 +211,7 @@ $string['add_uploads'] = 'Add files';
 $string['edit_uploads'] = 'Edit/upload files';
 $string['edit_timeover'] = 'Files can be edited only during the editing period.';
 $string['approval_timeover'] = 'You don\'t have any file waiting for sharing approval or approval time is over.';
-$string['approval_timeover_description'] = 'Sharing aproval';
+$string['approval_timeover_description'] = 'Sharing approval';
 $string['noentries'] = 'No entries';
 $string['nofiles'] = 'No files available';
 $string['nothing_to_show_users'] = 'Nothing to display - no students available';
@@ -275,8 +275,8 @@ $string['status:approvedrevoke'] = 'Revoked';
 $string['giveapproval'] = 'Give approval';
 $string['overdue'] = 'Deadline of editing period passed';
 $string['approval_required'] = 'Decision pending';
-$string['openbookstatus'] = 'Publication';
-$string['openbookstatus_help'] = 'The status of the publication represents the approval of the teacher and the final publication: <ul><li><i class="fa fa-check text-success fa-fw"></i> File is published and therefore visible for all participants</li><li><i class="fa fa-times text-danger fa-fw"></i> File is not published (approval has not yet been given or has been rejected) and therefore not visible</li></ul>';
+$string['openbookstatus'] = 'Approval';
+$string['openbookstatus_help'] = 'The status of the file represents the approval of the teacher: <ul><li><i class="fa fa-check text-success fa-fw"></i><i class="fa fa-share-from-square text-success fa-fw"></i> File is approved, has been shared, and is therefore visible for all participants</li><li><i class="fa fa-check text-success fa-fw"></i><i class="fa fa-user text-success fa-fw"></i> File is approved and is visible for the participant only</li><li><i class="fa fa-times text-danger fa-fw"></i> File is not approved (approval has not yet been given or has been rejected) and therefore not visible</li></ul>';
 
 $string['allfiles'] = 'File submissions';
 $string['publicfiles'] = 'Shared files';
