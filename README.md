@@ -1,5 +1,11 @@
 Openbook Resource Folder
 =====================
+[![Moodle Plugin CI](https://github.com/a-camacho/moodle-mod_openbook/actions/workflows/moodle-plugin-ci.yml/badge.svg?branch=main)](https://github.com/a-camacho/moodle-mod_openbook/actions/workflows/moodle-plugin-ci.yml)
+[![Latest Release](https://img.shields.io/github/v/release/a-camacho/moodle-mod_openbook?sort=semver&color=orange)](https://github.com/a-camacho/moodle-mod_openbook/releases)
+[![PHP Support](https://img.shields.io/badge/php-8.1--8.4-blue)](https://github.com/a-camacho/moodle-mod_openbook/actions)
+[![Moodle Support](https://img.shields.io/badge/Moodle-4.5--5.1+-orange)](https://github.com/a-camacho/moodle-mod_openbook/actions)
+[![License GPL-3.0](https://img.shields.io/github/license/a-camacho/moodle-mod_openbook?color=lightgrey)](https://github.com/a-camacho/moodle-mod_openbook/blob/main/LICENSE)
+[![GitHub contributors](https://img.shields.io/github/contributors/a-camacho/moodle-mod_openbook)](https://github.com/a-camacho/moodle-mod_openbook/graphs/contributors)
 
 This file is part of the mod_openbook plugin for Moodle - <http://moodle.org/>
 
