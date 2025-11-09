@@ -134,6 +134,28 @@ class openbook_overrides_form extends moodleform {
             $itemsadded = true;
         }
 
+        $mform->addElement('header', 'securewindowsettings', get_string('securewindowsettings', 'openbook'));
+        $mform->setExpanded('securewindowsettings');
+
+        $mform->addElement(
+            'date_time_selector',
+            'securewindowfromdate',
+            get_string('securewindowfromdate', 'openbook'),
+            ['optional' => true]
+        );
+        $mform->addHelpButton('securewindowfromdate', 'securewindowfromdate', 'openbook');
+        $mform->setDefault('securewindowfromdate', time());
+
+        $mform->addElement(
+            'date_time_selector',
+            'securewindowtodate',
+            get_string('securewindowtodate', 'openbook'),
+            ['optional' => true]
+        );
+        $mform->addHelpButton('securewindowtodate', 'securewindowtodate', 'openbook');
+        $mform->setDefault('securewindowtodate', time() + 7 * 24 * 3600);
+        $itemsadded = true;
+
         if (!$itemsadded) {
             $mform->addElement(
                 'html',

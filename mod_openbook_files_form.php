@@ -167,6 +167,7 @@ class mod_openbook_files_form extends moodleform {
             $approvalfromdate = false;
             $approvaltodate = false;
         }
+
         $tablecontext = [
             'myfiles' => $table->data,
             'hasmyfiles' => !empty($table->data),

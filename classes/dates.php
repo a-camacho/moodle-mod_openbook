@@ -38,7 +38,7 @@ use core\activity_dates;
  */
 class dates extends activity_dates {
     /**
-     * Returns a list of important dates in mod_assign
+     * Returns a list of important dates in mod_openbook.
      *
      * @return array
      */
@@ -60,6 +60,16 @@ class dates extends activity_dates {
             $instance->duedate = $override->duedate;
             $instance->allowsubmissionsfromdate = $override->allowsubmissionsfromdate;
         }
+
+        if ($override && $override->securewindowoverride) {
+            if ($override->securewindowfromdate > 0) {
+                $instance->securewindowfromdate = $override->securewindowfromdate;
+            }
+            if ($override->securewindowtodate > 0) {
+                $instance->securewindowtodate = $override->securewindowtodate;
+            }
+        }
+
         if ($instance->allowsubmissionsfromdate) {
             $dates[] = [
                 'dataid' => 'timeopen',
@@ -103,6 +113,22 @@ class dates extends activity_dates {
                     'timestamp' => $instance->approvaltodate,
                 ];
             }
+        }
+
+        if ($instance->securewindowfromdate) {
+            $dates[] = [
+                'dataid' => 'securewindowstart',
+                'label' => get_string('securewindowfromdate', 'openbook') . ':',
+                'timestamp' => $instance->securewindowfromdate,
+            ];
+        }
+
+        if ($instance->securewindowtodate) {
+            $dates[] = [
+                'dataid' => 'securewindowend',
+                'label' => get_string('securewindowtodate', 'openbook') . ':',
+                'timestamp' => $instance->securewindowtodate,
+            ];
         }
         return $dates;
     }

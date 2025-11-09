@@ -240,6 +240,13 @@ if (!$allfilespage) {
 } else {
     $PAGE->add_body_class('allfilespage');
 }
+
+// For teacher and manager/admins do not go into secure window layout.
+if (!has_capability('moodle/course:update', context_course::instance($course->id))) {
+    if ($openbook->is_securewindow_enforced()) {
+        $PAGE->set_pagelayout('secure');
+    }
+}
 echo $OUTPUT->header();
 
 $allfilesform = $openbook->display_allfilesform();

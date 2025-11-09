@@ -26,7 +26,7 @@ This plugin is primarily designed to allow students to upload files for later ac
 Teachers have the ability to approve documents manually, or documents can be automatically approved.
 Teachers can choose if files can be shared between students. They can also chose if student sharing approval is needed or automatic.
 PDF documents can be set to be opened in PDF.js for better handling. For exam purposes, documents can be set to be opened in
-Moodle's secure window.
+Moodle's secure layout window.
 
 Usage
 -------
@@ -46,7 +46,7 @@ or not (if sharing and student approval are enabled).
 
 * Accessing the documents can be restricted to them being opened in PDF.js.
 
-* Equally, the display of the documents can be set to happen in Moodle 'secure window', so that there is way to access the rest of
+* Equally, the display of the documents can be set to happen in Moodle 'secure layout', so that there is way to access the rest of
 the system, making it a safe way to use during an exam.
 
 Installation
