@@ -766,7 +766,7 @@ class openbook {
                 $buttons = '';
             }
 
-            $output .= html_writer::start_div('withselection col-7') .
+            $output .= html_writer::start_div('withselection col-7 d-flex align-items-center gap-1') .
                  html_writer::span(get_string('withselected', 'openbook')) .
                  html_writer::select($options, 'action') .
                  html_writer::empty_tag('input', [
