@@ -49,66 +49,42 @@ class openbook_overrides_form extends moodleform {
 
         $this->openbook = $this->_customdata['openbook'];
         $mode = $this->openbook->get_mode();
-        if ($mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
-            $groupids = $this->openbook->get_groups();
-            $groups = $DB->get_records_list('groups', 'id', $groupids);
+        $userids = $this->openbook->get_users([], true);
+        $users = $DB->get_records_list('user', 'id', $userids);
 
-            $mform->addElement('hidden', 'userid');
-            $mform->setType('userid', PARAM_INT);
-            $mform->setDefault('userid', 0);
-            $groupsclean = [];
-            foreach ($groups as $group) {
-                $groupsclean[$group->id] = $group->name;
+        $mform->addElement('hidden', 'groupid');
+        $mform->setType('groupid', PARAM_INT);
+        $mform->setDefault('groupid', 0);
+
+        $usersclean = [];
+        foreach ($users as $user) {
+            if ($user->deleted == 1 || $user->suspended == 1) {
+                continue;
             }
-            $options = [
-                'multiple' => false,
-                'noselectionstring' => get_string('override:group:choose', 'openbook'),
-
-            ];
-            $mform->addElement('autocomplete', 'groupid', get_string('group'), $groupsclean, $options);
-            $mform->addRule('groupid', null, 'required', null, 'client');
-        } else {
-            $userids = $this->openbook->get_users([], true);
-            $users = $DB->get_records_list('user', 'id', $userids);
-
-            $mform->addElement('hidden', 'groupid');
-            $mform->setType('groupid', PARAM_INT);
-            $mform->setDefault('groupid', 0);
-
-            $usersclean = [];
-            foreach ($users as $user) {
-                if ($user->deleted == 1 || $user->suspended == 1) {
-                    continue;
-                }
-                $usersclean[$user->id] = fullname($user);
-            }
-            $options = [
-                'multiple' => false,
-                'noselectionstring' => get_string('override:user:choose', 'openbook'),
-            ];
-            $mform->addElement('autocomplete', 'userid', get_string('user'), $usersclean, $options);
-            $mform->addRule('userid', null, 'required', null, 'client');
+            $usersclean[$user->id] = fullname($user);
         }
+        $options = [
+            'multiple' => false,
+            'noselectionstring' => get_string('override:user:choose', 'openbook'),
+        ];
+        $mform->addElement('autocomplete', 'userid', get_string('user'), $usersclean, $options);
+        $mform->addRule('userid', null, 'required', null, 'client');
 
-        $itemsadded = false;
-        if ($mode == OPENBOOK_MODE_FILEUPLOAD) {
-            $mform->addElement('header', 'submissionsettings', get_string('submissionsettings', 'openbook'));
-            $mform->setExpanded('submissionsettings');
+        $mform->addElement('header', 'submissionsettings', get_string('submissionsettings', 'openbook'));
+        $mform->setExpanded('submissionsettings');
 
-            $name = get_string('allowsubmissionsfromdate', 'openbook');
-            $options = ['optional' => true];
-            $mform->addElement('date_time_selector', 'allowsubmissionsfromdate', $name, $options);
-            $mform->addHelpButton('allowsubmissionsfromdate', 'allowsubmissionsfromdate', 'openbook');
-            $mform->setDefault('allowsubmissionsfromdate', time());
-            $mform->hideIf('allowsubmissionsfromdate', 'mode', 'neq', OPENBOOK_MODE_UPLOAD);
+        $name = get_string('allowsubmissionsfromdate', 'openbook');
+        $options = ['optional' => true];
+        $mform->addElement('date_time_selector', 'allowsubmissionsfromdate', $name, $options);
+        $mform->addHelpButton('allowsubmissionsfromdate', 'allowsubmissionsfromdate', 'openbook');
+        $mform->setDefault('allowsubmissionsfromdate', time());
+        $mform->hideIf('allowsubmissionsfromdate', 'mode', 'neq', OPENBOOK_MODE_UPLOAD);
 
-            $name = get_string('duedate', 'openbook');
-            $mform->addElement('date_time_selector', 'duedate', $name, ['optional' => true]);
-            $mform->addHelpButton('duedate', 'duedate', 'openbook');
-            $mform->setDefault('duedate', time() + 7 * 24 * 3600);
-            $mform->hideIf('duedate', 'mode', 'neq', OPENBOOK_MODE_UPLOAD);
-            $itemsadded = true;
-        }
+        $name = get_string('duedate', 'openbook');
+        $mform->addElement('date_time_selector', 'duedate', $name, ['optional' => true]);
+        $mform->addHelpButton('duedate', 'duedate', 'openbook');
+        $mform->setDefault('duedate', time() + 7 * 24 * 3600);
+        $mform->hideIf('duedate', 'mode', 'neq', OPENBOOK_MODE_UPLOAD);
 
         if ($this->openbook->get_instance()->obtainstudentapproval == 1) {
             $mform->addElement('header', 'approvalsettings', get_string('approvalsettings', 'openbook'));

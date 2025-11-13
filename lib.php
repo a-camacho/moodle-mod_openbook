@@ -138,12 +138,6 @@ function openbook_update_instance($openbook) {
 
     $instance->update_calendar_event();
 
-    if ($instance->get_instance()->mode == OPENBOOK_MODE_IMPORT || $approvalreseted) {
-        // Fetch all files right now!
-        $instance->importfiles();
-        openbook::send_all_pending_notifications();
-    }
-
     return true;
 }
 
@@ -318,20 +312,16 @@ function openbook_extend_settings_navigation(settings_navigation $settings, navi
     }
 
     if (has_capability('mod/openbook:manageoverrides', $settings->get_page()->cm->context)) {
-        $openbook = new openbook($cm, $course, $context);
-        $mode = $openbook->get_mode();
-        if ($mode != OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION || true) {
-            $url = new moodle_url('/mod/openbook/overrides.php', ['id' => $settings->get_page()->cm->id]);
+        $url = new moodle_url('/mod/openbook/overrides.php', ['id' => $settings->get_page()->cm->id]);
 
-            $node = navigation_node::create(
-                get_string('overrides', 'assign'),
-                $url,
-                navigation_node::TYPE_SETTING,
-                null,
-                'mod_openbook_useroverrides'
-            );
-            $navref->add_node($node, $beforekey);
-        }
+        $node = navigation_node::create(
+            get_string('overrides', 'assign'),
+            $url,
+            navigation_node::TYPE_SETTING,
+            null,
+            'mod_openbook_useroverrides'
+        );
+        $navref->add_node($node, $beforekey);
     }
 }
 

@@ -76,16 +76,7 @@ class mod_openbook_files_form extends moodleform {
             $noticestudentstringid = 'filesarepersonal';
         } else {
             if ($openbookinstance->obtainstudentapproval) {
-                if ($mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
-                    if ($openbookinstance->groupapproval == OPENBOOK_APPROVAL_ALL) {
-                        $noticestudentstringid = 'all';
-                    } else {
-                        $noticestudentstringid = 'one';
-                    }
-                    $noticemode = 'group';
-                } else {
-                    $noticestudentstringid = 'studentrequired';
-                }
+                $noticestudentstringid = 'studentrequired';
             } else {
                 $noticestudentstringid = 'studentnotrequired';
             }
@@ -97,38 +88,13 @@ class mod_openbook_files_form extends moodleform {
             }
         }
 
-        $stringid = 'notice_' . $noticemode . '_' . $noticestudentstringid . '_' . $noticeteacherid;
-
-        if ($mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
-            $headertext = get_string('mygroupfiles', 'openbook');
-        } else {
-            $headertext = get_string('myfiles', 'openbook');
-        }
-        $notice = get_string($stringid, 'openbook');
-
-        if ($mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
-            $notice = get_string('notice_files_imported_group', 'openbook') . ' ' . $notice;
-        } else if ($mode == OPENBOOK_MODE_ASSIGN_IMPORT) {
-            $notice = get_string('notice_files_imported', 'openbook') . ' ' . $notice;
-        }
-
-        if ($mode != OPENBOOK_MODE_FILEUPLOAD) {
-            $notice .= '<br />' . get_string('notice_changes_possible_in_original', 'openbook');
-        }
-
         $table = $openbook->get_filestable();
 
-        $mform->addElement('header', 'myfiles', $headertext);
+        $mform->addElement('header', 'myfiles', get_string('myfiles', 'openbook'));
         $mform->setExpanded('myfiles');
 
         $PAGE->requires->js_call_amd('mod_openbook/filesform', 'initializer', []);
         $PAGE->requires->js_call_amd('mod_openbook/alignrows', 'initializer', []);
-
-        $noticehtml = html_writer::start_tag('div', ['class' => 'alert alert-info']);
-        $noticehtml .= get_string('notice', 'openbook') . ' ' . $notice;
-        $noticehtml .= html_writer::end_tag('div');
-
-        $mform->addElement('html', $noticehtml);
 
         // Now we do all the table work and return 0 if there's no files to show!
         $table->init();
@@ -137,7 +103,6 @@ class mod_openbook_files_form extends moodleform {
         $timeremaining = false;
         $openbookinstance = $openbook->get_instance();
 
-        $extensionduedate = $openbook->user_extensionduedate($USER->id);
         $override = $openbook->override_get_currentuserorgroup();
         if ($override && $override->approvalfromdate) {
             $approvalfromdate = $override->approvalfromdate > 0 ? userdate($override->approvalfromdate) : false;
@@ -162,12 +127,6 @@ class mod_openbook_files_form extends moodleform {
             }
         }
 
-        $extensionduedate = $extensionduedate > 0 ? userdate($extensionduedate) : false;
-        if (!$openbookinstance->obtainstudentapproval) {
-            $approvalfromdate = false;
-            $approvaltodate = false;
-        }
-
         $tablecontext = [
             'myfiles' => $table->data,
             'hasmyfiles' => !empty($table->data),
@@ -175,11 +134,7 @@ class mod_openbook_files_form extends moodleform {
             'lastmodified' => userdate($table->lastmodified),
             'approvalfromdate' => $approvalfromdate,
             'approvaltodate' => $approvaltodate,
-            'extensionduedate' => $extensionduedate,
-            'assign' => $openbook->get_importlink(),
-            'myfilestitle' => $mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION
-                                ? get_string('mygroupfiles', 'openbook')
-                                : get_string('myfiles', 'openbook'),
+            'myfilestitle' => get_string('myfiles', 'openbook'),
         ];
         /* TODO : Add PDF.js link to myfiles table */
         $myfilestable = $OUTPUT->render_from_template('mod_openbook/myfiles', $tablecontext);
@@ -217,8 +172,7 @@ class mod_openbook_files_form extends moodleform {
         }
 
         if (
-            $openbook->get_instance()->mode == OPENBOOK_MODE_UPLOAD
-            && has_capability('mod/openbook:upload', $openbook->get_context())
+            has_capability('mod/openbook:upload', $openbook->get_context())
         ) {
             if ($openbook->is_open()) {
                 $buttonarray = [];

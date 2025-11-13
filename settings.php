@@ -87,21 +87,6 @@ if ($ADMIN->fulltree) {
     ));
 
     $options = [
-        OPENBOOK_APPROVAL_GROUPAUTOMATIC => get_string('obtainapproval_automatic', 'openbook'),
-        OPENBOOK_APPROVAL_SINGLE => get_string('obtaingroupapproval_single', 'openbook'),
-        OPENBOOK_APPROVAL_ALL => get_string('obtaingroupapproval_all', 'openbook'),
-    ];
-
-    $settings->add(new admin_setting_configselect(
-        'openbook/obtaingroupapproval',
-        get_string('obtaingroupapproval_admin', 'openbook'),
-        get_string('obtaingroupapproval_admin_desc', 'openbook'),
-        0,
-        $options
-    ));
-
-
-    $options = [
         OPENBOOK_NOTIFY_NONE => get_string('notify:setting:0', 'openbook'),
         OPENBOOK_NOTIFY_TEACHER => get_string('notify:setting:1', 'openbook'),
         OPENBOOK_NOTIFY_STUDENT => get_string('notify:setting:2', 'openbook'),

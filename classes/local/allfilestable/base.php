@@ -515,46 +515,6 @@ FROM
     }
 
     /**
-     * Method returns online-text-preview where it's needed!
-     * Is implemented/overwritten where needed!
-     *
-     * @param int $itemid user ID or group ID
-     * @param int $fileid file ID
-     * @return string link to onlinetext-preview
-     */
-    protected function add_onlinetext_preview($itemid, $fileid) {
-        global $DB, $OUTPUT;
-        // This method does nothing here!
-        // Get file data/record!
-        $conditions = [
-                'openbook' => $this->cm->instance,
-                'userid' => $itemid,
-                'fileid' => $fileid,
-                'type' => OPENBOOK_MODE_ONLINETEXT,
-        ];
-        if (!$DB->record_exists('openbook_file', $conditions)) {
-            return '';
-        }
-
-        $itemname = $this->get_itemname($itemid);
-
-        $url = new \moodle_url('/mod/openbook/onlinepreview.php', [
-                'id' => $this->cm->id,
-                'itemid' => $itemid,
-                'itemname' => $itemname,
-        ]);
-
-        $detailsattr = [
-                'class' => 'onlinetextpreview',
-                'data-itemid' => $itemid,
-                'data-itemname' => $itemname,
-        ];
-        $symbol = \html_writer::tag('span', $OUTPUT->pix_icon('i/preview', get_string('preview')), $detailsattr);
-
-        return \html_writer::link($url, $symbol, ['target' => '_blank']);
-    }
-
-    /**
      * Caches and returns itemnames for given itemids
      *
      * @param int $itemid
@@ -607,25 +567,10 @@ FROM
             $this->itemnames[$values->id] = fullname($values);
         }
 
-        $extension = $this->openbook->user_extensionduedate($values->id);
-        if ($extension) {
-            if (
-                (has_capability('mod/openbook:grantextension', $this->context) ||
-                    has_capability('mod/openbook:approve', $this->context)) && $this->allfilespage
-            ) {
-                $extensiontxt = \html_writer::empty_tag('br') . "\n" .
-                        get_string('extensionto', 'openbook') . ': ' . userdate($extension);
-            } else {
-                $extensiontxt = '';
-            }
-        } else {
-            $extensiontxt = '';
-        }
-
         if ($this->is_downloading()) {
-            return strip_tags(parent::col_fullname($values) . $extensiontxt);
+            return strip_tags(parent::col_fullname($values));
         } else {
-            return  $OUTPUT->user_picture($values) .  parent::col_fullname($values) . $extensiontxt;
+            return  $OUTPUT->user_picture($values) .  parent::col_fullname($values);
         }
     }
 

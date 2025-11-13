@@ -61,7 +61,6 @@ class provider implements core_userlist_provider, metadataprovider, pluginprovid
                 'userid' => 'privacy:metadata:userid',
                 'timecreated' => 'privacy:metadata:timecreated',
                 'fileid' => 'privacy:metadata:fileid',
-                'filesourceid' => 'privacy:metadata:fileid',
                 'filename' => 'privacy:metadata:filename',
                 'contenthash' => 'privacy:metadata:contenthash',
                 'type' => 'privacy:metadata:type',
@@ -401,23 +400,6 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
     }
 
     /**
-     * Export overrides for this assignment.
-     *
-     * @param  \context $context Context
-     * @param  \openbook $pub The openbook object.
-     * @param  \stdClass $user The user object.
-     * @throws \coding_exception
-     */
-    public static function export_extensions(\context $context, \openbook $pub, \stdClass $user) {
-        $ext = $pub->user_extensionduedate($user->id);
-        // Overrides returns an array with data in it, but an override with actual data will have the assign ID set.
-        if ($ext > 0) {
-            $data = (object)[get_string('privacy:extensionduedate', 'mod_openbook') => transform::datetime($ext)];
-            writer::with_context($context)->export_data([], $data);
-        }
-    }
-
-    /**
      * Fetches all of the user's files and adds them to the export
      *
      * @param  \context_module $context
@@ -430,65 +412,18 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
     protected static function export_files(\context_module $context, \openbook $pub, \stdClass $user, array $path) {
         global $DB;
 
-        $groupimports = false;
-        $emptygroup = false;
-        if (($pub->get_instance()->mode == OPENBOOK_MODE_IMPORT) && ($pub->get_instance()->importfrom > 0)) {
-            $assign = $DB->get_record(
-                'assign',
-                ['id' => $pub->get_instance()->importfrom],
-                'name, teamsubmission, preventsubmissionnotingroup'
-            );
-            $groupimports = $assign->teamsubmission;
-            if ($groupimports && !$assign->preventsubmissionnotingroup) {
-                $groups = groups_get_user_groups($pub->get_instance()->course, $user->id);
-                $emptygroup = ($groups === [0 => []]) ? true : false;
-            }
-        }
-
-        if ($groupimports) {
-            // Imported files are saved under group's ID!
-            if (!$emptygroup) {
-                $rs = $DB->get_recordset_sql("
-                    SELECT f.*
-                      FROM {openbook} p
-                      JOIN {openbook_file} f ON p.id = f.openbook
-                      JOIN {groups} g ON g.courseid = p.course
-                      JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :userid AND f.userid = gm.groupid
-                     WHERE p.id = :openbook", [
-                        'openbook' => $pub->get_instance()->id,
-                        'userid' => $user->id,
-                ]);
-            } else {
-                $rs = $DB->get_recordset("openbook_file", [
-                        'openbook' => $pub->get_instance()->id,
-                        'userid' => 0,
-                ]);
-            }
-        } else {
-            // Imported and uploaded files are saved with user's ID!
-            $rs = $DB->get_recordset_sql("SELECT f.*
-                  FROM {openbook} p
-                  JOIN {openbook_file} f ON p.id = f.openbook
-                 WHERE p.id = :openbook AND f.userid = :userid", [
-                    'openbook' => $pub->get_instance()->id,
-                    'userid' => $user->id,
-            ]);
-        }
+        // Imported and uploaded files are saved with user's ID!
+        $rs = $DB->get_recordset_sql("SELECT f.*
+              FROM {openbook} p
+              JOIN {openbook_file} f ON p.id = f.openbook
+             WHERE p.id = :openbook AND f.userid = :userid", [
+                'openbook' => $pub->get_instance()->id,
+                'userid' => $user->id,
+        ]);
 
         foreach ($rs as $cur) {
             $filepath = array_merge($path, [get_string('privacy:path:files', 'mod_openbook'), $cur->filename]);
-            switch ($cur->type) {
-                case OPENBOOK_MODE_ONLINETEXT:
-                    static::export_onlinetext($context, $cur, $filepath);
-                    break;
-                default:
-                    static::export_file($context, $cur, $filepath);
-                    break;
-            }
-        }
-
-        if ($groupimports) {
-            static::export_groupapprovals($context, $pub, $user, $path);
+            static::export_file($context, $cur, $filepath);
         }
     }
 

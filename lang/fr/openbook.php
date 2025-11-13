@@ -161,11 +161,6 @@ $string['cutoffdate_help'] = 'Si définie, l\'activité n\'acceptera pas de remi
 $string['cutoffdatevalidation'] = 'La date de fin ne peut pas être antérieure à la date limite.';
 $string['cutoffdatefromdatevalidation'] = 'La date de fin doit être postérieure à la date de début des remises autorisées.';
 
-$string['mode'] = 'Mode';
-$string['mode_help'] = 'Choisissez si les étudiants peuvent téléverser directement leurs documents ici ou si leurs remises d\'une activité doivent être importées.';
-$string['modeupload'] = 'Téléverser les fichiers directement dans cette activité';
-$string['modeimport'] = 'Importer les fichiers depuis une activité de remise';
-
 $string['courseuploadlimit'] = 'Limite de téléversement du cours';
 $string['allowedfiletypes'] = 'Types de fichiers acceptés';
 $string['allowedfiletypes_help'] = 'Les types de fichiers acceptés peuvent être limités en saisissant une liste de types MIME séparés par des virgules, par exemple \'video/mp4, audio/mp3, image/png, image/jpeg\', ou des extensions de fichiers avec un point, par exemple \'.png, .jpg\'. Si le champ est vide, tous les types de fichiers sont autorisés.';

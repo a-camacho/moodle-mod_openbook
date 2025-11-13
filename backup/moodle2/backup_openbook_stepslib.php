@@ -50,46 +50,39 @@ class backup_openbook_activity_structure_step extends backup_activity_structure_
                 'intro',
                 'introformat',
                 'alwaysshowdescription',
-                'duedate',
                 'allowsubmissionsfromdate',
+                'duedate',
                 'completionupload',
-                'timemodified',
-                'cutoffdate',
                 'approvalfromdate',
                 'approvaltodate',
-                'mode',
-                'importfrom',
                 'obtainstudentapproval',
                 'maxfiles',
                 'maxbytes',
                 'allowedfiletypes',
                 'obtainteacherapproval',
                 'filesarepersonal',
-                'openpdffilesinpdfjs_no',
-                'autoimport',
-                'groupapproval',
+                'openpdffilesinpdfjs',
                 'notifystatuschange',
                 'notifyfilechange',
-                'availabilityrestriction',
-        ]);
-
-        $extduedates = new backup_nested_element('extduedates');
-
-        $extduedate = new backup_nested_element('extduedate', ['id'], [
-                'userid',
-                'openbook',
-                'extensionduedate',
+                'securewindowfromdate',
+                'securewindowtodate',
+                'showfilechangeswarning',
+                'timecreated',
+                'timemodified',
+                'uselegacyviewer',
         ]);
 
         $overrides = new backup_nested_element('overrides');
         $override = new backup_nested_element('override', ['id'], [
                 'openbook',
-                'userid',
                 'groupid',
+                'userid',
                 'allowsubmissionsfromdate',
                 'duedate',
                 'approvalfromdate',
                 'approvaltodate',
+                'securewindowfromdate',
+                'securewindowtodate',
         ]);
 
         $files = new backup_nested_element('files');

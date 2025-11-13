@@ -68,7 +68,7 @@ $string['notify:setting:3'] = 'Both teachers and students';
 $string['notify:statuschange'] = 'Notifications about Openbook resource folder status changes';
 $string['notify:statuschange_help'] = ' Depends on the setting, if enabled, students and/or teachers will receive a notification when the Openbook resource folder status of one of the files is changed.';
 $string['notify:statuschange_admin'] = 'Default notification setting for Openbook resource folder status changes';
-$string['notify:filechange'] = 'Notifications about submitted or imported files';
+$string['notify:filechange'] = 'Notifications about submitted files';
 $string['notify:filechange_help'] = 'Depends on the setting, if enabled, students and/or teachers will receive a notification when students upload or change a file, or when a file is imported or updated from an assignment activity.';
 $string['notify:filechange_admin'] = 'Default notification setting for file changes - submitted or imported';
 
@@ -157,22 +157,12 @@ $string['duedate'] = 'To';
 $string['duedate_help'] = 'If this option is enabled, participants cannot submit their file submissions after this date. If the option is disabled, participants can submit forever.';
 $string['duedatevalidation'] = 'Due date must be after the allow submissions from date.';
 
-$string['cutoffdate'] = 'Cut-off date';
-$string['cutoffdate_help'] = 'If set, the assignment will not accept submissions after this date without an extension.';
-$string['cutoffdatevalidation'] = 'The cut-off date cannot be earlier than the due date.';
-$string['cutoffdatefromdatevalidation'] = 'Cut-off date must be after the allow submissions from date.';
-
 $string['securewindowsettings'] = 'Secure window settings';
 $string['securewindowfromdate'] = 'Start secure window';
 $string['securewindowfromdate_help'] = 'If this option is enabled, the activity will open in a secure window that hides navigation and offers no links to other parts of Moodle. So, for example, only links to the allowed files will be visible during the a quiz attempt. Secure window starts at the given date.';
 $string['securewindowtodate'] = 'End secure window';
 $string['securewindowtodate_help'] = 'If this option is enabled, the activity will open in a secure window that hides navigation and offers no links access to other parts of Moodle. So, for example, only links to the allowed files will be visible during the a quiz attempt. Secure window ends at the given date.';
 $string['securewindowtodatevalidation'] = 'End date must be after secure window start date.';
-
-$string['mode'] = 'Mode';
-$string['mode_help'] = 'Choose whether students can upload documents here or their submissions of an assignment shall be imported.';
-$string['modeupload'] = 'Upload files directly in the current activity';
-$string['modeimport'] = 'Import files from an assignment activity';
 
 $string['courseuploadlimit'] = 'Course upload limit';
 $string['allowedfiletypes'] = 'Accepted file types';

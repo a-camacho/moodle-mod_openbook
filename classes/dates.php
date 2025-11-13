@@ -85,15 +85,6 @@ class dates extends activity_dates {
             ];
         }
 
-        $extensionduedate = $openbook->user_extensionduedate($USER->id);
-
-        if ($extensionduedate) {
-            $dates[] = [
-                'label' => get_string('extensionto', 'openbook') . ':',
-                'timestamp' => $extensionduedate,
-            ];
-        }
-
         if ($instance->obtainstudentapproval) {
             if ($override && $override->approvaloverride) {
                 $instance->approvalfromdate = $override->approvalfromdate;

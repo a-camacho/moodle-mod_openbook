@@ -86,12 +86,6 @@ class restore_openbook_activity_structure_step extends restore_activity_structur
         $data->allowsubmissionsfromdate = $this->apply_date_offset($data->allowsubmissionsfromdate);
         $data->duedate = $this->apply_date_offset($data->duedate);
 
-        if (!isset($data->cutoffdate)) {
-            $data->cutoffdate = 0;
-        } else {
-            $data->cutoffdate = $this->apply_date_offset($data->cutoffdate);
-        }
-
         if ($data->approvalfromdate != 0) {
             $data->approvalfromdate = $this->apply_date_offset($data->approvalfromdate);
         }
@@ -145,11 +139,6 @@ class restore_openbook_activity_structure_step extends restore_activity_structur
         $data->openbook = $this->get_new_parentid('openbook');
 
         $data->userid = $this->get_mappingid('user', $data->userid);
-        if (!empty($data->extensionduedate)) {
-            $data->extensionduedate = $this->apply_date_offset($data->extensionduedate);
-        } else {
-            $data->extensionduedate = 0;
-        }
         // Flags mailed and locked need no translation on restore.
 
         $DB->insert_record('openbook_extduedates', $data);

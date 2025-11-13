@@ -20,14 +20,13 @@
     Openbook resource folder's overrides template.
 
     The purpose of this template is to the contents of the overrides.
-    
+
     Example context (json):
     {
         "isteacher": true,
         "showapprovalrequired": true,
         "viewall_approvalneeded_url": "https://example.com/mod/openbook/approvalneeded.php",
         "myfilesform": "<form>...teacher files form...</form>",
-        "mode": "Individual",
         "filesarepersonal": "Yes",
         "obtainteacherapproval": "Yes",
         "obtainstudentapprovaltitle": "Student approval required",
@@ -55,10 +54,6 @@
     {{/isteacher}}
     <table class="table table-striped w-100">
         {{#isteacher}}
-            <tr>
-                <th>{{#str}}mode,openbook{{/str}}</th>
-                <td>{{mode}}</td>
-            </tr>
             {{#assign}}
                 {{{.}}}
             {{/assign}}

@@ -85,13 +85,6 @@ class mod_openbook_grantextension_form extends moodleform {
             $mform->setDefault('extensionduedate', $finaldate);
         }
 
-        if (count($userids) == 1) {
-            $extensionduedate = $openbook->user_extensionduedate($userids[0]);
-            if ($extensionduedate) {
-                $mform->setDefault('extensionduedate', $extensionduedate);
-            }
-        }
-
         $mform->addElement('hidden', 'id', $openbook->get_coursemodule()->id);
         $mform->setType('id', PARAM_INT);
 

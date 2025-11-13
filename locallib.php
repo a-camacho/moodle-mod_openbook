@@ -27,13 +27,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 define('OPENBOOK_MODE_UPLOAD', 0);
-define('OPENBOOK_MODE_IMPORT', 1);
-// Used in DB to mark online-text-files!
-define('OPENBOOK_MODE_ONLINETEXT', 2);
-
-define('OPENBOOK_APPROVAL_GROUPAUTOMATIC', -1);
-define('OPENBOOK_APPROVAL_ALL', 0);
-define('OPENBOOK_APPROVAL_SINGLE', 1);
 
 define('OPENBOOK_EVENT_TYPE_DUE', 'due');
 
@@ -45,8 +38,6 @@ define('OPENBOOK_FILTER_APPROVALREQUIRED', 'approvalrequired');
 define('OPENBOOK_FILTER_NOFILES', 'nofiles');
 
 define('OPENBOOK_MODE_FILEUPLOAD', 'fileupload');
-define('OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION', 'teamsubmission');
-define('OPENBOOK_MODE_ASSIGN_IMPORT', 'import');
 
 define('OPENBOOK_NOTIFY_NONE', 0);
 define('OPENBOOK_NOTIFY_TEACHER', 1);
@@ -114,20 +105,6 @@ class openbook {
         // phpcs:disable Squiz.PHP.CommentedOutCode
         // phpcs:disable moodle.Commenting.InlineComment
         // $this->instance->obtainteacherapproval = !$this->instance->obtainteacherapproval;
-
-        if ($this->instance->mode == OPENBOOK_MODE_IMPORT) {
-            $cond = ['id' => $this->instance->importfrom];
-            $this->requiregroup = $DB->get_field('assign', 'preventsubmissionnotingroup', $cond);
-            $this->teamsubmission = $DB->get_field('assign', 'teamsubmission', $cond);
-        }
-
-        if ($this->get_instance()->mode == OPENBOOK_MODE_UPLOAD) {
-            $this->mode = OPENBOOK_MODE_FILEUPLOAD;
-        } else if ($this->teamsubmission) {
-            $this->mode = OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION;
-        } else {
-            $this->mode = OPENBOOK_MODE_ASSIGN_IMPORT;
-        }
     }
 
     /**
@@ -196,13 +173,6 @@ class openbook {
             echo '    <td class="c1">' . userdate($this->instance->duedate) . '</td></tr>';
         }
 
-        $extensionduedate = $this->user_extensionduedate($USER->id);
-
-        if ($extensionduedate) {
-            echo '<tr><td class="c0">' . get_string('extensionto', 'openbook') . ':</td>';
-            echo '    <td class="c1">' . userdate($extensionduedate) . '</td></tr>';
-        }
-
         $override = $this->override_get_currentuserorgroup();
         if ($override) {
             if ($override->submissionoverride) {
@@ -222,46 +192,6 @@ class openbook {
         echo '</table>';
 
         echo $OUTPUT->box_end();
-    }
-
-    /**
-     * If the mode is set to import then the link to the corresponding
-     * assignment will be displayed
-     */
-    public function get_importlink() {
-        global $DB, $OUTPUT;
-
-        if ($this->instance->mode == OPENBOOK_MODE_IMPORT) {
-            $context = new stdClass();
-
-            if ($this->get_instance()->importfrom == -1) {
-                $context->notset = true;
-            } else {
-                $assign = $DB->get_record('assign', ['id' => $this->instance->importfrom]);
-
-                $assignmoduleid = $DB->get_field('modules', 'id', ['name' => 'assign']);
-
-                if ($assign) {
-                    $assigncm = $DB->get_record('course_modules', [
-                            'course' => $assign->course,
-                            'module' => $assignmoduleid,
-                            'instance' => $assign->id,
-                    ]);
-                } else {
-                    $assigncm = false;
-                }
-                if ($assign && $assigncm) {
-                    $assignurl = new moodle_url('/mod/assign/view.php', ['id' => $assigncm->id]);
-                    $context->assign = true;
-                    $context->name = $assign->name;
-                    $context->url = $assignurl->out(false);
-                } else {
-                    $context->notfound = true;
-                }
-            }
-            return $OUTPUT->render_from_template('mod_openbook/partial_assignlink', $context);
-        }
-        return null;
     }
 
     /**
@@ -293,27 +223,6 @@ class openbook {
         }
 
         return '';
-    }
-
-    /**
-     * Get the extension due date (if set)
-     *
-     * @param int $uid User ID to fetch extension due date for
-     * @return int extension due date if set or 0
-     */
-    public function user_extensionduedate($uid) {
-        global $DB;
-
-        $extensionduedate = $DB->get_field('openbook_extduedates', 'extensionduedate', [
-                'openbook' => $this->get_instance()->id,
-                'userid' => $uid,
-        ]);
-
-        if (!$extensionduedate) {
-            return 0;
-        }
-
-        return $extensionduedate;
     }
 
     /**
@@ -370,12 +279,6 @@ class openbook {
         $from = $this->get_instance()->allowsubmissionsfromdate;
         $due = $this->get_instance()->duedate;
 
-        $extensionduedate = $this->user_extensionduedate($USER->id);
-
-        if ($extensionduedate) {
-            $due = $extensionduedate;
-        }
-
         $override = $this->override_get_currentuserorgroup();
 
         if ($override && $override->submissionoverride) {
@@ -407,11 +310,6 @@ class openbook {
 
         $from = $this->get_instance()->approvalfromdate;
         $to = $this->get_instance()->approvaltodate;
-        $extensionduedate = $this->user_extensionduedate($USER->id);
-
-        if ($to != 0 && $extensionduedate) {
-            $to = $extensionduedate;
-        }
 
         $override = $this->override_get_currentuserorgroup();
 
@@ -628,12 +526,7 @@ class openbook {
         }
         $modinfo = get_fast_modinfo($this->course->id);
 
-        $info = new \core_availability\info_module($modinfo->get_cm($this->coursemodule->id));
-        if ($this->get_instance()->availabilityrestriction) {
-            $filtered = $info->filter_user_list($users);
-        } else {
-            $filtered = $users;
-        }
+        $filtered = $users;
         if (empty($filtered)) {
             return [-1];
         }
@@ -661,13 +554,7 @@ class openbook {
             $this->allfilespage = true;
         }
         $uniqueid = \mod_openbook\local\allfilestable\base::get_table_uniqueid($this->instance->id);
-        if ($mode == OPENBOOK_MODE_FILEUPLOAD) {
-            $table = new \mod_openbook\local\allfilestable\upload($uniqueid . $this->coursemodule->id, $this, $filter);
-        } else if ($mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
-            $table = new \mod_openbook\local\allfilestable\group($uniqueid, $this, $filter);
-        } else {
-            $table = new \mod_openbook\local\allfilestable\import($uniqueid, $this, $filter);
-        }
+        $table = new \mod_openbook\local\allfilestable\upload($uniqueid . $this->coursemodule->id, $this, $filter);
         $this->allfilespage = $oldallfilespage;
         return $table;
     }
@@ -678,13 +565,7 @@ class openbook {
     public function get_filestable() {
         global $DB;
         $mode = $this->get_mode();
-        if ($mode == OPENBOOK_MODE_FILEUPLOAD) {
-            $table = new \mod_openbook\local\filestable\upload($this);
-        } else if ($mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
-            $table = new \mod_openbook\local\filestable\group($this);
-        } else {
-            $table = new \mod_openbook\local\filestable\import($this);
-        }
+        $table = new \mod_openbook\local\filestable\upload($this);
         return $table;
     }
 
@@ -1165,10 +1046,6 @@ class openbook {
             $availabilityinfo = new \core_availability\info_module($modinfo->get_cm($this->coursemodule->id));
         }
 
-        if ($this->mode != OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
-            throw new coding_exception('Cannot be called if files get uploaded or teamsubmission is deactivated!');
-        }
-
         if (!empty($groupid)) {
             $groupmembers = groups_get_members($groupid);
         } else if (!$DB->get_field('assign', 'preventsubmissionnotingroup', ['id' => $this->get_instance()->importfrom])) {
@@ -1194,58 +1071,6 @@ class openbook {
         }
 
         return $groupmembers;
-    }
-
-    /**
-     * Gets group approval for the specified file!
-     *
-     * @param int $pubfileid ID of openbook file entry in DB
-     * @return array cumulated approval for specified file and array with approval details
-     */
-    public function group_approval($pubfileid) {
-        global $DB;
-
-        if ($this->mode != OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
-            throw new coding_exception('Cannot be called if files get uploaded or teamsubmission is deactivated!');
-        }
-
-        $filerec = $DB->get_record('openbook_file', ['id' => $pubfileid]);
-
-        // Get group members!
-        $groupmembers = $this->get_submissionmembers($filerec->userid);
-        $studentapproval = 0;
-        $groupapproval = $this->get_instance()->groupapproval;
-        if (!empty($groupmembers)) {
-            [$usersql, $userparams] = $DB->get_in_or_equal(array_keys($groupmembers), SQL_PARAMS_NAMED, 'user');
-            $sql = "SELECT u.*, ga.approval, ga.timemodified AS approvaltime, ga.userid, ga.fileid
-                      FROM {openbook_groupapproval} ga
-                 JOIN {user} u ON u.id = ga.userid
-                     WHERE  ga.fileid = :fileid AND u.id " . $usersql;
-            $params = ['fileid' => $filerec->id] + $userparams;
-            $groupdata = $DB->get_records_sql($sql, $params);
-            $allconfirmed = true;
-            foreach ($groupdata as $gd) {
-                if ($gd->approval === 0 || $gd->approval === '0') {
-                    $studentapproval = 2;
-                    $allconfirmed = false;
-                    break;
-                }
-                if ($groupapproval == OPENBOOK_APPROVAL_SINGLE && $gd->approval == 1) {
-                    $studentapproval = 1;
-                } else if ($groupapproval == OPENBOOK_APPROVAL_ALL) {
-                    if ($gd->approval != 1) {
-                        $allconfirmed = false;
-                    }
-                }
-            }
-            if ($groupapproval == OPENBOOK_APPROVAL_ALL && $allconfirmed) {
-                $studentapproval = 1;
-            }
-        } else {
-            $groupdata = [];
-        }
-
-        return [$filerec->studentapproval, $groupdata];
     }
 
     /**
@@ -1557,13 +1382,6 @@ class openbook {
                     $newteacherapproval = 2;
                     break;
                 case 'resetstudentapproval':
-                    if (
-                        $oldstudentapproval != 1 &&
-                        $oldstudentapproval != 2 &&
-                        $this->mode != OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION
-                    ) {
-                        continue 2;
-                    }
                     $resetstudentapproval = true;
                     $newstatus = 'revoke';
                     $logstatus .= 'revoked';
@@ -1574,9 +1392,6 @@ class openbook {
 
             $user = $DB->get_record('user', ['id' => $x->userid]);
             $group = false;
-            if ($this->mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
-                $group = $x->userid;
-            }
 
             $dataforlog = new stdClass();
             $dataforlog->openbook = $this->instance->id;
@@ -1602,415 +1417,12 @@ class openbook {
                 $DB->set_field('openbook_file', 'teacherapproval', $newteacherapproval, ['fileid' => $fileid]);
             } else { // Reset student approval.
                 $DB->set_field('openbook_file', 'studentapproval', 0, ['fileid' => $fileid]);
-                if ($this->mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
-                    $groupapprovals = $DB->get_records('openbook_groupapproval', ['fileid' => $x->id]);
-                    foreach ($groupapprovals as $groupapproval) {
-                        $DB->set_field('openbook_groupapproval', 'approval', null, ['id' => $groupapproval->id]);
-                    }
-                }
             }
 
             if ($this->instance->notifystatuschange != 0) {
                 $cm = $this->coursemodule;
                 $cmid = $this->coursemodule->id;
                 self::send_notification_statuschange($cm, $USER, $newstatus, $x, $cmid, $this);
-            }
-        }
-    }
-
-    /**
-     * Updates files from connected assignment
-     */
-    public function importfiles() {
-        global $DB;
-
-        if ($this->instance->mode == OPENBOOK_MODE_IMPORT) {
-            $assign = $DB->get_record('assign', ['id' => $this->instance->importfrom]);
-            $assignmoduleid = $DB->get_field('modules', 'id', ['name' => 'assign']);
-            $assigncm = $DB->get_record('course_modules', [
-                    'course' => $assign->course,
-                    'module' => $assignmoduleid,
-                    'instance' => $assign->id,
-            ]);
-
-            $assigncontext = context_module::instance($assigncm->id);
-
-            $this->import_assign_files($assigncm, $assigncontext);
-            $this->import_assign_onlinetexts($assigncm, $assigncontext);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Import assignment's submission files!
-     *
-     * @param object $assigncm Assignment coursemodule object
-     * @param object $assigncontext Assignment context object
-     */
-    protected function import_assign_files($assigncm, $assigncontext) {
-        global $DB, $CFG, $OUTPUT;
-
-        $records = $DB->get_records('assignsubmission_file', ['assignment' => $this->get_instance()->importfrom]);
-
-        $fs = get_file_storage();
-
-        require_once($CFG->dirroot . '/mod/assign/locallib.php');
-        $assigncourse = $DB->get_record('course', ['id' => $assigncm->course]);
-        $assignment = new assign($assigncontext, $assigncm, $assigncourse);
-
-        foreach ($records as $record) {
-            $files = $fs->get_area_files(
-                $assigncontext->id,
-                "assignsubmission_file",
-                "submission_files",
-                $record->submission,
-                "id",
-                false
-            );
-            $submission = $DB->get_record('assign_submission', ['id' => $record->submission]);
-
-            $assignfileids = [];
-
-            $assignfiles = [];
-
-            foreach ($files as $file) {
-                $assignfiles[$file->get_id()] = $file;
-                $assignfileids[$file->get_id()] = $file->get_id();
-            }
-
-            $conditions = [];
-            $conditions['openbook'] = $this->get_instance()->id;
-            if (empty($assignment->get_instance()->teamsubmission)) {
-                $conditions['userid'] = $submission->userid;
-            } else {
-                $conditions['userid'] = $submission->groupid;
-            }
-            // We look for regular imported files here!
-            $conditions['type'] = OPENBOOK_MODE_IMPORT;
-
-            $oldpubfiles = $DB->get_records('openbook_file', $conditions);
-
-            foreach ($oldpubfiles as $oldpubfile) {
-                if (in_array($oldpubfile->filesourceid, $assignfileids)) {
-                    // File was in assign and is still there.
-                    unset($assignfileids[$oldpubfile->filesourceid]);
-                } else {
-                    // File has been removed from assign.
-                    // Remove from openbook (file and db entry).
-                    if ($file = $fs->get_file_by_id($oldpubfile->fileid)) {
-                        $file->delete();
-                    }
-
-                    $conditions['id'] = $oldpubfile->id;
-                    $dataobject = $DB->get_record('openbook_file', ['id' => $conditions['id']]);
-                    $cm = $this->coursemodule;
-                    \mod_openbook\event\openbook_file_deleted::create_from_object(
-                        $cm,
-                        $dataobject
-                    )->trigger();
-                    $DB->delete_records('openbook_file', $conditions);
-                }
-            }
-
-            // Add new files to openbook.
-            foreach ($assignfileids as $assignfileid) {
-                $newfilerecord = new stdClass();
-                $newfilerecord->contextid = $this->get_context()->id;
-                $newfilerecord->component = 'mod_openbook';
-                $newfilerecord->filearea = 'attachment';
-                if (empty($assignment->get_instance()->teamsubmission)) {
-                    $newfilerecord->itemid = $submission->userid;
-                } else {
-                    $newfilerecord->itemid = $submission->groupid;
-                }
-
-                try {
-                    $newfile = $fs->create_file_from_storedfile($newfilerecord, $assignfiles[$assignfileid]);
-
-                    $dataobject = new stdClass();
-                    $dataobject->openbook = $this->get_instance()->id;
-                    $importtype = 'user';
-                    if (empty($assignment->get_instance()->teamsubmission)) {
-                        $dataobject->userid = $submission->userid;
-                    } else {
-                        $importtype = 'group';
-                        $dataobject->userid = $submission->groupid;
-                    }
-                    $dataobject->timecreated = time();
-                    $dataobject->fileid = $newfile->get_id();
-                    $dataobject->filesourceid = $assignfileid;
-                    $dataobject->filename = $newfile->get_filename();
-                    $dataobject->contenthash = "666";
-                    $dataobject->type = OPENBOOK_MODE_IMPORT;
-
-                    $dataobject->id = $DB->insert_record('openbook_file', $dataobject);
-                    $dataobject->typ = $importtype;
-                    \mod_openbook\event\openbook_file_imported::file_added(
-                        $assigncm,
-                        $dataobject
-                    )->trigger();
-
-                    if ($this->get_instance()->notifyfilechange != 0) {
-                        $cm = get_coursemodule_from_instance(
-                            'openbook',
-                            $this->get_instance()->id,
-                            0,
-                            false,
-                            MUST_EXIST
-                        );
-                        self::send_notification_filechange($cm, $dataobject);
-                    }
-                } catch (Exception $e) {
-                    // File could not be copied, maybe it does already exist.
-                    // Should not happen.
-                    echo $OUTPUT->box($OUTPUT->notification($e->getMessage(), 'notifyproblem'), 'generalbox');
-                }
-            }
-        }
-    }
-
-    /**
-     * Import assignment's onlinetext submissions!
-     *
-     * @param object $assigncm Assignment coursemodule object
-     * @param object $assigncontext Assignment context object
-     * @throws coding_exception
-     */
-    protected function import_assign_onlinetexts($assigncm, $assigncontext) {
-        if ($this->get_instance()->mode != OPENBOOK_MODE_IMPORT) {
-            return;
-        }
-
-        self::update_assign_onlinetext($assigncm, $assigncontext, $this->get_instance()->id, $this->get_context()->id);
-    }
-
-    /**
-     * Updates the online-submission(s) of a single assignment used via event observer
-     *
-     * @param stdClass $assigncm Assign's coursemodule object
-     * @param stdClass $assigncontext Assign's context object
-     * @param int $openbookid Openbook resource folder's instance ID
-     * @param int $contextid Openbook resource folder's context ID
-     * @param int $submissionid (optional) If set, only process this submission, else process all submissions
-     */
-    public static function update_assign_onlinetext(
-        $assigncm,
-        $assigncontext,
-        $openbookid,
-        $contextid,
-        $submissionid = 0
-    ) {
-        global $USER, $DB, $CFG;
-
-        $fs = get_file_storage();
-
-        require_once($CFG->dirroot . '/mod/assign/locallib.php');
-        $assigncourse = $DB->get_record('course', ['id' => $assigncm->course]);
-        $assignment = new assign($assigncontext, $assigncm, $assigncourse);
-        $teamsubmission = $assignment->get_instance()->teamsubmission;
-        $cm = get_coursemodule_from_instance('openbook', $openbookid, 0, false, MUST_EXIST);
-        $openbook = new openbook($cm);
-
-        $currentonlinetexts = [];
-        if (!empty($submissionid)) {
-            $records = $DB->get_records('assignsubmission_onlinetext', [
-                    'assignment' => $assigncm->instance,
-                    'submission' => $submissionid,
-            ]);
-        } else {
-            $records = $DB->get_records('assignsubmission_onlinetext', ['assignment' => $assigncm->instance]);
-            $currentonlinetexts = $DB->get_records(
-                'openbook_file',
-                ['openbook' => $openbookid,
-                                                    'type' => OPENBOOK_MODE_ONLINETEXT]
-            );
-        }
-        $filename = get_string('onlinetextfilename', 'assignsubmission_onlinetext');
-
-        foreach ($records as $record) {
-            $submission = $DB->get_record('assign_submission', ['id' => $record->submission]);
-            $itemid = empty($teamsubmission) ? $submission->userid : $submission->groupid;
-            $importtype = empty($teamsubmission) ? 'user' : 'group';
-
-            // First we fetch the resource files (embedded files in text!).
-            $fsfiles = $fs->get_area_files(
-                $assigncontext->id,
-                'assignsubmission_onlinetext',
-                ASSIGNSUBMISSION_ONLINETEXT_FILEAREA,
-                $submission->id,
-                'timemodified',
-                false
-            );
-
-            foreach ($fsfiles as $file) {
-                $filerecord = new \stdClass();
-                $filerecord->contextid = $contextid;
-                $filerecord->component = 'mod_openbook';
-                $filerecord->filearea = 'attachment';
-                $filerecord->itemid = $itemid;
-                $filerecord->filepath = '/resources/';
-                $filerecord->filename = $file->get_filename();
-                $pathnamehash = $fs->get_pathname_hash(
-                    $filerecord->contextid,
-                    $filerecord->component,
-                    $filerecord->filearea,
-                    $filerecord->itemid,
-                    $filerecord->filepath,
-                    $filerecord->filename
-                );
-
-                if ($fs->file_exists_by_hash($pathnamehash)) {
-                    $otherfile = $fs->get_file_by_hash($pathnamehash);
-                    if ($file->get_contenthash() != $otherfile->get_contenthash()) {
-                        // We have to update the file!
-                        $otherfile->delete();
-                        $fs->create_file_from_storedfile($filerecord, $file);
-                    }
-                } else {
-                    // We have to add the file!
-                    $fs->create_file_from_storedfile($filerecord, $file);
-                }
-            }
-            // Now we delete old resource-files, which are no longer present!
-            $resources = $fs->get_directory_files(
-                $contextid,
-                'mod_openbook',
-                'attachment',
-                $itemid,
-                '/resources/',
-                true,
-                false
-            );
-            foreach ($resources as $resource) {
-                $pathnamehash = $fs->get_pathname_hash(
-                    $assignment->get_context()->id,
-                    'assignsubmission_onlinetext',
-                    ASSIGNSUBMISSION_ONLINETEXT_FILEAREA,
-                    $submission->id,
-                    '/',
-                    $resource->get_filename()
-                );
-                if (!$fs->file_exists_by_hash($pathnamehash)) {
-                    $resource->delete();
-                }
-            }
-
-            /* Here we convert the pluginfile urls to relative urls for the exported html-file
-             * (the resources have to be included in the download!) */
-            $formattedtext = str_replace('@@PLUGINFILE@@/', './resources/', $record->onlinetext);
-            $formattedtext = format_text($formattedtext, $record->onlineformat, ['context' => $assigncontext]);
-
-            $head = '<head><meta charset="UTF-8"></head>';
-            $submissioncontent = '<!DOCTYPE html><html>' . $head . '<body>' . $formattedtext . '</body></html>';
-
-            // Does the file exist... let's check it!
-            $pathhash = $fs->get_pathname_hash($contextid, 'mod_openbook', 'attachment', $itemid, '/', $filename);
-
-            $conditions = [
-                    'openbook' => $openbookid,
-                    'userid' => $itemid,
-                    'type' => OPENBOOK_MODE_ONLINETEXT,
-            ];
-            $pubfile = $DB->get_record('openbook_file', $conditions, '*', IGNORE_MISSING);
-            if ($pubfile && isset($currentonlinetexts[$pubfile->id])) {
-                unset($currentonlinetexts[$pubfile->id]);
-            }
-            $createnew = false;
-            if ($fs->file_exists_by_hash($pathhash)) {
-                $file = $fs->get_file_by_hash($pathhash);
-                if (empty($formattedtext)) {
-                    // The onlinetext was empty, delete the file!
-                    if ($pubfile) {
-                        \mod_openbook\event\openbook_file_deleted::create_from_object(
-                            $assigncm,
-                            $pubfile
-                        )->trigger();
-                        $DB->delete_records('openbook_file', $conditions);
-                    }
-                    $file->delete();
-                } else if (
-                    ($file->get_timemodified() < $submission->timemodified)
-                        && ($file->get_contenthash() != sha1($submissioncontent))
-                ) {
-                    /* If the submission has been modified after the file,             *
-                     * we check for different content-hashes to see if it was changed! */
-                    $createnew = true;
-                    if (empty($pubfile) || ($file->get_id() == $pubfile->fileid)) {
-                        // Everything's alright, we can delete the old file!
-                        $file->delete();
-                    } else {
-                        // Something unexcpected happened!
-                        throw new coding_exception('Mismatching fileids (pubfile with id ' . $pubfile->fileid .
-                                ' and stored file ' .
-                                $file->get_id() . '!');
-                    }
-                }
-            } else if (!empty($formattedtext)) {
-                // There exists no such file, so we create one!
-                $createnew = true;
-            }
-
-            if ($createnew === true) {
-                // We gotta create a new one!
-                $newfilerecord = new stdClass();
-                $newfilerecord->contextid = $contextid;
-                $newfilerecord->component = 'mod_openbook';
-                $newfilerecord->filearea = 'attachment';
-                $newfilerecord->itemid = $itemid;
-                $newfilerecord->filename = $filename;
-                $newfilerecord->filepath = '/';
-                $newfile = $fs->create_file_from_string($newfilerecord, $submissioncontent);
-                if (!$pubfile) {
-                    $pubfile = new stdClass();
-                    $pubfile->userid = $itemid;
-                    $pubfile->type = OPENBOOK_MODE_ONLINETEXT;
-                    $pubfile->openbook = $openbookid;
-                }
-                // The file has been updated, so we set the new time.
-                $pubfile->timecreated = time();
-                $pubfile->fileid = $newfile->get_id();
-                $pubfile->filename = $filename;
-                $pubfile->contenthash = $newfile->get_contenthash();
-                if (!empty($pubfile->id)) {
-                    $dataobject = $pubfile;
-                    $dataobject->typ = $importtype;
-                    $dataobject->itemid = $itemid;
-                    $dataobject->update = true;
-                    \mod_openbook\event\openbook_file_imported::file_added(
-                        $assigncm,
-                        $dataobject
-                    )->trigger();
-                    $DB->update_record('openbook_file', $pubfile);
-                } else {
-                    $dataobject = $pubfile;
-                    $dataobject->id = $DB->insert_record('openbook_file', $pubfile);
-                    $dataobject->typ = $importtype;
-                    $dataobject->itemid = $itemid;
-                    \mod_openbook\event\openbook_file_imported::file_added(
-                        $assigncm,
-                        $dataobject
-                    )->trigger();
-                }
-
-                if ($openbook->get_instance()->notifyfilechange != 0) {
-                    self::send_notification_filechange($cm, $dataobject);
-                }
-            }
-        }
-
-        // Clean up orphaned onlinetexts!
-        foreach ($currentonlinetexts as $pubfile) { // These online texts no longer exist!
-            $resource = $fs->get_file_by_id($pubfile->fileid);
-            if ($resource && $resource->get_itemid() == $pubfile->userid) {
-                $resource->delete();
-                \mod_openbook\event\openbook_file_deleted::create_from_object(
-                    $assigncm,
-                    $pubfile
-                )->trigger();
-                $DB->delete_records('openbook_file', ['id' => $pubfile->id]);
             }
         }
     }
@@ -2046,13 +1458,8 @@ class openbook {
             $receivers = $openbook->get_graders($userfrom);
         }
         if ($notifyfilechange == OPENBOOK_NOTIFY_STUDENT || $notifyfilechange == OPENBOOK_NOTIFY_ALL) {
-            if ($openbook->get_mode() == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
-                $usersingroup = $openbook->get_submissionmembers($pubfile->userid);
-                $receivers += $usersingroup;
-            } else {
-                $student = $DB->get_record('user', ['id' => $pubfile->userid]);
-                $receivers[$student->id] = $student;
-            }
+            $student = $DB->get_record('user', ['id' => $pubfile->userid]);
+            $receivers[$student->id] = $student;
         }
         if (!empty($receivers)) {
             foreach ($receivers as $receiver) {
@@ -2135,16 +1542,7 @@ class openbook {
             $openbook = new openbook($cm);
         }
 
-        $stridentifier = $openbook->get_instance()->mode == OPENBOOK_MODE_UPLOAD
-            ? 'filechange_upload'
-            : 'filechange_import';
-        $assignname = null;
-        if ($openbook->get_instance()->mode != OPENBOOK_MODE_UPLOAD) {
-            $assign = $DB->get_record('assign', ['id' => $openbook->get_instance()->importfrom]);
-            if ($assign) {
-                $assignname = $assign->name;
-            }
-        }
+        $stridentifier = 'filechange_import';
 
         $notifyfilechange = $openbook->get_instance()->notifyfilechange;
         $receivers = [];
@@ -2152,13 +1550,8 @@ class openbook {
             $receivers = $openbook->get_graders($user);
         }
         if ($notifyfilechange == OPENBOOK_NOTIFY_STUDENT || $notifyfilechange == OPENBOOK_NOTIFY_ALL) {
-            if ($openbook->get_mode() == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
-                $usersingroup = $openbook->get_submissionmembers($file->userid);
-                $receivers += $usersingroup;
-            } else {
-                $student = $DB->get_record('user', ['id' => $file->userid]);
-                $receivers[$student->id] = $student;
-            }
+            $student = $DB->get_record('user', ['id' => $file->userid]);
+            $receivers[$student->id] = $student;
         }
         if (!empty($receivers)) {
             foreach ($receivers as $receiver) {
@@ -2174,7 +1567,6 @@ class openbook {
                 $info->url = $CFG->wwwroot . '/mod/openbook/view.php?id=' . $cm->id;
                 $info->id = $cm->id;
                 $info->filename = $file->filename;
-                $info->assign = $assignname;
                 $info->dayupdated = userdate(time(), $sm->get_string('strftimedate', 'core_langconfig', null, $receiver->lang));
                 $info->timeupdated = userdate(time(), $sm->get_string('strftimetime24', 'core_langconfig', null, $receiver->lang));
 
@@ -2609,9 +2001,13 @@ class openbook {
         $overrides = $DB->get_records('openbook_overrides', ['openbook' => $this->instance->id]);
         $context->overridesempty = count($overrides) == 0;
         $context->overrides = [];
-        $isgroupmode = $this->mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION;
-        $context->isgroupmode = $isgroupmode;
-        if ($isgroupmode) {
+
+        // phpcs:disable moodle.Commenting.TodoComment
+        // TODO: this has to be done in https://github.com/a-camacho/moodle-mod_openbook/issues/11
+        $isgroupmode = false;
+        $context->isgroupmode = false;
+
+        if (false) {
             $context->usergroupcoltitle = get_string('group');
             $context->addoverridetitle = get_string('override:add:group', 'mod_openbook');
         } else {
@@ -2712,7 +2108,10 @@ class openbook {
             (!isset($formdata->allowsubmissionsfromdate) || $formdata->allowsubmissionsfromdate == 0) &&
             (!isset($formdata->duedate) || $formdata->duedate == 0) &&
             (!isset($formdata->approvalfromdate) || $formdata->approvalfromdate == 0) &&
-            (!isset($formdata->approvaltodate) || $formdata->approvaltodate == 0)
+            (!isset($formdata->approvaltodate) || $formdata->approvaltodate == 0) &&
+            (!isset($formdata->securewindowfromdate) || $formdata->securewindowfromdate == 0) &&
+            (!isset($formdata->securewindowtodate) || $formdata->securewindowtodate == 0)
+
         ) {
             return null;
         }
@@ -2834,27 +2233,13 @@ class openbook {
     public function override_get_currentuserorgroup() {
         global $DB, $USER;
         $override = null;
-        if ($this->mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
-            $groups = groups_get_all_groups($this->course->id, $USER->id);
-            if (!empty($groups)) {
-                $group = reset($groups);
-                $override = $DB->get_record(
-                    'openbook_overrides',
-                    [
-                        'openbook' => $this->instance->id,
-                        'groupid' => $group->id,
-                    ]
-                );
-            }
-        } else {
-            $override = $DB->get_record(
-                'openbook_overrides',
-                [
-                    'openbook' => $this->instance->id,
-                    'userid' => $USER->id,
-                ]
-            );
-        }
+        $override = $DB->get_record(
+            'openbook_overrides',
+            [
+                'openbook' => $this->instance->id,
+                'userid' => $USER->id,
+            ]
+        );
         if ($override) {
             return $this->override_export_for_template_single($override);
         }

@@ -62,13 +62,8 @@ if ($confirm) {
         ],
     ];
     $eventparams['objectid'] = $override->id;
-    if ($openbook->get_mode() == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
-        $eventparams['other']['groupid'] = $override->groupid;
-        $event = \mod_openbook\event\group_override_deleted::create($eventparams);
-    } else {
-        $eventparams['relateduserid'] = $override->userid;
-        $event = \mod_openbook\event\user_override_deleted::create($eventparams);
-    }
+    $eventparams['relateduserid'] = $override->userid;
+    $event = \mod_openbook\event\user_override_deleted::create($eventparams);
     $event->trigger();
     redirect($backurl, get_string('override:delete:success', 'mod_openbook'));
 }
@@ -97,22 +92,12 @@ echo $OUTPUT->heading(get_string('overrides', 'mod_assign'), 2);
 
 $mode = $openbook->get_mode();
 $confirmstrcontext = new stdClass();
-if ($mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
-    $confirmstrcontext->userorgroup = get_string('group');
-    $group = $DB->get_record('groups', ['id' => $override->groupid]);
-    if ($group) {
-        $confirmstrcontext->fullname = $group->name;
-    } else {
-        $confirmstrcontext->fullname = 'N/A';
-    }
+$confirmstrcontext->userorgroup = get_string('user');
+$user = $DB->get_record('user', ['id' => $override->userid]);
+if ($user) {
+    $confirmstrcontext->fullname = fullname($user);
 } else {
-    $confirmstrcontext->userorgroup = get_string('user');
-    $user = $DB->get_record('user', ['id' => $override->userid]);
-    if ($user) {
-        $confirmstrcontext->fullname = fullname($user);
-    } else {
-        $confirmstrcontext->fullname = 'N/A';
-    }
+    $confirmstrcontext->fullname = 'N/A';
 }
 
 $confirmstr = get_string('override:delete:ask', 'mod_openbook', $confirmstrcontext);

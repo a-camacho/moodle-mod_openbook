@@ -83,63 +83,6 @@ class mod_openbook_mod_form extends moodleform_mod {
             $disabled['disabled'] = 'disabled';
         }
 
-        $modearray = [];
-        $modearray[] =& $mform->createElement(
-            'radio',
-            'mode',
-            '',
-            get_string('modeupload', 'openbook'),
-            OPENBOOK_MODE_UPLOAD,
-            $disabled
-        );
-        $modearray[] =& $mform->createElement(
-            'radio',
-            'mode',
-            '',
-            get_string('modeimport', 'openbook'),
-            OPENBOOK_MODE_IMPORT,
-            $disabled
-        );
-        $mform->addGroup($modearray, 'modegrp', get_string('mode', 'openbook'), [' '], false);
-        $mform->addHelpButton('modegrp', 'mode', 'openbook');
-        if ($filecount === 0) {
-            $mform->addRule('modegrp', null, 'required', null, 'client');
-        }
-
-        // Openbook resource folder mode import specific elements.
-        $choices = [];
-        $choices[-1] = get_string('choose', 'openbook');
-        $assigninstances = $DB->get_records('assign', ['course' => $COURSE->id], 'name ASC');
-        $module = $DB->get_record('modules', ['name' => 'assign']);
-        $select = $mform->createElement(
-            'select',
-            'importfrom',
-            get_string('assignment', 'openbook'),
-            $choices,
-            $disabled
-        );
-        $notteamassigns = [-1];
-        $teamassigns = [];
-        foreach ($assigninstances as $assigninstance) {
-            $cm = $DB->get_record('course_modules', ['module' => $module->id, 'instance' => $assigninstance->id]);
-            if ($cm->deletioninprogress == 1) {
-                continue;
-            }
-            if (!$assigninstance->teamsubmission) {
-                $notteamassigns[] = $assigninstance->id;
-            } else {
-                $teamassigns[] = $assigninstance->id;
-            }
-            $attributes = ['data-teamsubmission' => $assigninstance->teamsubmission];
-            $select->addOption($assigninstance->name, $assigninstance->id, $attributes);
-        }
-        $this->teamassigns = $teamassigns;
-        $this->notteamassigns = $notteamassigns;
-        $mform->addElement($select);
-        $mform->addHelpButton('importfrom', 'assignment', 'openbook');
-        $mform->hideIf('importfrom', 'mode', 'neq', OPENBOOK_MODE_IMPORT);
-        $mform->addElement('html', '<span id="teamassignids" data-assignids="' . implode(',', $teamassigns) . '"></span>');
-
         // Openbook resource folder mode upload specific elements.
         $maxfiles = [];
         for ($i = 1; $i <= 100 || $i <= get_config('openbook', 'maxfiles'); $i++) {
@@ -253,24 +196,6 @@ class mod_openbook_mod_form extends moodleform_mod {
         $mform->hideIf('obtainstudentapproval', 'filesarepersonal', 'eq', '1');
         $mform->hideIf('approvalfromdate', 'filesarepersonal', 'eq', '1');
         $mform->hideIf('approvaltodate', 'filesarepersonal', 'eq', '1');
-
-        // Group approval.
-        $attributes = [];
-        $options = [
-            OPENBOOK_APPROVAL_GROUPAUTOMATIC => get_string('obtainapproval_automatic', 'openbook'),
-            OPENBOOK_APPROVAL_SINGLE => get_string('obtaingroupapproval_single', 'openbook'),
-            OPENBOOK_APPROVAL_ALL => get_string('obtaingroupapproval_all', 'openbook'),
-        ];
-
-        $mform->addElement(
-            'select',
-            'obtaingroupapproval',
-            get_string('obtaingroupapproval', 'openbook'),
-            $options,
-            $attributes
-        );
-        $mform->setDefault('obtaingroupapproval', get_config('openbook', 'obtaingroupapproval'));
-        $mform->addHelpButton('obtaingroupapproval', 'obtaingroupapproval', 'openbook');
 
         $mform->addElement(
             'date_time_selector',
@@ -396,20 +321,6 @@ class mod_openbook_mod_form extends moodleform_mod {
         if (!isset($data->mode) || $data->mode != OPENBOOK_MODE_UPLOAD) {
             $data->{$completionuploadlabel} = 0;
         }
-
-        $data->groupapproval = 0;
-        if ($data->mode == OPENBOOK_MODE_IMPORT && $data->importfrom != -1) {
-            $assigninstance = $DB->get_record('assign', ['id' => $data->importfrom], '*', MUST_EXIST);
-            if ($assigninstance->teamsubmission) {
-                if ($data->obtaingroupapproval == OPENBOOK_APPROVAL_GROUPAUTOMATIC) {
-                    $data->groupapproval = 0;
-                    $data->obtainstudentapproval = 0;
-                } else {
-                    $data->obtainstudentapproval = 1;
-                    $data->groupapproval = $data->obtaingroupapproval;
-                }
-            }
-        }
     }
 
     /**
@@ -462,9 +373,6 @@ class mod_openbook_mod_form extends moodleform_mod {
 
         if ($data['approvalfromdate'] && $data['approvaltodate']) {
             $studentapprovalrequired = $data['obtainstudentapproval'] == 1;
-            if ($data['mode'] == OPENBOOK_MODE_IMPORT && in_array($data['importfrom'], $this->teamassigns)) {
-                $studentapprovalrequired = $data['obtaingroupapproval'] != -1;
-            }
             if ($studentapprovalrequired && $data['approvalfromdate'] > $data['approvaltodate']) {
                 $errors['approvaltodate'] = get_string('approvaltodatevalidation', 'openbook');
             }
@@ -473,12 +381,6 @@ class mod_openbook_mod_form extends moodleform_mod {
         if ($data['securewindowfromdate'] && $data['securewindowtodate']) {
             if ($data['securewindowfromdate'] > $data['securewindowtodate']) {
                 $errors['securewindowtodate'] = get_string('securewindowtodatevalidation', 'openbook');
-            }
-        }
-
-        if ($data['mode'] == OPENBOOK_MODE_IMPORT) {
-            if ($data['importfrom'] == '0' || $data['importfrom'] == '-1') {
-                $errors['importfrom'] = get_string('importfrom_err', 'openbook');
             }
         }
 

@@ -189,13 +189,7 @@ if ($data = $filesform->get_data()) {
                 : get_string('rejected', 'openbook');
             $stats = null;
 
-            if ($openbook->get_mode() == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
-                /* We have to deal with group approval! The method sets group approval for the specified user
-                 * and returns current cumulated group approval (and it also sets it in openbook_file table)! */
-                $stats = $openbook->set_group_approval($approval, $pubfileids[$idx], $USER->id);
-            } else {
-                $DB->set_field('openbook_file', 'studentapproval', $approval, $conditions);
-            }
+            $DB->set_field('openbook_file', 'studentapproval', $approval, $conditions);
             if (is_array($stats)) {
                 $dataforlog->approval = get_string('datalogapprovalstudent', 'openbook', [
                     'approving' => $stats['approving'],
@@ -259,29 +253,9 @@ $templatecontext->obtainteacherapproval = $openbookinstance->obtainteacherapprov
     ? get_string('obtainteacherapproval_yes', 'openbook')
     : get_string('obtainteacherapproval_no', 'openbook');
 
-if ($openbookmode == OPENBOOK_MODE_FILEUPLOAD) {
-    $templatecontext->mode = get_string('modeupload', 'openbook');
-    $templatecontext->obtainstudentapproval = $openbookinstance->obtainstudentapproval == 1
-        ? get_string('obtainstudentapproval_yes', 'openbook')
-        : get_string('obtainstudentapproval_no', 'openbook');
-} else {
-    $templatecontext->mode = get_string('modeimport', 'openbook');
-    if ($openbookmode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION) {
-        $templatecontext->obtainstudentapprovaltitle = get_string('obtaingroupapproval', 'openbook');
-        if ($openbookinstance->obtainstudentapproval == 0) {
-            $templatecontext->obtainstudentapproval = get_string('obtainstudentapproval_no', 'openbook');
-        } else {
-            $templatecontext->obtainstudentapproval =
-                $openbookinstance->groupapproval == OPENBOOK_APPROVAL_ALL
-                    ? get_string('obtaingroupapproval_all', 'openbook')
-                    : get_string('obtaingroupapproval_single', 'openbook');
-        }
-    } else {
-        $templatecontext->obtainstudentapproval = $openbookinstance->obtainstudentapproval == 1
-            ? get_string('obtainstudentapproval_yes', 'openbook')
-            : get_string('obtainstudentapproval_no', 'openbook');
-    }
-}
+$templatecontext->obtainstudentapproval = $openbookinstance->obtainstudentapproval == 1
+    ? get_string('obtainstudentapproval_yes', 'openbook')
+    : get_string('obtainstudentapproval_no', 'openbook');
 
 if ($openbookinstance->duedate > 0) {
     $timeremainingdiff = $openbookinstance->duedate - time();
@@ -302,7 +276,6 @@ if (has_capability('mod/openbook:approve', $context)) {
         ['id' => $cm->id, 'filter' => OPENBOOK_FILTER_ALLFILES, 'allfilespage' => 1]
     ))->out(false);
     $templatecontext->allfiles_empty = $templatecontext->allfilescount == 0;
-    $templatecontext->assign = $openbook->get_importlink();
     if ($openbookinstance->obtainteacherapproval == 1) {
         $templatecontext->viewall_approvalneeded_url = (new moodle_url(
             '/mod/openbook/view.php',
@@ -321,9 +294,7 @@ $templatecontext->filesarepersonal = $openbookinstance->filesarepersonal == 1
                                                 : get_string('filesarepersonal_no', 'openbook');
 
 $mode = $openbook->get_mode();
-$templatecontext->myfilestitle = $mode == OPENBOOK_MODE_ASSIGN_TEAMSUBMISSION
-                                        ? get_string('mygroupfiles', 'openbook')
-                                        : get_string('myfiles', 'openbook');
+$templatecontext->myfilestitle = get_string('myfiles', 'openbook');
 
 /* Get restricted files table (only documents that have been aproved) */
 
