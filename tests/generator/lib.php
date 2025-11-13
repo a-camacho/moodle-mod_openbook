@@ -72,6 +72,7 @@ class mod_openbook_generator extends testing_module_generator {
             'maxbytes' => 2,
             'allowedfiletypes' => '',
             'openpdffilesinpdfjs' => 1,
+            'uselegacyviewer' => 0,
             'obtainteacherapproval' => 1,
             'groupmode' => SEPARATEGROUPS,
         ];

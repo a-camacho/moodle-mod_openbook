@@ -336,7 +336,8 @@ class base extends \html_table {
                 $this->openbook->get_openpdffilesinpdfjs_status() == "1" &&
                 $file->get_mimetype() == "application/pdf"
             ) {
-                $pdfjsurl = new \moodle_url('/mod/openbook/pdfjs-5.4.296-dist/web/viewer.html', [
+                $pdfviewer = ($this->openbook->get_uselegacyviewer_status() == "1") ? 'pdfjs-5.4.394-legacy-dist' : 'pdfjs-5.4.394-dist';
+                $pdfjsurl = new \moodle_url('/mod/openbook/' . $pdfviewer . '/web/viewer.html', [
                     'file' => $pluginurl->out(),
                 ]);
                 $url = $pdfjsurl;

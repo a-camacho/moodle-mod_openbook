@@ -65,6 +65,15 @@ if ($ADMIN->fulltree) {
         $options
     ));
 
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'openbook/uselegacyviewer',
+            get_string('uselegacyviewer', 'openbook'),
+            get_string('uselegacyviewer_help', 'openbook'),
+            1
+        )
+    );
+
     $options = [
         '0' => get_string('obtainapproval_automatic', 'openbook'),
         '1' => get_string('obtainapproval_required', 'openbook'),

@@ -106,6 +106,11 @@ $string['openpdffilesinpdfjs_admin'] = 'Les fichiers PDF sont affichés avec PDF
 $string['openpdffilesinpdfjs_admin_desc'] = 'Ce paramètre détermine le paramètre par défaut concernant la manière d\'afficher les documents PDF.';
 $string['openpdffilesinpdfjs_help'] = 'Cette option détermine si les fichiers PDF soumis doivent être affichés à l\'aide de la librairie PDF.js.';
 
+$string['uselegacyviewer'] = 'Use legacy PDF.js viewer';
+$string['uselegacyviewer_help'] = 'If enabled, will use the legacy PDF.js viewer. Else, modern PDF.js viewer will be used. The legacy viewer is needed when using old browser versions that have trouble displaying PDF files using the modern PDF.js viewer.';
+$string['uselegacyviewer_yes'] = 'Yes';
+$string['uselegacyviewer_no'] = 'No';
+
 $string['myownfiles'] = 'Mes fichiers';
 
 $string['obtainteacherapproval'] = 'Approbation de l\'enseignant';

@@ -159,6 +159,24 @@ class mod_openbook_mod_form extends moodleform_mod {
         $mform->setDefault('openpdffilesinpdfjs', get_config('openbook', 'openpdffilesinpdfjs'));
         $mform->addHelpButton('openpdffilesinpdfjs', 'openpdffilesinpdfjs', 'openbook');
 
+        // Use legacy PDF.js viewer.
+        $attributes = [];
+        $options = [
+            '0' => get_string('uselegacyviewer_no', 'openbook'),
+            '1' => get_string('uselegacyviewer_yes', 'openbook'),
+        ];
+
+        $mform->addElement(
+            'select',
+            'uselegacyviewer',
+            get_string('uselegacyviewer', 'openbook'),
+            $options,
+            $attributes
+        );
+        $mform->setDefault('uselegacyviewer', get_config('openbook', 'uselegacyviewer'));
+        $mform->addHelpButton('uselegacyviewer', 'uselegacyviewer', 'openbook');
+        $mform->hideIf('uselegacyviewer', 'openpdffilesinpdfjs', 'eq', '0');
+
         // Teacher approval.
         $attributes = [];
         $options = [
