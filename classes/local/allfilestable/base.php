@@ -264,6 +264,7 @@ class base extends \table_sql {
         $grandtotal = $DB->count_records_sql($this->countsql, $this->countparams);
         return $grandtotal;
     }
+
     /**
      * Sets the predefined SQL for this table
      */
@@ -570,7 +571,12 @@ FROM
         if ($this->is_downloading()) {
             return strip_tags(parent::col_fullname($values));
         } else {
-            return  $OUTPUT->user_picture($values) .  parent::col_fullname($values);
+            // If in secure layout, show only name without picture and link.
+            if ($this->openbook->is_securewindow_enforced()) {
+                return strip_tags(parent::col_fullname($values));
+            } else {
+                return  $OUTPUT->user_picture($values) .  parent::col_fullname($values);
+            }
         }
     }
 

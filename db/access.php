@@ -60,6 +60,15 @@ $capabilities = [
                 ],
         ],
 
+        'mod/openbook:uploadcommonteacherfile' => [
+            'captype' => 'write',
+            'contextlevel' => CONTEXT_MODULE,
+            'archetypes' => [
+                'teacher' => CAP_ALLOW,
+                'editingteacher' => CAP_ALLOW,
+            ],
+        ],
+
         'mod/openbook:approve' => [
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_MODULE,

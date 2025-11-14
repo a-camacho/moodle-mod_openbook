@@ -25,6 +25,7 @@ Feature: Testing secure window integration in openbook activity
       | intro                 | description                       |
       | idnumber              | openbook1                         |
 
+  @javascript  @_file_upload
   Scenario: The Openbook resource folder shows the view page in a normal/secure layout for teachers/students
     When I am on the "Openbook resource folder activity" "mod_openbook > Edit" page logged in as "teacher1"
     And I set the following fields to these values:
@@ -36,10 +37,15 @@ Feature: Testing secure window integration in openbook activity
       | End secure window   | ##tomorrow##  |
     And I press "Save and return to course"
     And I am on the "Openbook resource folder activity" "mod_openbook > View" page logged in as "teacher1"
+    And I click on "Edit/upload files" "button"
+    And I upload "mod/openbook/tests/fixtures/teacher_file.pdf" file to "Teacher files that are visible to everybody" filemanager
+    And I press "Save changes"
     And "Acceptance test site" "link" should exist
     And I log out
     And I am on the "Openbook resource folder activity" "mod_openbook > View" page logged in as "student1"
     Then "Acceptance test site" "link" should not exist
+    And I should see "teacher_file.pdf"
+    And "Teacher 1" "link" should not exist
 
   @javascript
   Scenario: Override the Openbook resource secure layout date for a student
@@ -66,3 +72,26 @@ Feature: Testing secure window integration in openbook activity
     And I log out
     And I am on the "Openbook resource folder activity" "mod_openbook > View" page logged in as "student2"
     Then "Acceptance test site" "link" should exist
+
+  @javascript  @_file_upload
+  Scenario: The Openbook resource folder shows the view page in a secure layout for students and the file opens
+    When I am on the "Openbook resource folder activity" "mod_openbook > Edit" page logged in as "teacher1"
+    And I set the following fields to these values:
+      | Teacher approval    | Automatic     |
+      | Student approval    | Automatic     |
+      | Upload from         | ## 3 weeks ago ## |
+      | To         | ## 2 weeks ago ## |
+      | Start secure window | ##yesterday## |
+      | End secure window   | ##tomorrow##  |
+    And I press "Save and return to course"
+    And I am on the "Openbook resource folder activity" "mod_openbook > View" page logged in as "teacher1"
+    And I click on "Edit/upload files" "button"
+    And I upload "mod/openbook/tests/fixtures/teacher_file.pdf" file to "Teacher files that are visible to everybody" filemanager
+    And I press "Save changes"
+    And "Acceptance test site" "link" should exist
+    And I log out
+    And I am on the "Openbook resource folder activity" "mod_openbook > View" page logged in as "student1"
+    And "Acceptance test site" "link" should not exist
+    And I should see "teacher_file.pdf"
+    And I click on "teacher_file.pdf" "link"
+    Then I can see a window whose URL contains "web/viewer.html"

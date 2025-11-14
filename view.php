@@ -246,7 +246,6 @@ echo $OUTPUT->header();
 $allfilesform = $openbook->display_allfilesform();
 
 $openbookinstance = $openbook->get_instance();
-$openbookmode = $openbook->get_mode();
 $templatecontext = new stdClass();
 $templatecontext->obtainstudentapprovaltitle = get_string('obtainstudentapproval', 'openbook');
 $templatecontext->obtainteacherapproval = $openbookinstance->obtainteacherapproval == 1
@@ -285,6 +284,13 @@ if (has_capability('mod/openbook:approve', $context)) {
         $notapprovedtable = $openbook->get_allfilestable(OPENBOOK_FILTER_APPROVALREQUIRED, true);
         $templatecontext->approvalrequiredcount = $notapprovedtable->get_count();
     }
+    $teacherfilestable = $openbook->get_allfilestable(OPENBOOK_FILTER_APPROVALREQUIRED, true);
+    $templatecontext->teacherfilescount = $teacherfilestable->get_count();
+    if ($templatecontext->teacherfilescount > 0) {
+        $templatecontext->showteacherfiles = true;
+    } else {
+        $templatecontext->showteacherfiles = false;
+    }
 }
 
 /* Set mode for "filesarepersonal" */
@@ -293,10 +299,13 @@ $templatecontext->filesarepersonal = $openbookinstance->filesarepersonal == 1
                                                 ? get_string('filesarepersonal_yes', 'openbook')
                                                 : get_string('filesarepersonal_no', 'openbook');
 
-$mode = $openbook->get_mode();
 $templatecontext->myfilestitle = get_string('myfiles', 'openbook');
 
-/* Get restricted files table (only documents that have been aproved) */
+if (has_capability('moodle/course:update', context_course::instance($course->id))) {
+    $templatecontext->myfilestitle = get_string('teacherfiles', 'openbook');
+}
+
+/* Get restricted files table (only documents that have been approved or that are common teacher files) */
 
 $filestable = $openbook->get_filestable();
 
@@ -306,6 +315,8 @@ $templatecontext->myfiles = $filestable->data;
 $templatecontext->hasmyfiles = count($templatecontext->myfiles) > 0;
 $templatecontext->myfilesform = $filesform->render();
 
+
+
 if (!$allfilespage) {
     echo $OUTPUT->render_from_template('mod_openbook/overview', $templatecontext);
 }
@@ -314,7 +325,7 @@ if (has_capability('mod/openbook:approve', $context) || $openbookinstance->files
     echo $allfilesform;
 } else {
     /* TODO: Make sure all files are not avalaible, no just hidden */
-    echo 'All files table not showing because files are personal.';
+    echo get_string('allfilesnotshowing', 'openbook');
 }
 
 echo $OUTPUT->footer();

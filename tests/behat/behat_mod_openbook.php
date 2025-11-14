@@ -117,4 +117,49 @@ class behat_mod_openbook extends behat_base {
         $openbook = $this->get_openbook_by_name($name);
         return get_coursemodule_from_instance('openbook', $openbook->id, $openbook->course);
     }
+
+    /**
+     * Automatically confirms Javascript dialog prompts.
+     *
+     * @Given /^I enable auto-accept for confirm dialogs$/
+     */
+    public function i_enable_auto_accept_confirm_for_confirm_dialogs(): void {
+        $this->getSession()->executeScript('window.confirm = () => true;');
+    }
+
+    /**
+     * Check the existence of a window whose URL contains a string.
+     *
+     * @Given /^I can see a window whose URL contains "(?P<url>(?:[^"]|\\")*)"$/
+     *
+     * @param string $url url string we look for.
+     * @throws ElementNotFoundException Thrown by behat_base::find
+     */
+    public function i_can_see_a_window_whose_url_contains(string $url): bool {
+        $driver = $this->getSession()->getDriver();
+        if (!($driver instanceof \Moodle\BehatExtension\Driver\WebDriver)) {
+            throw new \coding_exception('Unknown driver');
+        }
+
+        $wd = $driver->getWebDriver();
+        $originalhandle = $wd->getWindowHandle();
+
+        $found = false;
+
+        try {
+            foreach ($wd->getWindowHandles() as $handle) {
+                $wd->switchTo()->window($handle);
+                $currenturl = (string) $wd->getCurrentURL();
+                if ($currenturl !== '' && strpos($currenturl, $url) !== false) {
+                    $found = true;
+                    break;
+                }
+            }
+        } finally {
+            // Restore original window.
+            $wd->switchTo()->window($originalhandle);
+        }
+
+        return $found;
+    }
 }

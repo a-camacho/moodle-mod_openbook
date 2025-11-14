@@ -63,11 +63,9 @@ class mod_openbook_generator extends testing_module_generator {
             'securewindowfromdate' => $timecreated + 1209600, // 2 weeks later!
             'securewindowtodate' => $timecreated + 1814400, // 3 weeks later!
             'cutoffdate' => 0,
-            'mode' => 0, // Equals OPENBOOK_MODE_UPLOAD!
             'importfrom' => -1,
             'autoimport' => 1,
             'obtainstudentapproval' => 1,
-            'groupapproval' => 0, // Equals OPENBOOK_APPROVAL_ALL!
             'maxfiles' => 5,
             'maxbytes' => 2,
             'allowedfiletypes' => '',

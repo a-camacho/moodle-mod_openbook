@@ -174,8 +174,6 @@ $string['allowedfiletypes_err'] = 'Vérifiez la saisie ! Extensions de fichiers 
 $string['currentlynotapproved'] = '* Actuellement non approuvé ou rejeté pour Openbook resource folder.';
 
 $string['teacherapproval_help'] = 'Approbation ou rejet actuel des fichiers, c’est-à-dire s’ils sont visibles par tous les participants : <br><ul><li><strong>Choisir…</strong> - décision en attente / aucune approbation donnée ou rejeté, ces fichiers ne sont pas visibles.</li><li><strong>Approuver</strong> - approbation accordée, ces fichiers sont publiés et donc visibles par tous.</li><li><strong>Rejeter</strong> - aucune approbation donnée, ces fichiers ne sont pas publiés et donc non visibles.</li></ul>';
-$string['assignment'] = 'Activité';
-$string['assignment_help'] = 'Choisissez l\'activité depuis laquelle importer les fichiers des remises individuelles ou de groupe.';
 $string['choose'] = 'Veuillez choisir ...';
 $string['importfrom_err'] = 'Vous devez choisir une activité depuis laquelle importer les remises de fichiers.';
 $string['nonexistentfiletypes'] = 'Les types de fichiers suivants n\'ont pas été reconnus : {$a}';
