@@ -39,7 +39,6 @@
         "status": { "approved": false,
                     "rejected": true,
                     "pending": false },
-        "mode": "at least <strong>ONE</strong> member has to approve",
         "approval": [
             { "name": "John Doe", "time": "04.11.2016 15:37" },
             { "name": "Jane Doe", "time": "01.11.2016 09:42" }
@@ -61,11 +60,6 @@
             <th>
                 {{#str}}obtaingroupapproval_title, mod_openbook{{/str}}
             </th>
-            <td>
-                {{#mode}}
-                    {{{mode}}}
-                {{/mode}}
-            </td>
         </tr>
         {{#status}}
             <tr>

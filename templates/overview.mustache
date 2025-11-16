@@ -36,7 +36,8 @@
         "allfiles_url": "https://example.com/mod/openbook/files.php",
         "allfilescount": 17,
         "approvalrequiredcount": 3,
-        "assign": "<tr><th>Custom info</th><td>Some value</td></tr>"
+        "showteacherfiles": true,
+        "teacherfilescount": 3
     }
 }}
 {{#isteacher}}
@@ -54,9 +55,6 @@
     {{/isteacher}}
     <table class="table table-striped w-100">
         {{#isteacher}}
-            {{#assign}}
-                {{{.}}}
-            {{/assign}}
             <tr>
                 <th>{{#str}}filesarepersonal,openbook{{/str}}</th>
                 <td>{{filesarepersonal}}</td>
@@ -83,6 +81,12 @@
                     <td><a href="{{viewall_approvalneeded_url}}">{{approvalrequiredcount}}</a></td>
                 </tr>
             {{/showapprovalrequired}}
+            {{#showteacherfiles}}
+            <tr>
+                <th>{{#str}}teacher_files,openbook{{/str}}</th>
+                <td><a href="{{allfiles_url}}">{{teacherfilescount}}</a></td>
+            </tr>
+            {{/showteacherfiles}}
         {{/isteacher}}
     </table>
 </div>

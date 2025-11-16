@@ -145,20 +145,6 @@ class group extends base {
         $this->sortable(true, 'groupname'); // Sorted by group by default.
         $this->no_sorting('groupmembers');
 
-        // Init JS!
-        $params = new \stdClass();
-        $params->id = $uniqueid;
-        switch ($openbook->get_instance()->groupapproval) {
-            case OPENBOOK_APPROVAL_ALL:
-                $params->mode = get_string('obtaingroupapproval_all', 'mod_openbook');
-                break;
-            case OPENBOOK_APPROVAL_SINGLE:
-                $params->mode = get_string('obtaingroupapproval_single', 'mod_openbook');
-                break;
-        }
-
-        $PAGE->requires->js_call_amd('mod_openbook/groupapprovalstatus', 'initializer', [$params]);
-
         $params = new \stdClass();
         $cm = get_coursemodule_from_instance('openbook', $openbook->get_instance()->id);
         $params->cmid = $cm->id;

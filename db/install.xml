@@ -43,15 +43,16 @@
     <TABLE NAME="openbook_file" COMMENT="Defines Openbook resource folder files">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="Standard Moodle primary key." NEXT="openbook"/>
-        <FIELD NAME="openbook" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Openbook resource folder instance id" PREVIOUS="id" NEXT="userid" SEQUENCE="false"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Owner of that Openbook resource folder file" PREVIOUS="openbook" NEXT="timecreated" SEQUENCE="false"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Date/time at which the record was created" PREVIOUS="userid" NEXT="fileid" SEQUENCE="false"/>
-        <FIELD NAME="fileid" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="The file id" PREVIOUS="timecreated" NEXT="filename" SEQUENCE="false"/>
-        <FIELD NAME="filename" TYPE="char" LENGTH="255" NOTNULL="true" COMMENT="The file name" PREVIOUS="fileid" NEXT="contenthash" SEQUENCE="false"/>
-        <FIELD NAME="contenthash" TYPE="char" LENGTH="40" NOTNULL="false" COMMENT="The file content hash" PREVIOUS="filename" NEXT="type" SEQUENCE="false"/>
-        <FIELD NAME="type" TYPE="int" LENGTH="2" NOTNULL="true" COMMENT="The file type" PREVIOUS="contenthash" NEXT="teacherapproval" SEQUENCE="false"/>
-        <FIELD NAME="teacherapproval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="3" COMMENT="Holds the lecturer approval" PREVIOUS="type" NEXT="studentapproval" SEQUENCE="false"/>
-        <FIELD NAME="studentapproval" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false" COMMENT="Holds the student approval" PREVIOUS="teacherapproval"/>
+        <FIELD NAME="openbook" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Openbook resource folder instance id" PREVIOUS="id" NEXT="userid"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Owner of that Openbook resource folder file" PREVIOUS="openbook" NEXT="timecreated"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" DEFAULT="0" COMMENT="Date/time at which the record was created" PREVIOUS="userid" NEXT="fileid"/>
+        <FIELD NAME="fileid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The file id" PREVIOUS="timecreated" NEXT="filename"/>
+        <FIELD NAME="filename" TYPE="char" LENGTH="255" NOTNULL="true" COMMENT="The file name" PREVIOUS="fileid" NEXT="contenthash"/>
+        <FIELD NAME="contenthash" TYPE="char" LENGTH="40" NOTNULL="false" COMMENT="The file content hash" PREVIOUS="filename" NEXT="type"/>
+        <FIELD NAME="type" TYPE="int" LENGTH="2" NOTNULL="true" SEQUENCE="false" COMMENT="The file type" PREVIOUS="contenthash" NEXT="teacherapproval"/>
+        <FIELD NAME="teacherapproval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="3" SEQUENCE="false" COMMENT="Holds the lecturer approval" PREVIOUS="type" NEXT="studentapproval"/>
+        <FIELD NAME="studentapproval" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false" COMMENT="Holds the student approval" PREVIOUS="teacherapproval" NEXT="commonteacherfile"/>
+        <FIELD NAME="commonteacherfile" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Whether this is a teacher files which is visible to everybody" PREVIOUS="studentapproval"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

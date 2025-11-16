@@ -14,6 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+// TODO: Show common teacher files independently from Teacher approval / Student approval status.
+// TODO: Show common teacher files to teacher in the "Teacher files that are visible to everybody".
+// TODO: Remove common teacher files from 'Decision pending' count.
+// TODO: Remove common teacher files from 'Submitted' count.
+
 /**
  * Contains much of the logic needed for mod_openbook
  *
@@ -35,6 +40,7 @@ define('OPENBOOK_FILTER_ALLFILES', 'allfiles');
 define('OPENBOOK_FILTER_APPROVED', 'approved');
 define('OPENBOOK_FILTER_REJECTED', 'rejected');
 define('OPENBOOK_FILTER_APPROVALREQUIRED', 'approvalrequired');
+define('OPENBOOK_FILTER_TEACHERFILE', 'commonteacherfile');
 define('OPENBOOK_FILTER_NOFILES', 'nofiles');
 
 define('OPENBOOK_MODE_FILEUPLOAD', 'fileupload');
@@ -203,23 +209,21 @@ class openbook {
     public function display_uploadlink() {
         global $OUTPUT;
 
-        if ($this->instance->mode == OPENBOOK_MODE_UPLOAD) {
-            if (has_capability('mod/openbook:upload', $this->context)) {
-                if ($this->is_open()) {
-                    $url = new moodle_url(
-                        '/mod/openbook/upload.php',
-                        ['id' => $this->instance->id, 'cmid' => $this->coursemodule->id]
-                    );
-                    $label = get_string('edit_uploads', 'openbook');
-                    $editbutton = $OUTPUT->single_button($url, $label);
+        if (has_capability('mod/openbook:upload', $this->context)) {
+            if ($this->is_open()) {
+                $url = new moodle_url(
+                    '/mod/openbook/upload.php',
+                    ['id' => $this->instance->id, 'cmid' => $this->coursemodule->id]
+                );
+                $label = get_string('edit_uploads', 'openbook');
+                $editbutton = $OUTPUT->single_button($url, $label);
 
-                    return $editbutton;
-                } else {
-                    return get_string('edit_timeover', 'openbook');
-                }
+                return $editbutton;
             } else {
-                return get_string('edit_notcapable', 'openbook');
+                return get_string('edit_timeover', 'openbook');
             }
+        } else {
+            return get_string('edit_notcapable', 'openbook');
         }
 
         return '';
@@ -272,6 +276,10 @@ class openbook {
 
         if (!has_capability('mod/openbook:upload', $this->get_context())) {
             return false;
+        }
+
+        if (has_capability('mod/openbook:uploadcommonteacherfile', $this->get_context())) {
+            return true;
         }
 
         $now = time();
@@ -334,6 +342,11 @@ class openbook {
      */
     public function is_securewindow_enforced() {
         global $USER;
+
+        // For teachers secure window is never enforced.
+        if (has_capability('moodle/course:update', context_course::instance($this->course->id))) {
+            return false;
+        }
 
         $now = time();
 
@@ -505,13 +518,6 @@ class openbook {
             }   // No else {}
                 // Student and teacher have approved.
                 // $where = 'files.teacherapproval = 1 AND files.studentapproval = 1';
-            /*if ($this->get_instance()->mode == OPENBOOK_MODE_UPLOAD) {
-                // Mode upload.
-            } else {
-                // phpcs:disable moodle.Commenting.TodoComment
-                // TODO group mode!
-                // Mode import.
-            }*/
 
             if (mb_strlen($where) > 0) {
                 $sql .= 'AND ' . $where . ' ';
@@ -563,16 +569,12 @@ class openbook {
      * Get table with files
      */
     public function get_filestable() {
-        global $DB;
-        $mode = $this->get_mode();
         $table = new \mod_openbook\local\filestable\upload($this);
         return $table;
     }
 
     /**
      * Display form with table containing all files
-     *
-     * TODO: for Moodle 3.6 we should replace old form classes with a nice bootstrap based form layout!
      */
     public function display_allfilesform() {
         global $CFG, $DB;
@@ -687,10 +689,7 @@ class openbook {
                         'class' => 'visibilitysaver btn btn-secondary ' . $marginstartclass,
                 ]);
 
-                if (
-                    $this->get_instance()->mode == OPENBOOK_MODE_IMPORT &&
-                        $this->get_instance()->obtainstudentapproval
-                ) {
+                if ($this->get_instance()->obtainstudentapproval) {
                     $buttons .= html_writer::empty_tag('input', [
                             'type' => 'submit',
                             'name' => 'savevisibility',
@@ -709,7 +708,7 @@ class openbook {
                 $buttons = '';
             }
 
-            $output .= html_writer::start_div('withselection col-7 d-flex align-items-center gap-1') .
+            $output .= html_writer::start_div('withselection col-7 d-flex align-items-center gap-1 mt-3') .
                  html_writer::span(get_string('withselected', 'openbook')) .
                  html_writer::select($options, 'action') .
                  html_writer::empty_tag('input', [
@@ -833,22 +832,8 @@ class openbook {
 
         if ($filepermissions) {
             if ($userid != 0) {
-                if ($this->get_instance()->mode == OPENBOOK_MODE_UPLOAD && $filepermissions->userid == $userid) {
-                    // Everyone is allowed to view their own files.
-                    $haspermission = true;
-                } else if ($this->get_instance()->mode == OPENBOOK_MODE_IMPORT) {
-                    // If it's a team-submission, we have to check for the group membership!
-                    $teamsubmission = $this->teamsubmission;
-                    if (!empty($teamsubmission)) {
-                        $groupmembers = $this->get_submissionmembers($filepermissions->userid);
-                        if (array_key_exists($userid, $groupmembers)) {
-                            $haspermission = true;
-                        }
-                    } else if ($filepermissions->userid == $userid) {
-                        // Everyone is allowed to view their own files.
-                        $haspermission = true;
-                    }
-                }
+                // Everyone is allowed to view their own files.
+                $haspermission = true;
             }
 
             /* TODO: Define if user is not uploader, and files are personal, no permission */
@@ -1032,6 +1017,27 @@ class openbook {
         return $studentapproval;
     }
 
+
+    /**
+     * Determine and return the commonteacherfile status for the given file!
+     *
+     * @param stored_file $file file to determine approval status for
+     * @return int|null commonteacherfile status (null/0 = no common teacher file, 1 = common teacher file)
+     */
+    public function commonteacherfile(\stored_file $file) {
+        global $DB;
+
+        if (empty($conditions)) {
+            static $conditions = [];
+            $conditions['openbook'] = $this->get_instance()->id;
+        }
+        $conditions['fileid'] = $file->get_id();
+
+        $commonteacherfile = $DB->get_field('openbook_file', 'commonteacherfile', $conditions);
+
+        return $commonteacherfile;
+    }
+
     /**
      * Gets the group members for the specified group. Or users without membership if groupid is 0!
      *
@@ -1100,45 +1106,7 @@ class openbook {
             $fs = get_file_storage();
             $file = $fs->get_file_by_id($fileid);
             $itemid = $file->get_itemid();
-            if ($record->type == OPENBOOK_MODE_ONLINETEXT) {
-                global $CFG;
-
-                if ($this->get_instance()->importfrom == -1) {
-                    $teamsubmission = false;
-                } else {
-                    $teamsubmission = $this->teamsubmission;
-                }
-                if (!$teamsubmission) {
-                    // Get user firstname/lastname.
-                    $auser = $DB->get_record('user', ['id' => $itemid]);
-                    $itemname = str_replace(' ', '_', fullname($auser)) . '_';
-                } else {
-                    if (empty($itemid)) {
-                        $itemname = get_string('defaultteam', 'assign') . '_';
-                    } else {
-                        $itemname = $DB->get_field('groups', 'name', ['id' => $itemid]) . '_';
-                    }
-                }
-
-                // Create path for new zip file.
-                // Zip files.
-                $filename = $itemname . $file->get_filename();
-                $zipname = str_replace('.html', '.zip', $filename);
-                $zipper = new zip_packer();
-                $filesforzipping = [];
-                $this->add_onlinetext_to_zipfiles($filesforzipping, $file, '', $filename, $fs);
-                if (count($filesforzipping) == 1) {
-                    // We can send the file directly, if it has no resources!
-                    send_file($file, $filename, null, 0, false, true, $file->get_mimetype(), false);
-                } else {
-                    $zipfile = tempnam($CFG->dataroot . '/temp/', 'openbook_');
-                    if ($zipper->archive_to_pathname($filesforzipping, $zipfile)) {
-                        send_temp_file($zipfile, $zipname); // Send file and delete after sending.
-                    }
-                }
-            } else {
-                send_file($file, $file->get_filename(), null, 0, false, true, $file->get_mimetype(), false);
-            }
+            send_file($file, $file->get_filename(), null, 0, false, true, $file->get_mimetype(), false);
             die();
         } else {
             throw new \moodle_exception('You are not allowed to see this file', 'mod_openbook');
@@ -1222,12 +1190,8 @@ class openbook {
                     if (key_exists($fileforzipname, $filesforzipping)) {
                         throw new coding_exception('Can\'t overwrite ' . $fileforzipname . '!');
                     }
-                    if ($record->type == OPENBOOK_MODE_ONLINETEXT) {
-                        $this->add_onlinetext_to_zipfiles($filesforzipping, $file, $itemname, $fileforzipname, $fs, $itemunique);
-                    } else {
-                        // Save file name to array for zipping.
-                        $filesforzipping[$fileforzipname] = $file;
-                    }
+                    // Save file name to array for zipping.
+                    $filesforzipping[$fileforzipname] = $file;
                 }
             }
         } // End of foreach.
@@ -1254,61 +1218,6 @@ class openbook {
         }
 
         return false;
-    }
-
-    /**
-     * Adds onlinetext-file to zipping-files including all ressources!
-     *
-     * @param stored_file[] $filesforzipping array of stored files indexed by filename
-     * @param stored_file $file onlinetext-file to add to ZIP
-     * @param string $itemname User or group's name to use for filename
-     * @param string $fileforzipname Filename to use for the file being added
-     * @param file_storage $fs used to get the ressource files for the online-text-file
-     * @param string $itemunique user-ID of the uploading user or empty for teamsubmissions
-     */
-    protected function add_onlinetext_to_zipfiles(
-        array &$filesforzipping,
-        stored_file $file,
-        $itemname,
-        $fileforzipname,
-        $fs = null,
-        $itemunique = ''
-    ) {
-
-        if (empty($fs)) {
-            $fs = get_file_storage();
-        }
-
-        // First we get all ressources!
-        $resources = $fs->get_directory_files(
-            $this->get_context()->id,
-            'mod_openbook',
-            'attachment',
-            $file->get_itemid(),
-            '/resources/',
-            true,
-            false
-        );
-        if (count($resources) > 0) {
-            // If it's an online-Text with resources, we have to add altered content and all the ressources for it!
-            $content = $file->get_content();
-            // We grabbed the resources already above!
-            // Then we change every occurence of the ressource-name from ./resourcename to ./ITEMNAME/resourcename!
-            $folder = clean_filename((!empty($itemname) ? $itemname . '_' : '') .
-                    (($itemunique != '') ? $itemunique . '_' : '') .
-                    'resources');
-            foreach ($resources as $resource) {
-                $search = './resources/' . $resource->get_filename();
-                $replace = $folder . '/' . $resource->get_filename();
-                $content = str_replace($search, './' . $replace, $content);
-                $filesforzipping[$replace] = $resource;
-            }
-            /* We add the altered filecontent instead of the stored one        *
-             * (needs an array to differentiate between content and filepath)! */
-            $filesforzipping[$fileforzipname] = [$content];
-        } else {
-            $filesforzipping[$fileforzipname] = $file;
-        }
     }
 
     /**
@@ -1649,69 +1558,6 @@ class openbook {
         }
     }
 
-    /**
-     * Format file content of imported onlinetexts to be rendered as preview.
-     *
-     * @param int $itemid User's or group's ID
-     * @param int $openbookid Openbook resource folder instance's database ID
-     * @param int $contextid Openbook resource folder instance's context ID
-     * @return string formatted HTML snippet ready to be output
-     */
-    public static function export_onlinetext_for_preview($itemid, $openbookid, $contextid) {
-        global $DB;
-
-        // Get file data/record!
-        $conditions = [
-                'openbook' => $openbookid,
-                'userid' => $itemid,
-                'type' => OPENBOOK_MODE_ONLINETEXT,
-        ];
-        if (!$pubfile = $DB->get_record('openbook_file', $conditions, '*')) {
-            return '';
-        }
-
-        $fs = get_file_storage();
-        $file = $fs->get_file_by_id($pubfile->fileid);
-        $content = $file->get_content();
-
-        // Correct ressources filepaths for onine-view!
-        $resources = $fs->get_directory_files(
-            $contextid,
-            'mod_openbook',
-            'attachment',
-            $itemid,
-            '/resources/',
-            true,
-            false
-        );
-        foreach ($resources as $resource) {
-            // TODO watch the encoding of the file's names, in the event of core changing it, we have to change too!
-            $filename = rawurlencode($resource->get_filename());
-            $search = './resources/' . $filename;
-            $replace = '@@PLUGINFILE@@/resources/' . $filename;
-            $content = str_replace($search, $replace, $content);
-        }
-        $content = file_rewrite_pluginfile_urls(
-            $content,
-            'pluginfile.php',
-            $contextid,
-            'mod_openbook',
-            'attachment',
-            $itemid
-        );
-
-        // Get only the body part!
-        $start = strpos($content, '<body>');
-        $length = strrpos($content, '</body>') - strpos($content, '<body>');
-        if ($start !== false && $length > 0) {
-            $content = substr($content, $start, $length);
-        } else {
-            $content = '';
-        }
-
-        return $content;
-    }
-
     // Allowed file-types have been changed in Moodle 3.3 (and form element will probably change in Moodle 3.4 again)!
 
     /**
@@ -2046,10 +1892,7 @@ class openbook {
         $override->submissionoverride = null;
         $override->approvaloverride = null;
         $override->securewindowoverride = null;
-        if (
-            $this->mode == OPENBOOK_MODE_FILEUPLOAD &&
-            ($override->allowsubmissionsfromdate > 0 || $override->duedate > 0)
-        ) {
+        if ($override->allowsubmissionsfromdate > 0 || $override->duedate > 0) {
             $fromto = (object)[
                 'from' => userdate($override->allowsubmissionsfromdate),
                 'to' => userdate($override->duedate),
@@ -2286,7 +2129,6 @@ class openbook {
 
             $dataforlog = new stdClass();
             $dataforlog->openbook = $this->instance->id;
-            $dataforlog->approval = OPENBOOK_APPROVAL_ALL;
             $dataforlog->userid = $USER->id;
             if ($user && !empty($user->id)) {
                 $dataforlog->reluser = $user->id;

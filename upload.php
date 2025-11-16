@@ -179,6 +179,11 @@ if ($mform->is_cancelled()) {
             $dataobject->teacherapproval = 0;
             $dataobject->filename = $file->get_filename();
             $dataobject->type = OPENBOOK_MODE_UPLOAD;
+            if (has_capability('mod/openbook:uploadcommonteacherfile', $context)) {
+                $dataobject->commonteacherfile = true;
+            } else {
+                $dataobject->commonteacherfile = false;
+            }
 
             $dataobject->id = $DB->insert_record('openbook_file', $dataobject);
 
@@ -207,7 +212,7 @@ if ($mform->is_cancelled()) {
         }
     }
 
-    // Update competion status - if filescount == 0 => activity not completed, else => activity completed.
+    // Update completion status - if filescount == 0 => activity not completed, else => activity completed.
 
     $completion = new completion_info($course);
     if ($completion->is_enabled($cm) && $openbook->get_instance()->completionupload) {

@@ -384,14 +384,8 @@ class provider implements core_userlist_provider, metadataprovider, pluginprovid
                 'studentapproval' => transform::yesno($file->studentapproval),
         ];
         switch ($file->type) {
-            case OPENBOOK_MODE_IMPORT:
-                $export->type = get_string('privacy:type:import', 'openbook');
-                break;
             case OPENBOOK_MODE_UPLOAD:
                 $export->type = get_string('privacy:type:upload', 'openbook');
-                break;
-            case OPENBOOK_MODE_ONLINETEXT:
-                $export->type = get_string('privacy:type:onlinetext', 'openbook');
                 break;
         }
 

@@ -50,14 +50,21 @@ class mod_openbook_upload_form extends moodleform {
             $text = get_string('published_immediately', 'openbook');
         }
 
-        $mform->addElement('header', 'myfiles', get_string('myfiles', 'openbook'));
+        $headerstring = get_string('myfiles', 'openbook');
+        if (has_capability('mod/openbook:uploadcommonteacherfile', $openbook->get_context())) {
+            $headerstring = get_string('teacherfiles', 'openbook');
+        }
 
-        $mform->addElement('static', 'guideline', get_string('guideline', 'openbook'), $text);
+        $mform->addElement('header', 'myfiles', $headerstring);
+
+        if (!has_capability('mod/openbook:uploadcommonteacherfile', $openbook->get_context())) {
+            $mform->addElement('static', 'guideline', get_string('guideline', 'openbook'), $text);
+        }
 
         $mform->addElement(
             'filemanager',
             'attachment_filemanager',
-            get_string('myfiles', 'openbook'),
+            $headerstring,
             null,
             $attachmentoptions,
         );

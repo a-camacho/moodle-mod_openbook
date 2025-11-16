@@ -67,35 +67,6 @@ final class allfilestable_test extends base {
     public function test_allfilestable_upload(): void {
         // Setup fixture!
         $openbook = $this->create_instance([
-            'mode' => OPENBOOK_MODE_UPLOAD,
-            'filesarepersonal' => 1,
-            'openpdffilesinpdfjs' => 1,
-            'obtainteacherapproval' => 0,
-            'obtainstudentapproval' => 0,
-        ]);
-
-        // Exercise SUT!
-        $output = $openbook->display_allfilesform();
-        self::assertFalse(strpos($output, "Nothing to display"));
-
-        // Teardown fixture!
-        $openbook = null;
-    }
-
-    /**
-     * Tests if we can create an allfilestable without imported files
-     *
-     * @covers \openbook::get_allfilestable_import
-     * @return void
-     * @throws coding_exception
-     */
-    public function test_allfilestable_import(): void {
-        // Setup fixture!
-        /** @var mod_assign_generator $generator */
-        $generator = self::getDataGenerator()->get_plugin_generator('mod_assign');
-        $params['course'] = $this->course->id;
-        $assign = $generator->create_instance($params);
-        $openbook = $this->create_instance([
             'filesarepersonal' => 1,
             'openpdffilesinpdfjs' => 1,
             'obtainteacherapproval' => 0,

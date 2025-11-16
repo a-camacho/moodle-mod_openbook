@@ -140,6 +140,7 @@ class base extends \html_table {
     public function is_file_approved($file) {
         global $OUTPUT;
         $templatecontext = new \stdClass();
+
         // Now add the specific data to the table!
         $teacherapproval = $this->openbook->teacher_approval($file);
         $obtainteacherapproval = $this->openbook->get_instance()->obtainteacherapproval;
@@ -160,6 +161,11 @@ class base extends \html_table {
             $teacherapproved = true;
         }
 
+        // If it is a common teacher file, set $teacherapproved!
+        if ($this->openbook->commonteacherfile($file)) {
+            $teacherapproved = true;
+        }
+
         return $teacherapproved;
     }
 
@@ -175,6 +181,7 @@ class base extends \html_table {
         // Now add the specific data to the table!
         $teacherapproval = $this->openbook->teacher_approval($file);
         $studentapproval = $this->openbook->student_approval($file);
+        $commonteacherfile = $this->openbook->commonteacherfile($file);
 
         $obtainteacherapproval = $this->openbook->get_instance()->obtainteacherapproval;
         $obtainstudentapproval = $this->openbook->get_instance()->obtainstudentapproval;

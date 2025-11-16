@@ -28,6 +28,8 @@
 // phpcs:disable moodle.Files.LangFilesOrdering.UnexpectedComment
 // phpcs:disable moodle.Files.LangFilesOrdering.IncorrectOrder
 
+$string['allfilesnotshowing'] = 'All files table not showing because files are personal.';
+
 $string['availabilityrestriction'] = 'Apply availability restrictions to user list';
 $string['availabilityrestriction_admin'] = 'Default setting for availability restrictions to user list';
 $string['availabilityrestriction_help'] = 'Users who cannot access the activity due to availability restrictions will be removed from the list.<br>This only includes conditions which are marked as being applied to user lists. For example, group conditions are included but date conditions are not included.';
@@ -47,6 +49,7 @@ $string['pluginadministration'] = 'Openbook resource folder folder administratio
 $string['openbook:addinstance'] = 'Add a new Openbook resource folder';
 $string['openbook:view'] = 'View Openbook resource folder';
 $string['openbook:upload'] = 'Upload files to a Openbook resource folder';
+$string['openbook:uploadcommonteacherfile'] = 'Upload teacher files that are visible to everybody to a Openbook resource folder';
 $string['openbook:approve'] = 'Decide if files should be published (visible for all participants)';
 $string['openbook:grantextension'] = 'Grant extension';
 $string['openbook:manageoverrides'] = 'Manage overrides';
@@ -177,19 +180,10 @@ $string['allowedfiletypes_err'] = 'Check input! Invalid file extensions or seper
 $string['currentlynotapproved'] = '* Currently not approved or rejected to publication.';
 
 $string['teacherapproval_help'] = 'Current approval/rejection of files, i.e. whether they are visible to all participants: <br><ul><li><strong>Choose...</strong> - decision pending/no approval given or rejected, these files are not visible.</li><li><strong>Approve</strong> - approval granted, these files are published and therefore visible to all.</li><li><strong>Reject</strong> - no approval given, these files are not published and therefore not visible.</li></ul>';
-$string['assignment'] = 'Assignment';
-$string['assignment_help'] = 'Choose the assignment to import files from individual or group submissions.';
-$string['choose'] = 'Please choose ...';
-$string['importfrom_err'] = 'You have to choose an assignment you want to import file submissions from.';
 $string['nonexistentfiletypes'] = 'The following file types were not recognised: {$a}';
 
 $string['completionupload'] = 'Student must upload a file';
 $string['completiondetail:upload'] = 'Upload a file';
-
-// Strings from the File mod_openbook_grantextension_form.php.
-$string['extensionduedate'] = 'Extension due date';
-$string['extensionnotafterduedate'] = 'Extension date must be after the due date';
-$string['extensionnotafterfromdate'] = 'Extension date must be after the allow submissions from date';
 
 // Strings from the File index.php.
 $string['noopenbooksincourse'] = 'There is no student folder instance in this course.';
@@ -197,8 +191,6 @@ $string['noopenbooksincourse'] = 'There is no student folder instance in this co
 // Strings from the File view.php.
 $string['allowsubmissionsfromdate_upload'] = 'Upload from';
 $string['duedate_upload'] = 'Upload until';
-$string['cutoffdate_upload'] = 'Last upload to';
-$string['cutoffdate_import'] = 'Last approval to';
 $string['extensionto'] = 'Extension to';
 $string['filedetails'] = 'Details';
 $string['assignment_notfound'] = 'The assignment from which files were imported, could no longer be found.';
@@ -206,6 +198,8 @@ $string['assignment_notset'] = 'No assignment has been chosen.';
 $string['updatefiles'] = 'Update files';
 $string['updatefileswarning'] = 'Already imported files will be replaced or deleted if the original files in the assignment were refreshed or deleted. The student\'s settings like the approval for publishing remain as they are.';
 $string['myfiles'] = 'Own files';
+$string['teacherfiles'] = 'Teacher files that are visible to everybody';
+$string['teacher_files'] = 'Teacher files';
 $string['mygroupfiles'] = 'My group\'s files';
 $string['add_uploads'] = 'Add files';
 $string['edit_uploads'] = 'Edit/upload files';
@@ -331,7 +325,6 @@ $string['privacy:type:import'] = 'Imported file';
 $string['privacy:type:onlinetext'] = 'Imported onlinetext';
 $string['privacy:metadata:groupapproval'] = 'Stores information about approval or rejection of files by group members, imported from a group submission.';
 $string['privacy:metadata:openbookfileexplanation'] = 'Files and converted onlinetext-submissions for this plugin get stored via Moodle\'s file API.';
-$string['privacy:metadata:extduedates'] = 'Stores information about overridden/extended due dates for mod_openbook.';
 $string['privacy:metadata:files'] = 'Stores information (identifier, whom it belongs, where it came from, hash of content, file name and if approved by teacher and/or student) about the files uploaded/imported into mod_openbook.';
 $string['privacy:metadata:fileid'] = 'Identifier of the file.';
 $string['privacy:metadata:userid'] = 'Identifier of the user.';
@@ -343,7 +336,6 @@ $string['privacy:metadata:teacherapproval'] = 'Whether the teacher has approved 
 $string['privacy:metadata:type'] = 'Marks the origin of the file (uploaded by student, imported from assignment submission or converted onlinetext from assignment submission).';
 $string['privacy:metadata:contenthash'] = 'SHA1 hash of the file\'s content, used to determine if the file changed.';
 $string['privacy:metadata:filename'] = 'The file\'s name.';
-$string['privacy:metadata:extensionduedate'] = 'The due date effective for students due to the override/extension.';
 
 // Strings for filters.
 $string['filter'] = 'Filter';

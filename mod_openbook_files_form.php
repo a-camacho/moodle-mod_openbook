@@ -57,13 +57,7 @@ class mod_openbook_files_form extends moodleform {
 
         $noticestudentstringid = '';
         $noticeteacherid = '';
-        $noticemode = '';
-
-        if ($mode == OPENBOOK_MODE_FILEUPLOAD) {
-            $noticemode = 'upload';
-        } else {
-            $noticemode = 'import';
-        }
+        $noticemode = 'upload';
 
         /* Check if files are personal */
         if ($openbookinstance->filesarepersonal) {
@@ -90,7 +84,13 @@ class mod_openbook_files_form extends moodleform {
 
         $table = $openbook->get_filestable();
 
-        $mform->addElement('header', 'myfiles', get_string('myfiles', 'openbook'));
+        $headerstring = get_string('myfiles', 'openbook');
+        if (
+            has_capability('mod/openbook:uploadcommonteacherfile', $openbook->get_context())
+        ) {
+            $headerstring = get_string('teacherfiles', 'openbook');
+        }
+        $mform->addElement('header', 'myfiles', $headerstring);
         $mform->setExpanded('myfiles');
 
         $PAGE->requires->js_call_amd('mod_openbook/filesform', 'initializer', []);
@@ -134,7 +134,7 @@ class mod_openbook_files_form extends moodleform {
             'lastmodified' => userdate($table->lastmodified),
             'approvalfromdate' => $approvalfromdate,
             'approvaltodate' => $approvaltodate,
-            'myfilestitle' => get_string('myfiles', 'openbook'),
+            'myfilestitle' => $headerstring,
         ];
         /* TODO : Add PDF.js link to myfiles table */
         $myfilestable = $OUTPUT->render_from_template('mod_openbook/myfiles', $tablecontext);

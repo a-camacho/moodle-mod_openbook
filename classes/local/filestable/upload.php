@@ -50,13 +50,17 @@ class upload extends base {
         $templatecontext = new \stdClass();
         // Now add the specific data to the table!
         $teacherapproval = $this->openbook->teacher_approval($file);
+        // If it is a common teacher file, add data to the table!
+        $commonteacherfile = $this->openbook->commonteacherfile($file);
+
         if ($this->openbook->get_instance()->obtainteacherapproval) {
             // Teacher has to approve: show all status.
             if (is_null($teacherapproval) || $teacherapproval == 0) {
                 $templatecontext->icon = $this->questionmark;
                 $templatecontext->hint = get_string('hidden', 'openbook') .
                     ' (' . get_string('teacher_pending', 'openbook') . ')';
-            } else if ($teacherapproval == 1) {
+            } else if ($teacherapproval == 1 || $commonteacherfile == 1) {
+                // Here, show also the common teacher files.
                 $templatecontext->icon = $this->valid;
                 $templatecontext->hint = get_string('visible', 'openbook');
             } else if ($teacherapproval == 3) {
@@ -69,8 +73,9 @@ class upload extends base {
                     ' (' . get_string('teacher_rejected', 'openbook') . ')';
             }
         } else {
-            // Teacher doenst have to approve: only show when rejected.
-            if (is_null($teacherapproval) || $teacherapproval == 0) {
+            // Teacher doesn't have to approve: only show when rejected.
+            if ((is_null($teacherapproval) || $teacherapproval == 0) || $commonteacherfile == 1) {
+                // Here, show also the common teacher files.
                 $templatecontext->icon = $this->valid;
                 $templatecontext->hint = get_string('visible', 'openbook');
             } else if ($teacherapproval == 1) {
