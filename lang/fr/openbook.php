@@ -292,6 +292,8 @@ $string['visibleforstudents_yes'] = 'Ce fichier est publié (visible pour les é
 $string['visibleforstudents_no'] = 'Ce fichier n\'est pas publié (non visible pour les étudiants).';
 $string['resetstudentapproval'] = 'Annuler l\'approbation des étudiants';
 $string['savestudentapprovalwarning'] = 'Êtes-vous sûr de vouloir enregistrer ces modifications ? Le statut du openbook ne peut pas être modifié une fois défini.';
+$string['studentswhosubmitted'] = 'Étudiants qui ont soumis';
+$string['submittedbystudents'] = 'Soumis par les étudiants';
 
 $string['go'] = 'Valider';
 $string['withselected'] = 'Avec la sélection...';

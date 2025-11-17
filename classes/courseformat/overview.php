@@ -209,7 +209,7 @@ class overview extends \core_courseformat\activityoverviewbase {
             );
         }
         return new overviewitem(
-            name: get_string('submitted', 'openbook'),
+            name: get_string('submittedbystudents', 'openbook'),
             value: $status,
             content: $submittedstatuscontent,
             textalign: text_align::CENTER,

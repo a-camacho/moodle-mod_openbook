@@ -292,7 +292,7 @@ $string['visibleforstudents_no'] = 'This file is not published (not visible for 
 $string['resetstudentapproval'] = 'Revert student approval';
 $string['savestudentapprovalwarning'] = 'Are you sure you want to save these changes? The publication status cannot be changed once it is set.';
 $string['studentswhosubmitted'] = 'Students who submitted';
-$string['submitted'] = 'Submitted';
+$string['submittedbystudents'] = 'Submitted by students';
 
 $string['go'] = 'Go';
 $string['withselected'] = 'With selected...';
