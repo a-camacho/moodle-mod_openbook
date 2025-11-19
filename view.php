@@ -303,39 +303,36 @@ if (!$allfilespage) {
 /* Show "teacher files" table */
 
 if (!$allfilespage) {
-
     $teacherfilesform = $openbook->display_teacherfilesform();
-    // echo $teacherfilesform;
 
     $data = [
         'uniqid'  => 'id_teacherfilescontainer',
         'title'   => get_string('teacher_files', 'openbook'),
         'content' => $teacherfilesform,
-        'open'    => true
+        'open'    => true,
     ];
 
     echo $OUTPUT->render_from_template('mod_openbook/collapsible', $data);
-
 }
 
 /* Show "files shared by students" table */
 
-$content_html = '';
+$contenthtml = '';
 
 if (has_capability('mod/openbook:approve', $context) || $openbookinstance->filesarepersonal == 0) {
-    $content_html = $allfilesform;
+    $contenthtml = $allfilesform;
 } else {
     /* TODO: Make sure all files are not available, no just hidden */
-    $content_html = get_string('allfilesnotshowing', 'openbook');
+    $contenthtml = get_string('allfilesnotshowing', 'openbook');
 }
 
-$container_data = [
+$containerdata = [
     'uniqid'  => 'id_allfilescontainer',
     'title'   => get_string('publicfiles', 'openbook'),
-    'content' => $content_html,
-    'open'    => true
+    'content' => $contenthtml,
+    'open'    => true,
 ];
 
-echo $OUTPUT->render_from_template('mod_openbook/collapsible', $container_data);
+echo $OUTPUT->render_from_template('mod_openbook/collapsible', $containerdata);
 
 echo $OUTPUT->footer();

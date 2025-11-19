@@ -32,7 +32,7 @@ require_once($CFG->libdir . '/formslib.php'); // Putting this is as a safety as 
 /**
  * Form to upload files for mod_openbook
  */
-class mod_openbook_upload_form extends moodleform {
+class mod_openbook_upload_form_teacher extends moodleform {
     /**
      * Definition of file upload format
      */

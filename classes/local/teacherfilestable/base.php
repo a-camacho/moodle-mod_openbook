@@ -138,24 +138,14 @@ class base extends \table_sql {
         $this->define_baseurl($CFG->wwwroot . '/mod/openbook/view.php?id=' . $this->cm->id . '&amp;currentgroup=' .
                 $this->currentgroup . '&amp;filter=' . $this->filter . '&amp;allfilespage=' . intval($this->allfilespage));
 
-        // $this->sortable(true, 'lastname'); // Sorted by lastname by default.
         $this->collapsible(false);
         $this->initialbars(true);
-
-        // $this->column_suppress('fullname');
-        // $this->column_suppress('group');
-
-        // $this->column_class('fullname', 'fullname');
-        // $this->column_class('timemodified', 'timemodified');
 
         $this->set_attribute('cellspacing', '0');
         $this->set_attribute('id', 'attempts');
         $this->set_attribute('class', 'openbooks');
         $this->set_attribute('width', '100%');
 
-        // $this->no_sorting('studentapproval');
-        // $this->no_sorting('selection');
-        // $this->no_sorting('openbookstatus');
         $this->no_sorting('filename');
         $this->no_sorting('visibleforstudents');
 
@@ -532,15 +522,11 @@ class base extends \table_sql {
     }
 
     /**
-    * This function is called for generating HTML table with files
-    *
-    * @param mixed $values
-    */
-    /**
-    * Affiche le nom du fichier comme un lien (PDF.js ou téléchargement).
-    * @param object $values Contient la ligne SQL (avec id, filename, timecreated, etc.).
-    * @return string
-    */
+     * Displays the file name as a link (PDF.js or download).
+     *
+     * @param object $values Contains the SQL line (with id, filename, timecreated, etc.).
+     * @return string
+     */
     public function col_filename($values) {
         global $OUTPUT;
 
@@ -560,12 +546,11 @@ class base extends \table_sql {
             $values->filename &&
             pathinfo($values->filename, PATHINFO_EXTENSION) == 'pdf'
         ) {
-
             $pdfviewer = ($this->openbook->get_uselegacyviewer_status() == "1")
                 ? 'pdfjs-5.4.394-legacy-dist'
                 : 'pdfjs-5.4.394-dist';
 
-            $pluginfile_rawurl = \moodle_url::make_pluginfile_url(
+            $pluginfilerawurl = \moodle_url::make_pluginfile_url(
                 $contextid,
                 'mod_openbook',
                 $filearea,
@@ -575,15 +560,11 @@ class base extends \table_sql {
                 true
             );
 
-            // Ajout du paramètre pour le viewer
-            // $pluginfile_rawurl->param('forcedownload', 1);
-
             $pdfjsurl = new \moodle_url('/mod/openbook/' . $pdfviewer . '/web/viewer.html', [
-                'file' => $pluginfile_rawurl->out(false),
+                'file' => $pluginfilerawurl->out(false),
             ]);
 
             $url = $pdfjsurl;
-
         }
 
         $displayname = $values->filename;

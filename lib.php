@@ -342,8 +342,6 @@ function mod_openbook_pluginfile(
     $forcedownload,
     array $options = []
 ) {
-
-
     if ($context->contextlevel != CONTEXT_MODULE) {
         return false;
     }
