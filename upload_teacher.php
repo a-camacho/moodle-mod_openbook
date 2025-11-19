@@ -26,7 +26,7 @@
 
 require_once('../../config.php');
 require_once($CFG->dirroot . '/mod/openbook/locallib.php');
-require_once($CFG->dirroot . '/mod/openbook/upload_form.php');
+require_once($CFG->dirroot . '/mod/openbook/upload_form_teacher.php');
 
 $cmid = required_param('cmid', PARAM_INT); // Course Module ID.
 $id = optional_param('id', 0, PARAM_INT); // EntryID.
@@ -47,28 +47,22 @@ require_capability('mod/openbook:upload', $context);
 
 $openbook = new openbook($cm, $course, $context);
 
-$url = new moodle_url('/mod/openbook/upload.php', ['cmid' => $cm->id]);
+$url = new moodle_url('/mod/openbook/upload_teacher.php', ['cmid' => $cm->id]);
 if (!empty($id)) {
     $url->param('id', $id);
 }
 $PAGE->set_url($url);
 $PAGE->add_body_class('limitedwidth');
 
-if (!$openbook->is_open()) {
-    redirect(
-        new moodle_url(
-            '/mod/openbook/view.php',
-            ['id' => $cm->id],
-        ),
-        get_string('uploadnotopen', 'mod_openbook'),
-    );
+if (!has_capability('mod/openbook:uploadcommonteacherfile', $openbook->get_context())) {
+    redirect(new moodle_url('/mod/openbook/view.php', ['id' => $cm->id]));
 }
 
 $entry = new stdClass();
 $entry->id = $USER->id;
 
-$entry->definition = '';          // Updated later.
-$entry->definitionformat = FORMAT_HTML; // Updated later.
+$entry->definition = '';
+$entry->definitionformat = FORMAT_HTML;
 
 $maxfiles = $openbook->get_instance()->maxfiles;
 $maxbytes = $openbook->get_instance()->maxbytes;
@@ -102,11 +96,11 @@ $entry = file_prepare_standard_editor(
 
 $entry = file_prepare_standard_filemanager(
     $entry,
-    'attachment',
+    'commonteacherfiles',
     $attachmentoptions,
     $context,
     'mod_openbook',
-    'attachment',
+    'commonteacherfiles',
     $entry->id
 );
 
@@ -122,11 +116,11 @@ $mform = new mod_openbook_upload_form(null, [
 ]);
 
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/mod/openbook/view.php', ['id' => $cm->id]));
-} else if ($data = $mform->get_data()) {
-    // Store updated set of files.
 
-    // Save and relink embedded images and save attachments.
+    redirect(new moodle_url('/mod/openbook/view.php', ['id' => $cm->id]));
+
+} else if ($data = $mform->get_data()) {
+
     $entry = file_postupdate_standard_editor(
         $entry,
         'definition',
@@ -139,15 +133,15 @@ if ($mform->is_cancelled()) {
 
     $entry = file_postupdate_standard_filemanager(
         $entry,
-        'attachment',
+        'commonteacherfiles',
         $attachmentoptions,
         $context,
         'mod_openbook',
-        'attachment',
+        'commonteacherfiles',
         $entry->id
     );
-    $sid = $USER->id;
-    $filearea = 'attachment';
+    $sid = $openbook->get_instance()->id;
+    $filearea = 'commonteacherfiles';
 
     $fs = get_file_storage();
 

@@ -547,6 +547,26 @@ class openbook {
     }
 
     /**
+     * Get table with all teacher submitted files
+     *
+     * @param string $filter
+     * @param bool $ignoreallfilespage (optional)
+     */
+    public function get_teacherfilestable($filter, $ignoreallfilespage = false) {
+        global $DB;
+        $mode = $this->get_mode();
+        $oldallfilespage = $this->allfilespage;
+        if ($ignoreallfilespage) {
+            $this->allfilespage = true;
+        }
+        $uniqueid = \mod_openbook\local\teacherfilestable\base::get_table_uniqueid($this->instance->id);
+        $table = new \mod_openbook\local\teacherfilestable\upload($uniqueid . $this->coursemodule->id, $this, $filter);
+
+        $this->allfilespage = $oldallfilespage;
+        return $table;
+    }
+
+    /**
      * Get table with all files
      *
      * @param string $filter
@@ -571,6 +591,217 @@ class openbook {
     public function get_filestable() {
         $table = new \mod_openbook\local\filestable\upload($this);
         return $table;
+    }
+
+    /**
+     * Display form with table containing all teacher files
+     */
+    public function display_teacherfilesform() {
+        global $CFG, $DB;
+        $output = '';
+
+        $cm = $this->coursemodule;
+        $context = $this->context;
+
+        $filter = optional_param('filter', OPENBOOK_FILTER_NOFILTER, PARAM_ALPHANUMEXT);
+
+        $page = optional_param('page', 0, PARAM_INT);
+        $perpage = 10;
+
+        $formattrs = [];
+        $formattrs['action'] = new moodle_url('/mod/openbook/view.php', ['allfilespage' => $this->allfilespage]);
+        $formattrs['id'] = 'fastg';
+        $formattrs['method'] = 'post';
+        $formattrs['class'] = 'mform';
+
+        $output .= html_writer::start_tag('form', $formattrs) .
+                html_writer::empty_tag('input', [
+                        'type' => 'hidden',
+                        'name' => 'id',
+                        'value' => $this->get_coursemodule()->id,
+                ]) .
+                html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'page', 'value' => $page]) .
+                html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]) .
+                html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'filter', 'value' => $filter]);
+
+        $output .= html_writer::start_tag('fieldset', ['class' => 'clearfix collapsible', 'id' => 'id_allfiles']);
+
+        // $teacherfiles = get_string('teacher_files', 'openbook');
+        // $title = $teacherfiles;
+        // $output .= html_writer::tag('legend', $title, ['class' => 'ftoggler h3']);
+
+        $output .= html_writer::start_div('fcontainer clearfix mb-3');
+
+        $f = groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/openbook/view.php?id=' . $cm->id, true);
+
+        /* Download all file submissions button */
+        $mf = new mod_openbook_allfiles_form(null, ['form' => $f]);
+        $output .= $mf->render();
+
+        $table = $this->get_teacherfilestable($filter);
+
+        ob_start();
+        $table->out($perpage, true); // Print the whole table.
+        $tableoutput = ob_get_contents();
+        ob_end_clean();
+
+        $norowsfound = $table->get_count() == 0;
+        $nofilesfound = $table->get_totalfilescount() == 0;
+
+        /* Download all file submissions button */
+        $link = html_writer::link(
+            new moodle_url('/mod/openbook/view.php', [
+                'id' => $this->coursemodule->id,
+                'action' => 'zip',
+                'allfilespage' => $this->allfilespage,
+            ]),
+            get_string('downloadall', 'openbook'),
+            ['class' => 'btn btn-secondary mb-2']
+        );
+
+        if (!$norowsfound && !$nofilesfound) {
+            $output .= html_writer::tag('div', $link, ['class' => 'mod-openbook-download-link']);
+        }
+
+        if ($perpage == 0) {
+            $output .= '<style> nav.pagination ul.pagination li:only-child { display: none} </style>';
+        }
+
+        $output .= $tableoutput;
+
+        if (has_capability('mod/openbook:uploadcommonteacherfile', $context)) {
+
+            $uploadurl = new \moodle_url('/mod/openbook/upload_teacher.php', [
+                'cmid' => $this->coursemodule->id
+            ]);
+
+            $label = get_string('edit_teacher_uploads', 'openbook');
+
+            $button_html = \html_writer::link(
+                $uploadurl,
+                $label,
+                ['class' => 'btn btn-primary']
+            );
+
+            $output .= \html_writer::div($button_html, 'mt-3 mb-2');
+        }
+
+        $options = [];
+        $options['zipusers'] = get_string('zipusers', 'openbook');
+
+        if (has_capability('mod/openbook:approve', $context) && $table->totalfiles() > 0  && $this->allfilespage) {
+            if ($this->get_instance()->obtainteacherapproval) {
+                $options['approveusers'] = get_string('approveusers', 'openbook');
+                $options['rejectusers'] = get_string('rejectusers', 'openbook');
+            }
+
+            if ($this->get_instance()->obtainstudentapproval) {
+                $options['resetstudentapproval'] = get_string('resetstudentapproval', 'openbook');
+            }
+        }
+        if (has_capability('mod/openbook:grantextension', $this->get_context()) && $this->allfilespage) {
+            $options['grantextension'] = get_string('grantextension', 'openbook');
+        }
+
+        if (count($options) > 0 && !$norowsfound && !$nofilesfound) {
+            $output .= html_writer::start_div('form-row');
+            $marginstartclass = "ml-1";
+            if ($CFG->version >= 2024041400) {
+                $marginstartclass = "ms-1";
+            }
+            if (has_capability('mod/openbook:approve', $context) && $this->allfilespage) {
+                $buttons = html_writer::empty_tag('input', [
+                        'type' => 'reset',
+                        'name' => 'resetvisibility',
+                        'value' => get_string('reset', 'openbook'),
+                        'class' => 'visibilitysaver btn btn-secondary ' . $marginstartclass,
+                ]);
+
+                if ($this->get_instance()->obtainstudentapproval) {
+                    $buttons .= html_writer::empty_tag('input', [
+                            'type' => 'submit',
+                            'name' => 'savevisibility',
+                            'value' => get_string('saveapproval', 'openbook'),
+                            'class' => 'visibilitysaver btn btn-primary',
+                    ]);
+                } else {
+                    $buttons .= html_writer::empty_tag('input', [
+                            'type' => 'submit',
+                            'name' => 'savevisibility',
+                            'value' => get_string('saveteacherapproval', 'openbook'),
+                            'class' => 'visibilitysaver btn btn-primary',
+                    ]);
+                }
+            } else {
+                $buttons = '';
+            }
+
+            $output .= html_writer::end_div();
+
+        }
+
+        $output .= html_writer::end_div();
+        $output .= html_writer::end_tag('fieldset');
+        $output .= html_writer::end_tag('form');
+
+        // Mini form for setting user preference.
+        $formaction = new moodle_url(
+            '/mod/openbook/view.php',
+            [
+                'id' => $this->coursemodule->id,
+                'allfilespage' => $this->allfilespage,
+            ]
+        );
+
+        $mform = new MoodleQuickForm('optionspref', 'post', $formaction, '', ['class' => 'optionspref']);
+
+        $attributes = [];
+
+        $attributes['onChange'] = "document.querySelector('form.optionspref').submit()";
+
+        $mform->addElement('hidden', 'updatepref');
+        $mform->setDefault('updatepref', 1);
+
+        if (has_capability('mod/openbook:approve', $context) && $this->allfilespage) {
+            $filteroptions = [
+                OPENBOOK_FILTER_NOFILTER => get_string(
+                    'filter:' . OPENBOOK_FILTER_NOFILTER,
+                    'openbook'
+                ),
+                OPENBOOK_FILTER_ALLFILES => get_string(
+                    'filter:' . OPENBOOK_FILTER_ALLFILES,
+                    'openbook'
+                ),
+            ];
+            if ($this->get_instance()->obtainteacherapproval || $this->get_instance()->obtainstudentapproval) {
+                $filteroptions += [
+                    OPENBOOK_FILTER_APPROVED => get_string(
+                        'filter:' . OPENBOOK_FILTER_APPROVED,
+                        'openbook'
+                    ),
+                    OPENBOOK_FILTER_REJECTED => get_string(
+                        'filter:' . OPENBOOK_FILTER_REJECTED,
+                        'openbook'
+                    ),
+                    OPENBOOK_FILTER_APPROVALREQUIRED => get_string(
+                        'filter:' . OPENBOOK_FILTER_APPROVALREQUIRED,
+                        'openbook'
+                    ),
+                ];
+            }
+            $filteroptions += [
+                OPENBOOK_FILTER_NOFILES => get_string(
+                    'filter:' . OPENBOOK_FILTER_NOFILES,
+                    'openbook'
+                ),
+            ];
+            $mform->addElement('select', 'filter', get_string('filter', 'openbook'), $filteroptions, $attributes);
+            $mform->setDefault('filter', $filter);
+        }
+        $mform->disable_form_change_checker();
+
+        $output .= $mform->toHtml();
+        return $output;
     }
 
     /**
@@ -615,10 +846,12 @@ class openbook {
 
         $output .= html_writer::start_tag('fieldset', ['class' => 'clearfix collapsible', 'id' => 'id_allfiles']);
         $allfiles = get_string('allfiles', 'openbook');
-        $publicfiles = get_string('publicfiles', 'openbook');
-        $myownfiles = get_string('myownfiles', 'openbook');
-        $title = (has_capability('mod/openbook:approve', $context)  && $this->allfilespage) ? $allfiles : $publicfiles;
-        $output .= html_writer::tag('legend', $title, ['class' => 'ftoggler h3']);
+
+        // $publicfiles = get_string('publicfiles', 'openbook');
+        // $myownfiles = get_string('myownfiles', 'openbook');
+        // $title = (has_capability('mod/openbook:approve', $context)  && $this->allfilespage) ? $allfiles : $publicfiles;
+        // $output .= html_writer::tag('legend', $title, ['class' => 'ftoggler h3']);
+
         $output .= html_writer::start_div('fcontainer clearfix mb-3');
 
         $f = groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/openbook/view.php?id=' . $cm->id, true);
@@ -718,6 +951,8 @@ class openbook {
                     'class' => 'btn btn-primary',
                  ]) . html_writer::end_div() .
                  html_writer::div($buttons, 'col');
+
+            $output .= html_writer::end_div();
         }
 
         // Select all/none.
@@ -735,11 +970,13 @@ class openbook {
                         }
                     }
                 }
-            </script>" .
-                html_writer::end_div() .
-                html_writer::end_div() .
-                html_writer::end_tag('fieldset') .
-                html_writer::end_tag('form');
+            </script>";
+
+        $output .= html_writer::end_div();
+
+        $output .= html_writer::end_div();
+        $output .= html_writer::end_tag('fieldset');
+        $output .= html_writer::end_tag('form');
 
         // Mini form for setting user preference.
         $formaction = new moodle_url(
@@ -2163,99 +2400,4 @@ class openbook {
         return true;
     }
 
-    /**
-     * Serve the files from the myplugin file areas.
-     *
-     * @param stdClass $course the course object
-     * @param stdClass $cm the course module object
-     * @param stdClass $context the context
-     * @param string $filearea the name of the file area
-     * @param array $args extra arguments (itemid, path)
-     * @param bool $forcedownload whether or not force download
-     * @param array $options additional options affecting the file serving
-     * @return bool false if the file not found, just send the file otherwise and do not return anything
-     */
-    public function mod_openbook_pluginfile(
-        $course,
-        $cm,
-        $context,
-        string $filearea,
-        array $args,
-        bool $forcedownload,
-        array $options = []
-    ): bool {
-
-        global $DB;
-
-        // Check the contextlevel is as expected - if your plugin is a block, this becomes CONTEXT_BLOCK, etc.
-        if ($context->contextlevel != CONTEXT_MODULE) {
-            return false;
-        }
-
-        // Make sure the filearea is one of those used by the plugin.
-        if ($filearea !== 'expectedfilearea' && $filearea !== 'anotherexpectedfilearea') {
-            return false;
-        }
-
-        // Make sure the user is logged in and has access to the module (plugins that are not course modules should leave out
-        // the 'cm' part).
-        require_login($course, true, $cm);
-
-        // Check the relevant capabilities - these may vary depending on the filearea being accessed.
-        if (!has_capability('mod/myplugin:view', $context)) {
-            return false;
-        }
-
-        // The args is an array containing [itemid, path].
-        // Fetch the itemid from the path.
-        $itemid = array_shift($args);
-
-        // The itemid can be used to check access to a record, and ensure that the
-        // record belongs to the specifeid context. For example:
-        if ($filearea === 'expectedfilearea') {
-            $post = $DB->get_record('myplugin_posts', ['id' => $itemid]);
-            if ($post->myplugin !== $context->instanceid) {
-                // This post does not belong to the requested context.
-                return false;
-            }
-
-            // phpcs:disable Squiz.PHP.CommentedOutCode
-
-            // You may want to perform additional checks here, for example:
-            // - ensure that if the record relates to a grouped activity, that this
-            // user has access to it
-            // - check whether the record is hidden
-            // - check whether the user is allowed to see the record for some other
-            // reason.
-
-            // If, for any reason, the user does not hve access, you can return
-            // false here.
-        }
-
-        // For a plugin which does not specify the itemid, you may want to use the following to keep your code consistent:
-        // $itemid = null;
-
-        // phpcs:enable Squiz.PHP.CommentedOutCode
-
-        // Extract the filename / filepath from the $args array.
-        $filename = array_pop($args); // The last item in the $args array.
-        if (empty($args)) {
-            // Variable $args is empty => the path is '/'.
-            $filepath = '/';
-        } else {
-            // Variable $args contains the remaining elements of the filepath.
-            $filepath = '/' . implode('/', $args) . '/';
-        }
-
-        // Retrieve the file from the Files API.
-        $fs = get_file_storage();
-        $file = $fs->get_file($context->id, 'mod_myplugin', $filearea, $itemid, $filepath, $filename);
-        if (!$file) {
-            // The file does not exist.
-            return false;
-        }
-
-        // We can now send the file back to the browser - in this case with a cache lifetime of 1 day and no filtering.
-        send_stored_file($file, DAY_SECS, 0, $forcedownload, $options);
-    }
 }

@@ -342,6 +342,8 @@ function mod_openbook_pluginfile(
     $forcedownload,
     array $options = []
 ) {
+
+
     if ($context->contextlevel != CONTEXT_MODULE) {
         return false;
     }
@@ -351,7 +353,7 @@ function mod_openbook_pluginfile(
         return false;
     }
 
-    if ($filearea !== 'attachment') {
+    if ($filearea !== 'attachment' && $filearea !== 'commonteacherfiles') {
         return false;
     }
 

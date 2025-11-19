@@ -24,7 +24,7 @@
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_openbook\local\allfilestable;
+namespace mod_openbook\local\teacherfilestable;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -138,32 +138,31 @@ class base extends \table_sql {
         $this->define_baseurl($CFG->wwwroot . '/mod/openbook/view.php?id=' . $this->cm->id . '&amp;currentgroup=' .
                 $this->currentgroup . '&amp;filter=' . $this->filter . '&amp;allfilespage=' . intval($this->allfilespage));
 
-        $this->sortable(true, 'lastname'); // Sorted by lastname by default.
-        $this->collapsible(true);
+        // $this->sortable(true, 'lastname'); // Sorted by lastname by default.
+        $this->collapsible(false);
         $this->initialbars(true);
 
-        $this->column_suppress('fullname');
-        $this->column_suppress('group');
+        // $this->column_suppress('fullname');
+        // $this->column_suppress('group');
 
-        $this->column_class('fullname', 'fullname');
-        $this->column_class('timemodified', 'timemodified');
+        // $this->column_class('fullname', 'fullname');
+        // $this->column_class('timemodified', 'timemodified');
 
         $this->set_attribute('cellspacing', '0');
         $this->set_attribute('id', 'attempts');
         $this->set_attribute('class', 'openbooks');
         $this->set_attribute('width', '100%');
 
-        $this->no_sorting('studentapproval');
-        $this->no_sorting('selection');
-        $this->no_sorting('openbookstatus');
-        $this->no_sorting('files');
-
+        // $this->no_sorting('studentapproval');
+        // $this->no_sorting('selection');
+        // $this->no_sorting('openbookstatus');
+        $this->no_sorting('filename');
         $this->no_sorting('visibleforstudents');
 
         $this->init_sql();
 
         // Save status of table(s) persistent as user preference!
-        $this->is_persistent(true);
+        $this->is_persistent(false);
 
         $this->valid = self::approval_icon(
             'check',
@@ -217,33 +216,12 @@ class base extends \table_sql {
      * @return array Array with column names, column headers and help icons
      */
     protected function get_columns() {
-        $selectallnone = \html_writer::checkbox('selectallnone', false, false, '', [
-                'id' => 'selectallnone',
-                'onClick' => 'toggle_userselection()',
-        ]);
 
-        $columns = ['selection', 'fullname'];
-        $headers = [$selectallnone, get_string('fullnameuser')];
-        $helpicons = [null, null];
-
-        $fields = \core_user\fields::for_identity($this->context, false);
-        $useridentity = $fields->get_required_fields();
-        foreach ($useridentity as $cur) {
-            if (has_capability('mod/openbook:approve', $this->context) && $this->allfilespage) {
-                $columns[] = $cur;
-                $headers[] = ($cur == 'phone1') ? get_string('phone') : get_string($cur);
-                $helpicons[] = null;
-            }
-        }
-
-        $columns[] = 'timemodified';
-        $headers[] = get_string('lastmodified');
-        $helpicons[] = null;
-        $columns[] = 'files';
+        $columns[] = 'filename';
         $headers[] = get_string('files');
         $helpicons[] = null;
 
-        // Import and upload tables will enhance this list! Import from teamassignments will overwrite it!
+        // Upload tables will enhance this list!
         return [$columns, $headers, $helpicons];
     }
 
@@ -271,77 +249,31 @@ class base extends \table_sql {
     protected function init_sql() {
         global $DB;
 
-        $params = [];
-        $userfields = \core_user\fields::for_userpic();
-        $selects = $userfields->get_sql('u', false, '', 'id', false)->selects;
-        $ufields = str_replace(', ', ',', $selects);
+        $fields = 'files.id AS id, ' .
+          'files.itemid, ' .
+          'files.filename, ' .
+          'files.timecreated, ' .
+          'files.mimetype, ' .
+          'files.userid';
 
-        $fields = \core_user\fields::for_identity($this->context, false);
-        $useridentityfields = $fields->get_sql('u')->selects;
+        $from = '{files} files';
 
-        $fields = $ufields . ' ' . $useridentityfields . ', u.username,
-                                COUNT(*) filecount,
-                                SUM(files.studentapproval) AS studentapproval,
-                                SUM(files.teacherapproval) AS teacherapproval,
-                                MAX(files.timecreated) AS timemodified ';
+        $params = [
+            'contextid' => $this->context->id,
+            'component' => 'mod_openbook',
+            'filearea'  => 'commonteacherfiles',
+            'dot'       => '.',
+        ];
 
-        // Also filters out users according to set activitygroupmode & current activitygroup!
-        $users = $this->openbook->get_users();
-        [$sqluserids, $userparams] = $DB->get_in_or_equal($users, SQL_PARAMS_NAMED, 'user');
-        $params = $params + $userparams + ['openbook' => $this->cm->instance];
+        $where = "files.contextid = :contextid " .
+         "AND files.component = :component " .
+         "AND files.filearea = :filearea " .
+         "AND files.filename != :dot";
 
-        $having = '';
-        if ($this->filter == OPENBOOK_FILTER_NOFILTER) {
-            $from = '{user} u ' .
-                'LEFT JOIN {openbook_file} files ON u.id = files.userid AND ' .
-                'files.openbook = :openbook ';
-        } else if ($this->filter == OPENBOOK_FILTER_ALLFILES) {
-            $from = '{user} u ' .
-                'JOIN {openbook_file} files ON u.id = files.userid AND ' .
-                'files.openbook = :openbook ';
-        } else if ($this->filter == OPENBOOK_FILTER_APPROVED) {
-            $from = '{user} u ' .
-                'JOIN {openbook_file} files ON u.id = files.userid AND ' .
-                'files.openbook = :openbook ';
-            if ($this->obtainteacherapproval == 1) {
-                $from .= ' AND files.teacherapproval = 1 ';
-            }
-            if ($this->obtainstudentapproval == 1) {
-                $from .= ' AND files.studentapproval = 1 ';
-            }
-        } else if ($this->filter == OPENBOOK_FILTER_REJECTED) {
-            $from = '{user} u ' .
-                'JOIN {openbook_file} files ON u.id = files.userid AND ' .
-                'files.openbook = :openbook ' .
-                'AND files.teacherapproval = 2 ';
-        } else if ($this->filter == OPENBOOK_FILTER_APPROVALREQUIRED) {
-            $from = '{user} u ' .
-                'JOIN {openbook_file} files ON u.id = files.userid AND ' .
-                'files.openbook = :openbook ' .
-                'AND (files.teacherapproval = 3 OR files.teacherapproval IS NULL OR files.teacherapproval = 0) ';
-        } else if ($this->filter == OPENBOOK_FILTER_NOFILES) {
-            $from = '{user} u ' .
-                'LEFT JOIN {openbook_file} files ON u.id = files.userid AND ' .
-                'files.openbook = :openbook ';
-            $having = ' HAVING timemodified IS NULL ';
-        }
-
-        $where = "u.id " . $sqluserids;
-        $groupby = $ufields . ' ' . $useridentityfields . ', u.username ' . $having;
+        $groupby = "";
 
         $this->set_sql($fields, $from, $where, $params, $groupby);
-        if ($this->filter != OPENBOOK_FILTER_NOFILES) {
-            $this->set_count_sql("SELECT COUNT(a.uid) FROM (SELECT DISTINCT u.id AS uid FROM $from WHERE $where) a", $params);
-        } else {
-            $this->set_count_sql(
-                "SELECT
-    COUNT(a.uid)
-FROM
-    (SELECT u.id AS uid, MAX(files.timecreated) AS timemodified FROM $from WHERE " .
-                "$where GROUP BY u.id) a WHERE a.timemodified IS NULL",
-                $params
-            );
-        }
+        $this->set_count_sql("SELECT COUNT(files.id) FROM $from WHERE $where", $params);
     }
 
     /**
@@ -431,50 +363,22 @@ FROM
      */
     public function get_files($itemid) {
         global $DB;
+
         if (($itemid === $this->itemid) && (($this->files !== null) || ($this->resources !== null))) {
             // We cache just the current files, to use less memory!
             return [$this->itemid, $this->files, $this->resources];
         }
 
         $contextid = $this->openbook->get_context()->id;
-        $filearea = 'attachment';
+        $filearea = 'commonteacherfiles';
 
-        $this->itemid = $itemid;
         $this->files = [];
         $this->resources = [];
+        $this->itemid = $itemid;
 
         $files = $this->fs->get_area_files($contextid, 'mod_openbook', $filearea, $this->itemid, 'timemodified', false);
 
-        $dbfiles = $DB->get_records(
-            'openbook_file',
-            ['userid' => $itemid],
-            '',
-            'fileid, teacherapproval, studentapproval'
-        );
         foreach ($files as $file) {
-            if (isset($dbfiles[intval($file->get_id())])) {
-                $dbfile = $dbfiles[intval($file->get_id())];
-                if ($this->filter == OPENBOOK_FILTER_APPROVED) {
-                    if ($this->obtainstudentapproval) {
-                        if ($dbfile->studentapproval != 1) {
-                            continue;
-                        }
-                    }
-                    if ($this->obtainteacherapproval) {
-                        if ($dbfile->teacherapproval != 1) {
-                            continue;
-                        }
-                    }
-                } else if ($this->filter == OPENBOOK_FILTER_REJECTED) {
-                    if ($dbfile->teacherapproval != 2) {
-                        continue;
-                    }
-                } else if ($this->filter == OPENBOOK_FILTER_APPROVALREQUIRED) {
-                    if ($dbfile->teacherapproval == 1 || $dbfile->teacherapproval == 2) {
-                        continue;
-                    }
-                }
-            }
             if ($file->get_filepath() == '/resources/') {
                 $this->resources[] = $file;
             } else {
@@ -628,128 +532,71 @@ FROM
     }
 
     /**
-     * This function is called for each data row to allow processing of the
-     * user's submission time.
-     *
-     * @param object $values Contains object with all the values of record.
-     * @return string Return user time of submission.
-     */
-    public function col_timemodified($values) {
-        global $OUTPUT;
-
-        [, $files, ] = $this->get_files($values->id);
-
-        $filetable = new \html_table();
-        $filetable->attributes = ['class' => 'filetable table-reboot'];
-
-        foreach ($files as $file) {
-            if (
-                has_capability('mod/openbook:approve', $this->context)
-                    || $this->openbook->has_filepermission($file->get_id())
-            ) {
-                $filerow = [];
-                $filerow[] = $OUTPUT->pix_icon(file_file_icon($file), get_mimetype_description($file));
-
-                $url = new \moodle_url(
-                    '/mod/openbook/view.php',
-                    ['id' => $this->cm->id, 'download' => $file->get_id()],
-                );
-                $filerow[] = \html_writer::link($url, $file->get_filename()) .
-                        $this->add_onlinetext_preview($values->id, $file->get_id());
-
-                $filetable->data[] = $filerow;
-            }
-        }
-
-        if ($this->totalfiles === null) {
-            $this->totalfiles = 0;
-        }
-        $lastmodified = '';
-        if (count($filetable->data) > 0) {
-            $lastmodified = \html_writer::span(userdate($values->timemodified), "timemodified");
-        }
-
-        // phpcs:disable moodle.Commenting.TodoComment
-        // TODO: download without tags?
-        return $lastmodified;
-    }
-
+    * This function is called for generating HTML table with files
+    *
+    * @param mixed $values
+    */
     /**
-     * This function is called for generating HTML table with files
-     *
-     * @param mixed $values
-     */
-    public function col_files($values) {
-        [, $files, ] = $this->get_files($values->id);
-
+    * Affiche le nom du fichier comme un lien (PDF.js ou téléchargement).
+    * @param object $values Contient la ligne SQL (avec id, filename, timecreated, etc.).
+    * @return string
+    */
+    public function col_filename($values) {
         global $OUTPUT;
-        $filetable = new \html_table();
-        $filetable->attributes = ['class' => 'filetable table-reboot'];
 
-        foreach ($files as $file) {
-            if (
-                (has_capability('mod/openbook:approve', $this->context))
-                || $this->openbook->has_filepermission($file->get_id())
-            ) {
-                $filerow = [];
-                $filerow[] = $OUTPUT->pix_icon(file_file_icon($file), get_mimetype_description($file));
-
-                $mycmid = $this->cm->id;
-
-                $filename = $file->get_filename();
-                $maxlen = 65;
-
-                if (strlen($filename) > $maxlen) {
-                    $displayname = \core_text::substr($filename, 0, $maxlen - 3) . '...';
-                } else {
-                    $displayname = $filename;
-                }
-
-                $pluginurl = \moodle_url::make_pluginfile_url(
-                    $file->get_contextid(),
-                    $file->get_component(),
-                    $file->get_filearea(),
-                    $file->get_itemid(),
-                    $file->get_filepath(),
-                    $file->get_filename(),
-                    false
-                );
-
-                if (
-                    $this->openbook->get_openpdffilesinpdfjs_status() == "1" &&
-                    $file->get_mimetype() == "application/pdf"
-                ) {
-                    $pdfviewer = ($this->openbook->get_uselegacyviewer_status() == "1")
-                        ? 'pdfjs-5.4.394-legacy-dist'
-                        : 'pdfjs-5.4.394-dist';
-                    $pdfjsurl = new \moodle_url('/mod/openbook/' . $pdfviewer . '/web/viewer.html', [
-                        'file' => $pluginurl->out(),
-                    ]);
-                    $url = $pdfjsurl;
-                } else {
-                    $url = new \moodle_url('/mod/openbook/view.php', ['id' => $mycmid, 'download' => $file->get_id()]);
-                }
-
-                $filerow[] = \html_writer::link(
-                    $url,
-                    $displayname,
-                    ['target' => '_blank', 'rel' => 'noopener noreferrer', 'title' => $filename]
-                )
-                . $this->add_onlinetext_preview($values->id, $file->get_id(), []);
-
-                $filetable->data[] = $filerow;
-            }
+        if (empty($values->filename) || empty($values->id)) {
+            return '-';
         }
 
-        if ($this->totalfiles === null) {
-            $this->totalfiles = 0;
+        $contextid = $this->context->id;
+        $filearea = 'commonteacherfiles';
+        $itemid = $this->cm->instance;
+        $mycmid = $this->cm->id;
+
+        $url = new \moodle_url('/mod/openbook/view.php', ['id' => $mycmid, 'download' => $values->id]);
+
+        if (
+            $this->openbook->get_openpdffilesinpdfjs_status() == "1" &&
+            $values->filename &&
+            pathinfo($values->filename, PATHINFO_EXTENSION) == 'pdf'
+        ) {
+
+            $pdfviewer = ($this->openbook->get_uselegacyviewer_status() == "1")
+                ? 'pdfjs-5.4.394-legacy-dist'
+                : 'pdfjs-5.4.394-dist';
+
+            $pluginfile_rawurl = \moodle_url::make_pluginfile_url(
+                $contextid,
+                'mod_openbook',
+                $filearea,
+                $values->itemid,
+                '/',
+                $values->filename,
+                true
+            );
+
+            // Ajout du paramètre pour le viewer
+            // $pluginfile_rawurl->param('forcedownload', 1);
+
+            $pdfjsurl = new \moodle_url('/mod/openbook/' . $pdfviewer . '/web/viewer.html', [
+                'file' => $pluginfile_rawurl->out(false),
+            ]);
+
+            $url = $pdfjsurl;
+
         }
-        $lastmodified = '';
-        if (count($filetable->data) > 0) {
-            $lastmodified = \html_writer::table($filetable);
-            $this->totalfiles += count($filetable->data);
+
+        $displayname = $values->filename;
+        $maxlen = 65;
+        if (strlen($displayname) > $maxlen) {
+            $displayname = \core_text::substr($displayname, 0, $maxlen - 3) . '...';
         }
-        return $lastmodified;
+
+        return \html_writer::link(
+            $url,
+            $displayname,
+            ['target' => '_blank', 'rel' => 'noopener noreferrer', 'title' => $values->filename]
+        );
     }
 
     /**
@@ -990,6 +837,6 @@ FROM
      * @param string $instanceid
      */
     public static function get_table_uniqueid($instanceid) {
-        return 'mod-openbook-allfiles-' . $instanceid;
+        return 'mod-openbook-teacherfiles-' . $instanceid;
     }
 }

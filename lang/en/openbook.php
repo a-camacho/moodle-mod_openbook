@@ -203,6 +203,7 @@ $string['teacher_files'] = 'Teacher files';
 $string['mygroupfiles'] = 'My group\'s files';
 $string['add_uploads'] = 'Add files';
 $string['edit_uploads'] = 'Edit/upload files';
+$string['edit_teacher_uploads'] = 'Edit/upload teacher files';
 $string['edit_timeover'] = 'Files can be edited/uploaded only during the editing period.';
 $string['approval_timeover'] = 'You don\'t have any file waiting for sharing approval or approval time is over.';
 $string['approval_timeover_description'] = 'Sharing approval';

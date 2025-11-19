@@ -85,11 +85,9 @@ class mod_openbook_files_form extends moodleform {
         $table = $openbook->get_filestable();
 
         $headerstring = get_string('myfiles', 'openbook');
-        if (
-            has_capability('mod/openbook:uploadcommonteacherfile', $openbook->get_context())
-        ) {
-            $headerstring = get_string('teacherfiles', 'openbook');
-        }
+        // if (has_capability('mod/openbook:uploadcommonteacherfile', $openbook->get_context())) {
+        //     $headerstring = get_string('teacherfiles', 'openbook');
+        // }
         $mform->addElement('header', 'myfiles', $headerstring);
         $mform->setExpanded('myfiles');
 

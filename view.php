@@ -95,26 +95,6 @@ if ($savevisibility) {
     }
     $users = array_keys($users);
     $openbook->download_zip($users);
-} else if ($action == 'import') {
-    require_capability('mod/openbook:approve', $context);
-    require_sesskey();
-
-    if (!isset($_POST['confirm'])) {
-        $message = get_string('updatefileswarning', 'openbook');
-
-        echo $OUTPUT->header();
-        echo $OUTPUT->heading(format_string($openbook->get_instance()->name), 1);
-        echo $OUTPUT->confirm(
-            $message,
-            'view.php?id=' . $id . '&action=import&confirm=1&sesskey=' . sesskey(),
-            'view.php?id=' . $id
-        );
-        echo $OUTPUT->footer();
-        exit;
-    }
-
-    $openbook->importfiles();
-    openbook::send_all_pending_notifications();
 } else if ($action == 'grantextension') {
     require_capability('mod/openbook:grantextension', $context);
     require_sesskey();
@@ -267,6 +247,7 @@ if ($openbookinstance->duedate > 0) {
 $templatecontext->isteacher = false;
 if (has_capability('mod/openbook:approve', $context)) {
     $templatecontext->isteacher = true;
+    // TODO : Count only students ?
     $templatecontext->studentcount = count($openbook->get_users([], true));
     $allfilestable = $openbook->get_allfilestable(OPENBOOK_FILTER_ALLFILES, true);
     $templatecontext->allfilescount = $allfilestable->get_count();
@@ -305,7 +286,7 @@ if (has_capability('moodle/course:update', context_course::instance($course->id)
     $templatecontext->myfilestitle = get_string('teacherfiles', 'openbook');
 }
 
-/* Get restricted files table (only documents that have been approved or that are common teacher files) */
+/* Show "own files" table */
 
 $filestable = $openbook->get_filestable();
 
@@ -315,17 +296,46 @@ $templatecontext->myfiles = $filestable->data;
 $templatecontext->hasmyfiles = count($templatecontext->myfiles) > 0;
 $templatecontext->myfilesform = $filesform->render();
 
-
-
 if (!$allfilespage) {
     echo $OUTPUT->render_from_template('mod_openbook/overview', $templatecontext);
 }
 
-if (has_capability('mod/openbook:approve', $context) || $openbookinstance->filesarepersonal == 0) {
-    echo $allfilesform;
-} else {
-    /* TODO: Make sure all files are not avalaible, no just hidden */
-    echo get_string('allfilesnotshowing', 'openbook');
+/* Show "teacher files" table */
+
+if (!$allfilespage) {
+
+    $teacherfilesform = $openbook->display_teacherfilesform();
+    // echo $teacherfilesform;
+
+    $data = [
+        'uniqid'  => 'id_teacherfilescontainer',
+        'title'   => get_string('teacher_files', 'openbook'),
+        'content' => $teacherfilesform,
+        'open'    => true
+    ];
+
+    echo $OUTPUT->render_from_template('mod_openbook/collapsible', $data);
+
 }
+
+/* Show "files shared by students" table */
+
+$content_html = '';
+
+if (has_capability('mod/openbook:approve', $context) || $openbookinstance->filesarepersonal == 0) {
+    $content_html = $allfilesform;
+} else {
+    /* TODO: Make sure all files are not available, no just hidden */
+    $content_html = get_string('allfilesnotshowing', 'openbook');
+}
+
+$container_data = [
+    'uniqid'  => 'id_allfilescontainer',
+    'title'   => get_string('publicfiles', 'openbook'),
+    'content' => $content_html,
+    'open'    => true
+];
+
+echo $OUTPUT->render_from_template('mod_openbook/collapsible', $container_data);
 
 echo $OUTPUT->footer();
