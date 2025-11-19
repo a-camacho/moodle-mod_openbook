@@ -107,7 +107,7 @@ $entry = file_prepare_standard_filemanager(
 $entry->cmid = $cm->id;
 
 // Create a new form object (found in lib.php).
-$mform = new mod_openbook_upload_form(null, [
+$mform = new mod_openbook_upload_form_teacher(null, [
         'current' => $entry,
         'cm' => $cm,
         'openbook' => $openbook,
@@ -116,11 +116,8 @@ $mform = new mod_openbook_upload_form(null, [
 ]);
 
 if ($mform->is_cancelled()) {
-
     redirect(new moodle_url('/mod/openbook/view.php', ['id' => $cm->id]));
-
 } else if ($data = $mform->get_data()) {
-
     $entry = file_postupdate_standard_editor(
         $entry,
         'definition',

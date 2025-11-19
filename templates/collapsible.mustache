@@ -1,49 +1,70 @@
 {{!
-	This file is part of mod_openbook for Moodle - http://moodle.org/
+    This file is part of mod_openbook for Moodle - http://moodle.org/
 
-	Moodle is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	Moodle is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-	@template mod_openbook/collapsible
+    @template mod_openbook/collapsible
 
-	Openbook resource folder's collapsible section template.
+    Openbook resource folder's colapsible section.
 
-	The purpose of this template is to display a collapsible section.
+    The purpose of this template is a collapsed section.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * uniquid ID of related element
+    * open Whether the collapsible object is open
+    * title The title.
+    * content The content.
+
+    Example context (json):
+    {
+        "uniqid": 7,
+        "open": true,
+        "title": "Title",
+        "content": "Content"
+    }
+
 }}
-<div class="mb-2 border-bottom">
+<div class="mb-2">
 
-	<div class="d-flex align-items-center mb-2 position-relative">
-		<a data-bs-toggle="collapse"
-		   href="#{{uniqid}}"
-		   role="button"
-		   aria-expanded="{{#open}}true{{/open}}{{^open}}false{{/open}}"
-		   aria-controls="{{uniqid}}"
-		   class="btn btn-icon me-3 icons-collapse-expand fheader {{^open}}collapsed{{/open}}">
-			<span class="expanded-icon icon-no-margin p-2" title="{{#str}}collapse, core{{/str}}">
-				<i class="icon fa fa-chevron-down fa-fw " aria-hidden="true"></i>
-			</span>
-			<span class="collapsed-icon icon-no-margin p-2" title="{{#str}}expand, core{{/str}}">
-				<span class="dir-rtl-hide"><i class="icon fa fa-chevron-right fa-fw " aria-hidden="true"></i></span>
-				<span class="dir-ltr-hide"><i class="icon fa fa-chevron-left fa-fw " aria-hidden="true"></i></span>
-			</span>
-			<span class="visually-hidden">{{title}}</span>
-		</a>
-		<h3 class="m-0">{{title}}</h3>
-	</div>
+    <div class="d-flex align-items-center mb-2 position-relative">
+        <a data-bs-toggle="collapse"
+           href="#{{uniqid}}"
+           role="button"
+           aria-expanded="{{#open}}true{{/open}}{{^open}}false{{/open}}"
+           aria-controls="{{uniqid}}"
+           class="btn btn-icon me-3 icons-collapse-expand fheader {{^open}}collapsed{{/open}}">
+            <span class="expanded-icon icon-no-margin p-2" title="{{#str}}collapse, core{{/str}}">
+                <i class="icon fa fa-chevron-down fa-fw " aria-hidden="true"></i>
+            </span>
+            <span class="collapsed-icon icon-no-margin p-2" title="{{#str}}expand, core{{/str}}">
+                <span class="dir-rtl-hide"><i class="icon fa fa-chevron-right fa-fw " aria-hidden="true"></i></span>
+                <span class="dir-ltr-hide"><i class="icon fa fa-chevron-left fa-fw " aria-hidden="true"></i></span>
+            </span>
+            <span class="visually-hidden">{{title}}</span>
+        </a>
+        <h3 class="m-0">{{title}}</h3>
+    </div>
 
-	<div class="collapse {{#open}}show{{/open}}" id="{{uniqid}}">
-		{{{content}}}
-	</div>
+    <div class="collapse {{#open}}show{{/open}}" id="{{uniqid}}">
+        {{{content}}}
+    </div>
 
 </div>

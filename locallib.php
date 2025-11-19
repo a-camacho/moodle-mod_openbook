@@ -670,20 +670,19 @@ class openbook {
         $output .= $tableoutput;
 
         if (has_capability('mod/openbook:uploadcommonteacherfile', $context)) {
-
             $uploadurl = new \moodle_url('/mod/openbook/upload_teacher.php', [
-                'cmid' => $this->coursemodule->id
+                'cmid' => $this->coursemodule->id,
             ]);
 
             $label = get_string('edit_teacher_uploads', 'openbook');
 
-            $button_html = \html_writer::link(
+            $buttonhtml = \html_writer::link(
                 $uploadurl,
                 $label,
                 ['class' => 'btn btn-primary']
             );
 
-            $output .= \html_writer::div($button_html, 'mt-3 mb-2');
+            $output .= \html_writer::div($buttonhtml, 'mt-3 mb-2');
         }
 
         $options = [];
@@ -735,9 +734,7 @@ class openbook {
             } else {
                 $buttons = '';
             }
-
             $output .= html_writer::end_div();
-
         }
 
         $output .= html_writer::end_div();
@@ -2396,8 +2393,6 @@ class openbook {
                 self::send_notification_statuschange($cm, $USER, 'automatic', $file, $cmid, $this);
             }
         }
-
         return true;
     }
-
 }
