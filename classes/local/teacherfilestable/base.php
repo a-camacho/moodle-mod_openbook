@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Base class for classes listing all files imported or uploaded
+ * Base class for classes listing all files depending on groups and group mode
  *
  * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
@@ -35,7 +35,7 @@ require_once($CFG->dirroot . '/mod/openbook/locallib.php');
 require_once($CFG->libdir . '/tablelib.php');
 
 /**
- * Base class for tables showing all (public) files (upload or import)
+ * Base class for tables showing all (public) files
  *
  * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team *
@@ -61,11 +61,12 @@ class base extends \table_sql {
     protected $totalfiles = null;
     /** @var string[] of cached itemnames */
     protected $itemnames = [];
-
     /** @var int activity's groupmode */
     protected $groupmode = 0;
     /** @var int current group if group mode is active */
     protected $currentgroup = 0;
+    /** @var int grouping id for files */
+    protected $groupingid = 0;
     /** @var string valid pix-icon */
     protected $valid = '';
     /** @var string questionmark pix-icon */
@@ -237,7 +238,19 @@ class base extends \table_sql {
      * Sets the predefined SQL for this table
      */
     protected function init_sql() {
-        global $DB;
+        global $DB, $USER;
+
+        $params = [];
+
+        $groups = $this->openbook->get_groups($this->groupingid);
+
+        if (count($groups) > 0) {
+            [$sqlgroupids, $groupparams] = $DB->get_in_or_equal($groups, SQL_PARAMS_NAMED, 'group');
+            $params = $params + $groupparams + ['openbook' => $this->cm->instance];
+        } else {
+            $sqlgroupids = " = :group ";
+            $params = $params + ['group' => -1, 'openbook' => $this->cm->instance];
+        }
 
         $fields = 'files.id AS id, ' .
           'files.itemid, ' .
@@ -259,6 +272,32 @@ class base extends \table_sql {
          "AND files.component = :component " .
          "AND files.filearea = :filearea " .
          "AND files.filename != :dot";
+
+        $canviewallgroups = has_capability('moodle/site:accessallgroups', $this->openbook->get_context());
+
+        if ($this->groupmode == 1) {
+            if ($canviewallgroups) {
+                $where .= "";
+            } else {
+                $allmembers = [];
+                // All other group member's user ids that are in the same group(s)
+                // as the current user in this course.
+                $currentusergroups = groups_get_user_groups($this->openbook->get_instance()->course, $USER->id);
+                foreach ($currentusergroups as $coursegroup) {
+                    foreach ($coursegroup as $groupid) {
+                        $groupusers = groups_get_members($groupid, 'u.id');
+                        // Merge into the main array.
+                        $allmembers = array_merge($allmembers, $groupusers);
+                    }
+                }
+
+                if (!empty($allmembers)) {
+                    [$insql, $insqlparams] = $DB->get_in_or_equal(array_column($allmembers, 'id'), SQL_PARAMS_NAMED, 'user');
+                    $where .= " AND files.itemid " . $insql;
+                    $params = array_merge($params, $insqlparams);
+                }
+            }
+        }
 
         $groupby = "";
 
@@ -285,7 +324,7 @@ class base extends \table_sql {
      * Query the db. Store results in the table object for use by build_table. We had to override, due to group by clause!
      *
      * @param int $pagesize size of page for paginated displayed table.
-     * @param bool $useinitialsbar do you want to use the initials bar. Bar
+     * @param bool $useinitialsbar do you want to use the initials bar. The bar
      * will only be used if there is a fullname column defined for the table.
      */
     public function query_db($pagesize, $useinitialsbar = true) {
@@ -352,7 +391,7 @@ class base extends \table_sql {
      * @return array Array with itemid, files-array and resources-array as items
      */
     public function get_files($itemid) {
-        global $DB;
+        global $DB, $USER;
 
         if (($itemid === $this->itemid) && (($this->files !== null) || ($this->resources !== null))) {
             // We cache just the current files, to use less memory!

@@ -261,19 +261,6 @@ class group extends base {
         $contextid = $this->openbook->get_context()->id;
         $filearea = 'attachment';
 
-        /* OK, assign is a little bit inconsistent with implementation and doc-comments, it states it will return false for user's
-         * group if there's no group or multiple groups, instead it uses just the first group it finds for the user!
-         * So if assign doesn't behave that exact, we just use all users groups (except there's a groupingid set for submission! */
-        $assignid = $this->openbook->get_instance()->importfrom;
-        $this->groupingid = $DB->get_field('assign', 'teamsubmissiongroupingid', ['id' => $assignid]);
-        $groups = groups_get_all_groups($this->openbook->get_instance()->course, $USER->id, $this->groupingid);
-        if (empty($groups)) {
-            // Users without group membership get assigned group id 0!
-            $groups = [];
-            $groups[0] = new \stdClass();
-            $groups[0]->id = 0;
-        }
-
         foreach ($groups as $group) {
             $itemid = $group->id;
 

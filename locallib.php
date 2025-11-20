@@ -71,8 +71,6 @@ class openbook {
     protected $course;
     /** @var object coursemodule */
     protected $coursemodule;
-    /** @var bool requiregroup if mode = import and group membership is required for submission in assign to import from */
-    protected $requiregroup = 0;
     /** @var constant mode */
     protected $mode;
     /** @var bool allfilespage */
@@ -421,16 +419,7 @@ class openbook {
     }
 
     /**
-     * Whether or not the assign to import from requires group membership for submissions!
-     *
-     * @return bool true if group membership is required, false if not or type = upload
-     */
-    public function requiregroup() {
-        return $this->requiregroup;
-    }
-
-    /**
-     * Get's all groups (optionaly filtered by groupingid or group-IDs in selgroups-array)
+     * Get all groups (optionally filtered by groupingid or group-IDs in selgroups-array)
      *
      * @param int $groupingid (optional) Grouping-ID to filter groups for or 0
      * @param int[] $selgroups (optional) selected group's IDs to filter for or empty array()
@@ -440,21 +429,18 @@ class openbook {
         $groups = groups_get_all_groups($this->get_instance()->course, 0, $groupingid);
         $groups = array_keys($groups);
 
-        if (!$this->requiregroup()) {
-            $groups[] = 0;
-        }
-
         if (is_array($selgroups) && count($selgroups) > 0) {
             $groups = array_intersect($groups, $selgroups);
         }
 
         foreach ($groups as $id => $groupid) {
-            $members = $this->get_submissionmembers($groupid);
+            if (!empty($groupid)) {
+                $members = groups_get_members($groupid);
+            }
             if (empty($members)) {
                 unset($groups[$id]);
             }
         }
-
         return $groups;
     }
 
