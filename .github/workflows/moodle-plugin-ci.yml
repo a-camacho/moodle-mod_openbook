@@ -115,6 +115,8 @@ jobs:
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
+          PHPCS_IGNORE_PATHS: /^pdfjs-5.4.394-dist/,/^pdfjs-5.4.394-legacy-dist/
+          PHPDOCCHECKER_IGNORE_PATHS: /^pdfjs-5.4.394-dist/,/^pdfjs-5.4.394-legacy-dist/
 
       - name: PHP Lint
         if: ${{ !cancelled() }}
