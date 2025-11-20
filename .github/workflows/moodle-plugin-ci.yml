@@ -115,6 +115,8 @@ jobs:
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
+          CODECHECKER_IGNORE_PATHS: 'pdfjs-5.4.394-dist,pdfjs-5.4.394-legacy-dist'
+          IGNORE_PATHS: 'pdfjs-5.4.394-dist,pdfjs-5.4.394-legacy-dist'
           PHPCS_IGNORE_PATHS: /^pdfjs-5.4.394-dist/,/^pdfjs-5.4.394-legacy-dist/
           PHPDOCCHECKER_IGNORE_PATHS: /^pdfjs-5.4.394-dist/,/^pdfjs-5.4.394-legacy-dist/
 
