@@ -306,13 +306,17 @@ if (!$allfilespage) {
     $teacherfilesform = $openbook->display_teacherfilesform();
 
     $data = [
-        'uniqid'  => 'id_teacherfilescontainer',
-        'title'   => get_string('teacher_files', 'openbook'),
-        'content' => $teacherfilesform,
+        'elementid'  => 'id_teacherfilescontainer',
+        'titlecontent'   => get_string('teacher_files', 'openbook'),
+        'sectioncontent' => $teacherfilesform,
         'open'    => true,
     ];
 
-    echo $OUTPUT->render_from_template('mod_openbook/collapsible', $data);
+    if (file_exists("{$CFG->dirroot}/lib/templates/local/collapsable_section.mustache")) {
+        echo $OUTPUT->render_from_template('core/local/collapsable_section', $data);
+    } else {
+        echo $OUTPUT->render_from_template('mod_openbook/collapsible', $data);
+    }
 }
 
 /* Show "files shared by students" table */
@@ -327,12 +331,16 @@ if (has_capability('mod/openbook:approve', $context) || $openbookinstance->files
 }
 
 $containerdata = [
-    'uniqid'  => 'id_allfilescontainer',
-    'title'   => get_string('publicfiles', 'openbook'),
-    'content' => $contenthtml,
+    'elementid'  => 'id_allfilescontainer',
+    'titlecontent'   => get_string('publicfiles', 'openbook'),
+    'sectioncontent' => $contenthtml,
     'open'    => true,
 ];
 
-echo $OUTPUT->render_from_template('mod_openbook/collapsible', $containerdata);
+if (file_exists("{$CFG->dirroot}/lib/templates/local/collapsable_section.mustache")) {
+    echo $OUTPUT->render_from_template('core/local/collapsable_section', $containerdata);
+} else {
+    echo $OUTPUT->render_from_template('mod_openbook/collapsible', $containerdata);
+}
 
 echo $OUTPUT->footer();
