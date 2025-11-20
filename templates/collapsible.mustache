@@ -28,17 +28,17 @@
     * none
 
     Context variables required for this template:
-    * uniquid ID of related element
+    * elementid ID of related element
     * open Whether the collapsible object is open
-    * title The title.
-    * content The content.
+    * titlecontent The title.
+    * sectioncontent The content.
 
     Example context (json):
     {
-        "uniqid": 7,
+        "elementid": 7,
         "open": true,
-        "title": "Title",
-        "content": "Content"
+        "titlecontent": "Title",
+        "sectioncontent": "Content"
     }
 
 }}
@@ -46,10 +46,10 @@
 
     <div class="d-flex align-items-center mb-2 position-relative">
         <a data-bs-toggle="collapse"
-           href="#{{uniqid}}"
+           href="#{{elementid}}"
            role="button"
            aria-expanded="{{#open}}true{{/open}}{{^open}}false{{/open}}"
-           aria-controls="{{uniqid}}"
+           aria-controls="{{elementid}}"
            class="btn btn-icon me-3 icons-collapse-expand fheader {{^open}}collapsed{{/open}}">
             <span class="expanded-icon icon-no-margin p-2" title="{{#str}}collapse, core{{/str}}">
                 <i class="icon fa fa-chevron-down fa-fw " aria-hidden="true"></i>
@@ -58,13 +58,13 @@
                 <span class="dir-rtl-hide"><i class="icon fa fa-chevron-right fa-fw " aria-hidden="true"></i></span>
                 <span class="dir-ltr-hide"><i class="icon fa fa-chevron-left fa-fw " aria-hidden="true"></i></span>
             </span>
-            <span class="visually-hidden">{{title}}</span>
+            <span class="visually-hidden">{{titlecontent}}</span>
         </a>
-        <h3 class="m-0">{{title}}</h3>
+        <h3 class="m-0">{{titlecontent}}</h3>
     </div>
 
-    <div class="collapse {{#open}}show{{/open}}" id="{{uniqid}}">
-        {{{content}}}
+    <div class="collapse {{#open}}show{{/open}}" id="{{elementid}}">
+        {{{sectioncontent}}}
     </div>
 
 </div>
