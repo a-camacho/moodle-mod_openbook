@@ -47,8 +47,8 @@
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Owner of that Openbook resource folder file" PREVIOUS="openbook" NEXT="timecreated"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" DEFAULT="0" COMMENT="Date/time at which the record was created" PREVIOUS="userid" NEXT="fileid"/>
         <FIELD NAME="fileid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The file id" PREVIOUS="timecreated" NEXT="filename"/>
-        <FIELD NAME="filename" TYPE="char" LENGTH="255" NOTNULL="true" COMMENT="The file name" PREVIOUS="fileid" NEXT="contenthash"/>
-        <FIELD NAME="contenthash" TYPE="char" LENGTH="40" NOTNULL="false" COMMENT="The file content hash" PREVIOUS="filename" NEXT="type"/>
+        <FIELD NAME="filename" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="The file name" PREVIOUS="fileid" NEXT="contenthash"/>
+        <FIELD NAME="contenthash" TYPE="char" LENGTH="40" NOTNULL="false" SEQUENCE="false" COMMENT="The file content hash" PREVIOUS="filename" NEXT="type"/>
         <FIELD NAME="type" TYPE="int" LENGTH="2" NOTNULL="true" SEQUENCE="false" COMMENT="The file type" PREVIOUS="contenthash" NEXT="teacherapproval"/>
         <FIELD NAME="teacherapproval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="3" SEQUENCE="false" COMMENT="Holds the lecturer approval" PREVIOUS="type" NEXT="studentapproval"/>
         <FIELD NAME="studentapproval" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false" COMMENT="Holds the student approval" PREVIOUS="teacherapproval" NEXT="commonteacherfile"/>
