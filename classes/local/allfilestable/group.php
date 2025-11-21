@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Contains class for files table listing all files for imported teamsubmissions
+ * Contains class for files table listing all files
  *
  * @package       mod_openbook
  * @author        University of Geneva, E-Learning Team
@@ -36,14 +36,10 @@ namespace mod_openbook\local\allfilestable;
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class group extends base {
-    /** @var int grouping id for assign's team submissions */
+    /** @var int grouping id for files */
     protected $groupingid = 0;
-    /** @var bool if a group membership is required by assign's team submission */
+    /** @var bool if a group membership is required the openbook */
     protected $requiregroup = 0;
-    /** @var \stdClass course module object of assign to import from */
-    protected $assigncm = null;
-    /** @var \context_module context instance of assign to import from */
-    protected $assigncontext = null;
 
     /**
      * Sets the predefined SQL for this table
@@ -69,7 +65,6 @@ class group extends base {
         if ($this->requiregroup || !count($this->openbook->get_submissionmembers(0))) {
             $grouptable = '{groups} g ';
         } else {
-            // If no group is required by assign to submit, we have to include all users without group as group 0 - standard group!
             $grouptable = " ( SELECT 0 AS id, :stdname AS name
                            UNION ALL
                               SELECT {groups}.id, {groups}.name AS name
@@ -134,11 +129,8 @@ class group extends base {
     public function __construct($uniqueid, \openbook $openbook, $filter) {
         global $DB, $PAGE;
 
-        $assignid = $openbook->get_instance()->importfrom;
         $this->groupingid = $DB->get_field('assign', 'teamsubmissiongroupingid', ['id' => $assignid]);
         $this->requiregroup = $openbook->requiregroup();
-        $this->assigncm = get_coursemodule_from_instance('assign', $assignid, $openbook->get_instance()->course);
-        $this->assigncontext = \context_module::instance($this->assigncm->id);
 
         parent::__construct($uniqueid, $openbook, $filter);
 
@@ -212,7 +204,6 @@ class group extends base {
             $helpicons[] = new \help_icon('openbookstatus', 'openbook');
         }
 
-        // Import and upload tables will enhance this list! Import from teamassignments will overwrite it!
         return [$columns, $headers, $helpicons];
     }
 
