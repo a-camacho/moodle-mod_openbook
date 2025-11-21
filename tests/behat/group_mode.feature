@@ -54,3 +54,29 @@ Feature: I can use Openbook resource folder groupwise with separate groups
     And I log out
     And I am on the "Openbook resource folder" "openbook activity" page logged in as student2
     Then I should not see "teacher_file.pdf"
+
+  @javascript @_file_upload
+  Scenario: Upload file to openbook resource folder as student 1 in group A, make it public and view it
+    When I am on the "Openbook resource folder" "openbook activity editing" page logged in as teacher1
+    And I expand all fieldsets
+    And I set the field with xpath "//*[@id='id_allowsubmissionsfromdate_enabled']" to "0"
+    And I set the field with xpath "//*[@id='id_duedate_enabled']" to "0"
+    And I set the following fields to these values:
+      | Files are personal | No (files can be shared between students) |
+      | Teacher approval   | Automatic                                 |
+      | Student approval   | Automatic                                 |
+    And I press "Save and display"
+    And I log out
+    And I am on the "Openbook resource folder" "openbook activity" page logged in as student1
+    And I should see "Own files"
+    And I should see "Teacher files"
+    And I click on "Edit/upload files" "button"
+    And I upload "mod/openbook/tests/fixtures/student_file_shared.pdf" file to "Own files" filemanager
+    And I press "Save changes"
+    And I should see "student_file_shared.pdf"
+    And I log out
+    And I am on the "Openbook resource folder" "openbook activity" page logged in as student1
+    And I should see "student_file_shared.pdf"
+    And I log out
+    And I am on the "Openbook resource folder" "openbook activity" page logged in as student2
+    Then I should not see "student_file_shared.pdf"
