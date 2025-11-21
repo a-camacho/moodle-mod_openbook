@@ -54,17 +54,32 @@ final class allfilestable_test extends base {
      * @return void
      */
     public function test_create_instance(): void {
-        self::assertNotEmpty($this->create_instance());
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+
+        $this->assertFalse($DB->record_exists('openbook', ['course' => $course->id]));
+        $openbook = $this->getDataGenerator()->create_module('openbook', ['course' => $course->id]);
+        $this->assertEquals(1, $DB->count_records('openbook', ['course' => $course->id]));
+        $this->assertTrue($DB->record_exists('openbook', ['course' => $course->id]));
+        $this->assertTrue($DB->record_exists('openbook', ['id' => $openbook->id]));
+
+        $params = ['course' => $course->id, 'name' => 'One more openbook'];
+        $openbook = $this->getDataGenerator()->create_module('openbook', $params);
+        $this->assertEquals(2, $DB->count_records('openbook', ['course' => $course->id]));
+        $this->assertEquals('One more openbook', $DB->get_field_select('openbook', 'name', 'id = :id', ['id' => $openbook->id]));
     }
 
     /**
      * Tests if we can create an allfilestable without uploaded files
      *
-     * @covers \openbook::get_allfilestable_upload
+     * @covers \openbook::get_allfilestable
      * @return void
      * @throws Exception
      */
-    public function test_allfilestable_upload(): void {
+    public function test_allfilestable(): void {
         // Setup fixture!
         $openbook = $this->create_instance([
             'filesarepersonal' => 1,

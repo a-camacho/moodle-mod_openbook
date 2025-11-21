@@ -142,7 +142,7 @@ function openbook_update_instance($openbook) {
 }
 
 /**
- * complete deletes an openbook instance
+ * Completely deletes an openbook instance
  *
  * @param int $id
  * @return bool

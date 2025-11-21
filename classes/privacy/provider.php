@@ -53,33 +53,30 @@ class provider implements core_userlist_provider, metadataprovider, pluginprovid
      * @return  collection Returns the collection of metadata.
      */
     public static function get_metadata(collection $collection): collection {
-        $openbookextduedates = [
-                'userid' => 'privacy:metadata:userid',
-                'extensionduedate' => 'privacy:metadata:extensionduedate',
-        ];
-        $openbookfile = [
-                'userid' => 'privacy:metadata:userid',
-                'timecreated' => 'privacy:metadata:timecreated',
-                'fileid' => 'privacy:metadata:fileid',
-                'filename' => 'privacy:metadata:filename',
-                'contenthash' => 'privacy:metadata:contenthash',
-                'type' => 'privacy:metadata:type',
-                'teacherapproval' => 'privacy:metadata:teacherapproval',
-                'studentapproval' => 'privacy:metadata:studentapproval',
-        ];
-        $openbookgroupapproval = [
-                'fileid' => 'privacy:metadata:fileid',
-                'userid' => 'privacy:metadata:userid',
-                'approval' => 'privacy:metadata:approval',
-                'timemodified' => 'privacy:metadata:timemodified',
-        ];
 
-        $collection->add_database_table('openbook_file', $openbookfile, 'privacy:metadata:files');
-        $collection->add_database_table(
-            'openbook_groupapproval',
-            $openbookgroupapproval,
-            'privacy:metadata:groupapproval',
-        );
+        // The table 'quiz_overrides' contains any user or group overrides for users.
+        // It should be included where data exists for a user.
+        $collection->add_database_table('openbook_overrides', [
+            'openbook'                  => 'privacy:metadata:openbook',
+            'userid'                => 'privacy:metadata:userid',
+            'allowsubmissionfromdate'              => 'privacy:metadata:userextensionallowsubmissionsfromdate',
+            'duedate'              => 'privacy:metadata:userextensiontodate',
+            'approvalfromdate'              => 'privacy:metadata:userextensionapprovalfromdate',
+            'approvaltodate'              => 'privacy:metadata:userextensionapprovaltodate',
+            'securewindowfromdate'             => 'privacy:metadata:userextensionsecurewindowfromdate',
+            'securewindowtodate'             => 'privacy:metadata:userextensionsecurewindowtodate',
+        ], 'privacy:metadata:openbook_overrides');
+
+        $collection->add_database_table('openbook_file', [
+            'userid' => 'privacy:metadata:userid',
+            'timecreated' => 'privacy:metadata:timecreated',
+            'timemodifed' => 'privacy:metadata:timemodified',
+            'fileid' => 'privacy:metadata:fileid',
+            'filename' => 'privacy:metadata:filename',
+            'contenthash' => 'privacy:metadata:contenthash',
+            'teacherapproval' => 'privacy:metadata:teacherapproval',
+            'studentapproval' => 'privacy:metadata:studentapproval',
+        ], 'privacy:metadata:files');
 
         $collection->add_user_preference('openbook_perpage', 'privacy:metadata:openbookperpage');
 
@@ -152,13 +149,23 @@ class provider implements core_userlist_provider, metadataprovider, pluginprovid
                 'upload' => OPENBOOK_MODE_UPLOAD,
         ];
 
-        // Get all who uploaded!
+        // Get all who uploaded.
         $sql = "SELECT f.userid
                   FROM {context} ctx
                   JOIN {course_modules} cm ON cm.id = ctx.instanceid
                   JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
                   JOIN {openbook} p ON p.id = cm.instance
                   JOIN {openbook_file} f ON p.id = f.openbook
+                 WHERE ctx.id = :contextid AND ctx.contextlevel = :contextlevel";
+        $userlist->add_from_sql('userid', $sql, $params);
+
+        // Get all who have overrides.
+        $sql = "SELECT o.userid
+                  FROM {context} ctx
+                  JOIN {course_modules} cm ON cm.id = ctx.instanceid
+                  JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
+                  JOIN {openbook} p ON p.id = cm.instance
+                  JOIN {openbook_overrides} o ON p.id = o.openbook
                  WHERE ctx.id = :contextid AND ctx.contextlevel = :contextlevel";
         $userlist->add_from_sql('userid', $sql, $params);
     }
@@ -232,6 +239,10 @@ class provider implements core_userlist_provider, metadataprovider, pluginprovid
             return;
         }
 
+        $user = $contextlist->get_user();
+
+        // Export general information about all Openbook resource folders.
+
         [$contextsql, $contextparams] = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
 
         $sql = "SELECT
@@ -247,8 +258,6 @@ class provider implements core_userlist_provider, metadataprovider, pluginprovid
         $mappings = [];
 
         $openbooks = $DB->get_records_sql($sql, $contextparams);
-
-        $user = $contextlist->get_user();
 
         foreach ($openbooks as $openbook) {
             $context = \context_module::instance($openbook->cmid);
@@ -267,14 +276,12 @@ class provider implements core_userlist_provider, metadataprovider, pluginprovid
             $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
             $openbook = new \openbook($cm, $course, $context);
 
+            static::export_overrides($context, $openbook, $user);
+            static::export_files($context, $openbook, $user, []);
+
             writer::with_context($context)->export_data([], $openbookdata);
 
-            /* We don't differentiate between roles, if we have data about the user, we give it freely ;) - no sensible
-             * information here! */
-
-            static::export_user_preferences($user->id);
-            static::export_extensions($context, $openbook, $user);
-            static::export_files($context, $openbook, $user, []);
+            helper::export_context_files($context, $user);
         }
     }
 
@@ -286,34 +293,66 @@ class provider implements core_userlist_provider, metadataprovider, pluginprovid
      * @throws \coding_exception
      */
     public static function export_user_preferences(int $userid) {
-        global $DB;
-        $context = \context_system::instance();
+        $openbookperpage = get_user_preferences('openbook_perpage', null, $userid);
 
-        $sql = "SELECT name, value
-                  FROM {user_preferences}
-                 WHERE userid = :userid AND ";
-        $namelike = $DB->sql_like('name', ':name');
-        $sql .= $namelike;
-
-        $params = ['userid' => $userid, 'name' => 'mod-openbook-perpage-%'];
-        $userprefs = $DB->get_records_sql($sql, $params);
-        foreach ($userprefs as $userpref) {
-            writer::with_context($context)->export_user_preference(
-                'mod_openbook',
-                $userpref->name,
-                $userpref->value,
-                get_string('privacy:metadata:openbookperpage', 'mod_openbook')
-            );
+        if ($openbookperpage !== null) {
+            writer::export_user_preference('openbook_perpage', (string)$openbookperpage);
         }
-        $params['name'] = \mod_openbook\local\allfilestable\base::get_table_uniqueid('%');
-        $userprefs = $DB->get_records_sql($sql, $params);
-        foreach ($userprefs as $userpref) {
-            writer::with_context($context)->export_user_preference(
-                'mod_openbook',
-                $userpref->name,
-                $userpref->value,
-                get_string('privacy:metadata:openbookperpage', 'mod_openbook')
-            );
+    }
+
+    /**
+     * Export overrides for this openbook.
+     *
+     * @param  \context $context Context
+     * @param  \openbook $openbook The Openbook folder object.
+     * @param  \stdClass $user The user object.
+     * @throws \coding_exception
+     */
+    public static function export_overrides(\context $context, \openbook $openbook, \stdClass $user) {
+        $data = new \stdClass();
+
+        $extallowsubmissionsfromdate = $openbook->user_overriddenallowsubmissionsfromdate($user->id);
+        // Overrides returns an array with data in it, but an override with actual data will have the assign ID set.
+        if ($extallowsubmissionsfromdate > 0) {
+            $data->allowsubmissionsfromdate = (object)[get_string(
+                'privacy:metadata:userextensionallowsubmissionsfromdate',
+                'mod_openbook'
+            ) => transform::datetime($extallowsubmissionsfromdate)];
+        }
+        $exttodate = $openbook->user_overriddentodate($user->id);
+        // Overrides returns an array with data in it, but an override with actual data will have the assign ID set.
+        if ($exttodate > 0) {
+            $data->todate = (object)[get_string('privacy:metadata:userextensiontodate', 'mod_openbook') =>
+                transform::datetime($exttodate)];
+        }
+        $extapprovalfromdate = $openbook->user_overriddenapprovalfromdate($user->id);
+        // Overrides returns an array with data in it, but an override with actual data will have the assign ID set.
+        if ($extapprovalfromdate > 0) {
+            $data->approvalfromdate = (object)[get_string('privacy:metadata:userextensionapprovalfromdate', 'mod_openbook') =>
+                transform::datetime($extapprovalfromdate)];
+        }
+        $extapprovaltodate = $openbook->user_overriddenapprovaltodate($user->id);
+        // Overrides returns an array with data in it, but an override with actual data will have the assign ID set.
+        if ($extapprovaltodate > 0) {
+            $data->approvaltodate = (object)[get_string('privacy:metadata:userextensionapprovaltodate', 'mod_openbook') =>
+                transform::datetime($extapprovaltodate)];
+        }
+        $extsecurewindowfromdate = $openbook->user_overriddensecurewindowfromdate($user->id);
+        // Overrides returns an array with data in it, but an override with actual data will have the assign ID set.
+        if ($extsecurewindowfromdate > 0) {
+            $data->securewindowfromdate = (object)[get_string(
+                'privacy:metadata:userextensionsecurewindowfromdate',
+                'mod_openbook'
+            ) => transform::datetime($extsecurewindowfromdate)];
+        }
+        $extsecurewindowtodate = $openbook->user_overriddensecurewindowtodate($user->id);
+        // Overrides returns an array with data in it, but an override with actual data will have the assign ID set.
+        if ($extsecurewindowtodate > 0) {
+            $data->securewindowtodate = (object)[get_string('privacy:metadata:userextensionsecurewindowtodate', 'mod_openbook') =>
+                transform::datetime($extsecurewindowtodate)];
+        }
+        if (!empty($data)) {
+            writer::with_context($context)->export_data([get_string('overrides', 'mod_openbook')], $data);
         }
     }
 
@@ -321,49 +360,37 @@ class provider implements core_userlist_provider, metadataprovider, pluginprovid
      * Fetches all of the user's files and adds them to the export
      *
      * @param  \context_module $context
-     * @param  \openbook $pub
+     * @param  \openbook $openbook
      * @param  \stdClass $user
      * @param  array $path Current directory path that we are exporting to.
      * @throws \dml_exception
      * @throws \coding_exception
      */
-    protected static function export_files(\context_module $context, \openbook $pub, \stdClass $user, array $path) {
+    protected static function export_files(\context_module $context, \openbook $openbook, \stdClass $user, array $path) {
         global $DB;
 
-        // Imported and uploaded files are saved with user's ID!
+        // Uploaded files are saved with user's ID!
         $rs = $DB->get_recordset_sql("SELECT f.*
-              FROM {openbook} p
-              JOIN {openbook_file} f ON p.id = f.openbook
-             WHERE p.id = :openbook AND f.userid = :userid", [
-                'openbook' => $pub->get_instance()->id,
+              FROM {openbook} o
+              JOIN {openbook_file} f ON o.id = f.openbook
+             WHERE o.id = :openbook AND f.userid = :userid", [
+                'openbook' => $openbook->get_instance()->id,
                 'userid' => $user->id,
         ]);
 
         foreach ($rs as $cur) {
             $filepath = array_merge($path, [get_string('privacy:path:files', 'mod_openbook'), $cur->filename]);
-            static::export_file($context, $cur, $filepath);
+            // Export file!
+            static $fs = null;
+
+            if ($fs === null) {
+                $fs = new \file_storage();
+            }
+
+            $fsfile = $fs->get_file_by_id($cur->fileid);
+            static::export_file_metadata($context, $cur, $filepath);
+            writer::with_context($context)->export_custom_file($filepath, $fsfile->get_filename(), $fsfile->get_content());
         }
-    }
-
-    /**
-     * Exports an uploaded/imported file!
-     *
-     * @param \context_module $context
-     * @param \stdClass $file
-     * @param array $path
-     * @throws \coding_exception
-     */
-    protected static function export_file(\context_module $context, \stdClass $file, array $path) {
-        // Export file!
-        static $fs = null;
-
-        if ($fs === null) {
-            $fs = new \file_storage();
-        }
-
-        $fsfile = $fs->get_file_by_id($file->fileid);
-        static::export_file_metadata($context, $file, $path);
-        writer::with_context($context)->export_custom_file($path, $fsfile->get_filename(), $fsfile->get_content());
     }
 
     /**
@@ -383,131 +410,35 @@ class provider implements core_userlist_provider, metadataprovider, pluginprovid
                 'teacherapproval' => transform::yesno($file->teacherapproval),
                 'studentapproval' => transform::yesno($file->studentapproval),
         ];
-        switch ($file->type) {
-            case OPENBOOK_MODE_UPLOAD:
-                $export->type = get_string('privacy:type:upload', 'openbook');
-                break;
-        }
 
         writer::with_context($context)->export_data($path, (object)$export);
     }
 
     /**
-     * Adds an imported onlinetext and resources to export!
-     *
-     * @param \context_module $context
-     * @param \stdClass $file
-     * @param array $path
-     * @throws \coding_exception
-     */
-    protected static function export_onlinetext(\context_module $context, \stdClass $file, array $path) {
-        // Export file!
-        static $fs = null;
-
-        if ($fs === null) {
-            $fs = new \file_storage();
-        }
-
-        $fsfile = $fs->get_file_by_id($file->fileid);
-
-        static::export_file_metadata($context, $file, $path);
-        writer::with_context($context)->export_custom_file($path, $fsfile->get_filename(), $fsfile->get_content());
-
-        /*
-         * Export resources!
-         * We won't use writer::with_context($context)->export_area_files() due to us only needing a subdirectory!
-         */
-        $resources = $fs->get_directory_files(
-            $context->id,
-            'mod_openbook',
-            'attachment',
-            $fsfile->get_itemid(),
-            '/resources/',
-            true,
-            false
-        );
-        if (count($resources) > 0) {
-            foreach ($resources as $cur) {
-                writer::with_context($context)->export_custom_file(array_merge($path, [
-                        get_string('privacy:path:resources', 'mod_openbook'),
-                ]), $cur->get_filename(), $cur->get_content());
-            }
-        }
-    }
-
-    /**
-     * Fetches all of the user's group approvals and adds them to the export
-     *
-     * @param  \context $context
-     * @param  \openbook $pub
-     * @param  \stdClass $user
-     * @param  array $path Current directory path that we are exporting to.
-     * @throws \dml_exception
-     */
-    protected static function export_groupapprovals(\context $context, \openbook $pub, \stdClass $user, array $path) {
-        global $DB;
-
-        // Fetch all approvals!
-        $rs = $DB->get_recordset_sql("SELECT ga.id, f.filename, ga.userid, ga.approval, ga.timecreated, ga.timemodified,
-                                             f.userid AS groupid
-                                        FROM {openbook_groupapproval} ga
-                                        JOIN {openbook_file} f ON ga.fileid = f.id
-                                       WHERE ga.userid = :userid AND f.openbook = :openbook", [
-                'userid' => $user->id,
-                'openbook' => $pub->get_instance()->id,
-        ]);
-
-        foreach ($rs as $cur) {
-            static::export_groupapproval($context, $cur, $path);
-        }
-
-        $rs->close();
-    }
-
-    /**
-     * Formats and then exports the user's approval data.
-     *
-     * @param  \context $context
-     * @param  \stdClass $approval
-     * @param  array $path Current directory path that we are exporting to.
-     */
-    protected static function export_groupapproval(\context $context, \stdClass $approval, array $path) {
-        $approvaldata = (object)[
-                'filename' => $approval->filename,
-                'approval' => transform::yesno($approval->approval),
-                'groupid' => $approval->groupid,
-                'timecreated' => transform::datetime($approval->timecreated),
-                'timemodified' => transform::datetime($approval->timemodified),
-        ];
-
-        writer::with_context($context)->export_data($path, $approvaldata);
-    }
-
-    /**
-     * Delete all use data which matches the specified context.
+     * Delete all user data which matches the specified context.
      *
      * @param \context $context The module context.
      * @throws \dml_exception
      */
     public static function delete_data_for_all_users_in_context(\context $context) {
         global $DB;
-
         if ($context->contextlevel == CONTEXT_MODULE) {
             $fs = new \file_storage();
 
             // Apparently we can't trust anything that comes via the context.
-            // Go go mega query to find out it we have an assign context that matches an existing assignment.
-            $sql = "SELECT p.id
-                    FROM {openbook} p
-                    JOIN {course_modules} cm ON p.id = cm.instance AND p.course = cm.course
+            // Go go mega query to find out it we have an openbook context that matches an existing openbook.
+            $sql = "SELECT o.id
+                    FROM {openbook} o
+                    JOIN {course_modules} cm ON o.id = cm.instance AND o.course = cm.course
                     JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
                     JOIN {context} ctx ON ctx.instanceid = cm.id AND ctx.contextlevel = :contextmodule
                     WHERE ctx.id = :contextid";
             $params = ['modulename' => 'openbook', 'contextmodule' => CONTEXT_MODULE, 'contextid' => $context->id];
+
             $id = $DB->get_field_sql($sql, $params);
             // If we have a count over zero then we can proceed.
             if ($id > 0) {
-                // Get all openbook files and group approvals to delete them!
+                // Get all openbook files to delete them!
                 if ($files = $DB->get_records('openbook_file', ['openbook' => $id])) {
                     $fileids = array_keys($files);
 
@@ -518,6 +449,42 @@ class provider implements core_userlist_provider, metadataprovider, pluginprovid
 
                     $DB->delete_records_list('openbook_file', 'id', $fileids);
                 }
+            }
+
+            // Now delete all overrides!
+            $sql = "SELECT o.id
+                    FROM {openbook} o
+                    JOIN {course_modules} cm ON o.id = cm.instance AND o.course = cm.course
+                    JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
+                    JOIN {context} ctx ON ctx.instanceid = cm.id AND ctx.contextlevel = :contextmodule
+                    JOIN {openbook_overrides} oo ON oo.openbook = o.id
+                    WHERE ctx.id = :contextid";
+            $params = ['modulename' => 'openbook', 'contextmodule' => CONTEXT_MODULE, 'contextid' => $context->id];
+            $ids = $DB->get_fieldset_sql($sql, $params);
+
+            if (!empty($ids)) {
+                [$insql, $inparams] = $DB->get_in_or_equal($ids);
+                // Get all openbook overrides and delete them!
+                $DB->delete_records_select('openbook_overrides', 'id ' . $insql, $inparams);
+            }
+            $sql = "SELECT * FROM {openbook_overrides}";
+            $params = [];
+
+            // Now delete all events!
+            $sql = "SELECT DISTINCT e.id
+                    FROM {event} e
+                    JOIN {openbook} o ON o.id = e.instance
+                    JOIN {course_modules} cm ON o.id = cm.instance AND o.course = cm.course
+                    JOIN {modules} m ON m.id = cm.module AND m.name = 'openbook'
+                    JOIN {context} ctx ON ctx.instanceid = cm.id AND ctx.contextlevel = :contextmodule
+                    WHERE ctx.id = :contextid AND e.modulename = :modulename";
+            $params = ['modulename' => 'openbook', 'contextmodule' => CONTEXT_MODULE, 'contextid' => $context->id];
+            $ids = $DB->get_fieldset_sql($sql, $params);
+            // If we have id results then we can proceed.
+            if (!empty($ids)) {
+                [$insql, $inparams] = $DB->get_in_or_equal($ids);
+                // Get all openbook events and delete them!
+                $DB->delete_records_select('event', 'id ' . $insql, $inparams);
             }
         }
     }
@@ -562,21 +529,21 @@ class provider implements core_userlist_provider, metadataprovider, pluginprovid
                 continue;
             }
 
-            $pub = $records[$context->id];
+            $openbook = $records[$context->id];
 
             $teams = false;
             $emptygroup = false;
 
             if ($emptygroup) {
-                $files = $DB->get_records('openbook_file', ['openbook' => $pub->id, 'userid' => 0]);
+                $files = $DB->get_records('openbook_file', ['openbook' => $openbook->id, 'userid' => 0]);
             } else if (!$teams) {
-                $files = $DB->get_records('openbook_file', ['openbook' => $pub->id, 'userid' => $user->id]);
+                $files = $DB->get_records('openbook_file', ['openbook' => $openbook->id, 'userid' => $user->id]);
             } else {
                 $files = [];
 
-                $usergroups = groups_get_all_groups($pub->course, $user->id);
+                $usergroups = groups_get_all_groups($openbook->course, $user->id);
                 foreach (array_keys($usergroups) as $grpid) {
-                    $files = $files + $DB->get_records('openbook_file', ['openbook' => $pub->id,
+                    $files = $files + $DB->get_records('openbook_file', ['openbook' => $openbook->id,
                             'userid' => $grpid]);
                 }
             }
@@ -595,6 +562,11 @@ class provider implements core_userlist_provider, metadataprovider, pluginprovid
                 if (!$teams) {
                     $DB->delete_records_list('openbook_file', 'id', $fileids);
                 }
+            }
+            $overrides = $DB->get_records('openbook_overrides', ['openbook' => $openbook->id, 'userid' => $user->id]);
+            if ($overrides) {
+                $overrideids = array_keys($overrides);
+                $DB->delete_records_list('openbook_file', 'id', $overrideids);
             }
         }
     }

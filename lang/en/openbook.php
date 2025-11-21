@@ -233,17 +233,7 @@ $string['notice_group_all_teachernotrequired'] = 'The files will only be publish
 $string['notice_group_one_teacherrequired'] = 'The files will only be published for all students with the approval of <strong>at LEAST ONE group member and the teacher.</strong> Teachers reserve the right to reject the publication of your files at any time.';
 $string['notice_group_one_teachernotrequired'] = 'The files will only be published for all students with the approval of <strong>at LEAST ONE group member.</strong>';
 
-$string['notice_files_imported'] = 'Shown files are imported from an assignment activity.';
-$string['notice_files_imported_group'] = 'Shown files are from a group submission, imported from an assignment activity.';
-$string['notice_changes_possible_in_original'] = 'Changes to existing files are only possible in the original assignment activity.';
-
 // Strings for approval.
-$string['notice_obtainteacherapproval_studentsapproval'] = 'In the spirit of copyright law, we ask that you request approval to publish files from participants in a separate way.';
-
-$string['notice_obtainapproval_import_both'] = 'As a teacher, you can reject approval for publication at any time, if a file not meets the defined requirements.';
-$string['notice_obtainapproval_import_studentonly'] = 'In the spirit of copyright law, we ask that you request approval to publish files from students in a separate way.<br>As a teacher, you can reject approval for publication at any time, if a file not meets the defined requirements.';
-$string['notice_obtainapproval_upload_teacher'] = 'In the spirit of copyright law, we ask that you request approval to publish files from students in a separate way.<br>As a teacher, you can reject approval for publication at any time, if a file does not meet the defined requirements.';
-$string['notice_obtainapproval_upload_automatic'] = 'In the spirit of copyright law, we ask that you request approval to publish files from students in a separate way.<br>As a teacher, you can reject approval for publication at any time, if a file does not meet the defined requirements.';
 
 $string['teacher_pending'] = 'Decision from teacher is pending.';
 $string['teacher_approved'] = 'Approved by teacher.';
@@ -320,21 +310,22 @@ $string['details'] = 'Details';
 // Strings for privacy-API.
 $string['privacy:metadata:openbookperpage'] = 'How many entries should be displayed on a single table page!';
 $string['privacy:path:files'] = 'Files';
-$string['privacy:path:resources'] = 'Resources';
-$string['privacy:type:upload'] = 'Uploaded file';
-$string['privacy:type:import'] = 'Imported file';
-$string['privacy:type:onlinetext'] = 'Imported onlinetext';
-$string['privacy:metadata:groupapproval'] = 'Stores information about approval or rejection of files by group members, imported from a group submission.';
-$string['privacy:metadata:openbookfileexplanation'] = 'Files and converted onlinetext-submissions for this plugin get stored via Moodle\'s file API.';
+$string['privacy:metadata:openbookfileexplanation'] = 'Files for this plugin get stored via Moodle\'s file API.';
 $string['privacy:metadata:files'] = 'Stores information (identifier, whom it belongs, where it came from, hash of content, file name and if approved by teacher and/or student) about the files uploaded/imported into mod_openbook.';
 $string['privacy:metadata:fileid'] = 'Identifier of the file.';
 $string['privacy:metadata:userid'] = 'Identifier of the user.';
 $string['privacy:metadata:timecreated'] = 'The time and date the data record was created.';
+$string['privacy:metadata:openbook'] = 'The Openbook resource folder';
+$string['privacy:metadata:openbook_overrides'] = 'The overrides for this Openbook resource folder';
 $string['privacy:metadata:timemodified'] = 'The most recent time and date the data record got updated/modified.';
-$string['privacy:metadata:approval'] = 'Whether the group member has approved or rejected for publication.';
+$string['privacy:metadata:userextensionapprovalfromdate'] = 'The overridden start date for file approval for that user.';
+$string['privacy:metadata:userextensionapprovaltodate'] = 'The overridden end date for file approval for that user.';
+$string['privacy:metadata:userextensionsecurewindowfromdate'] = 'The overridden start date for secure window for that user.';
+$string['privacy:metadata:userextensionsecurewindowtodate'] = 'The overridden end date for secure window for that user.';
+$string['privacy:metadata:userextensionallowsubmissionsfromdate'] = 'The overridden start date for file submissions for that user.';
+$string['privacy:metadata:userextensiontodate'] = 'The overridden end date for file submissions for that user.';
 $string['privacy:metadata:studentapproval'] = 'Whether the student has approved or rejected the publication of a file.';
 $string['privacy:metadata:teacherapproval'] = 'Whether the teacher has approved or rejected the publication of a file.';
-$string['privacy:metadata:type'] = 'Marks the origin of the file (uploaded by student, imported from assignment submission or converted onlinetext from assignment submission).';
 $string['privacy:metadata:contenthash'] = 'SHA1 hash of the file\'s content, used to determine if the file changed.';
 $string['privacy:metadata:filename'] = 'The file\'s name.';
 
@@ -371,3 +362,8 @@ $string['override:securewindow:to'] = 'Secure window until {$a->to}';
 $string['override:nothingtochange'] = 'There are no settings that can be overriden with the current activity settings!';
 $string['override:delete:ask'] = 'Are you sure you want to delete the override for {$a->userorgroup} {$a->fullname}?';
 $string['override:delete:success'] = 'Override deleted successfully!';
+
+$string['calendarsubmissionstart'] = '{$a} opens for file uploads';
+$string['calendarsubmissionend'] = '{$a} closes for file uploads';
+$string['calendarapprovalstart'] = '{$a} opens for file approvals';
+$string['calendarapprovalend'] = '{$a} closes for file approvals';

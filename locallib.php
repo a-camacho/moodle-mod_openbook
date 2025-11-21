@@ -14,11 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-// TODO: Show common teacher files independently from Teacher approval / Student approval status.
-// TODO: Show common teacher files to teacher in the "Teacher files that are visible to everybody".
-// TODO: Remove common teacher files from 'Decision pending' count.
-// TODO: Remove common teacher files from 'Submitted' count.
-
 /**
  * Contains much of the logic needed for mod_openbook
  *
@@ -51,6 +46,11 @@ define('OPENBOOK_NOTIFY_STUDENT', 2);
 define('OPENBOOK_NOTIFY_ALL', 3);
 define('OPENBOOK_NOTIFY_STATUSCHANGE', 'status');
 define('OPENBOOK_NOTIFY_FILECHANGE', 'file');
+
+define('OPENBOOK_EVENT_TYPE_SUBMISSION_OPEN', 'opensubmission');
+define('OPENBOOK_EVENT_TYPE_SUBMISSION_CLOSE', 'closesubmission');
+define('OPENBOOK_EVENT_TYPE_APPROVAL_OPEN', 'openapproval');
+define('OPENBOOK_EVENT_TYPE_APPROVAL_CLOSE', 'closeapproval');
 
 require_once($CFG->dirroot . '/mod/openbook/mod_openbook_allfiles_form.php');
 
@@ -228,12 +228,12 @@ class openbook {
     }
 
     /**
-     * Get the secure window to date (if set)
+     * Get the overridden secure window to date (if set)
      *
-     * @param int $uid User ID to fetch overriden secure window to date for
+     * @param int $uid User ID to fetch overridden secure window to date for
      * @return int overridden date if set or 0
      */
-    public function user_overridensecurewindowtodate($uid) {
+    public function user_overriddensecurewindowtodate($uid) {
         global $DB;
 
         $overriddensecurewindowtodate = $DB->get_field('openbook_overrides', 'securewindowtodate', [
@@ -246,6 +246,110 @@ class openbook {
         }
 
         return $overriddensecurewindowtodate;
+    }
+
+    /**
+     * Get the overridden secure window to date (if set)
+     *
+     * @param int $uid User ID to fetch overridden secure window to date for
+     * @return int overridden date if set or 0
+     */
+    public function user_overriddensecurewindowfromdate($uid) {
+        global $DB;
+
+        $overriddensecurewindowfromdate = $DB->get_field('openbook_overrides', 'securewindowfromdate', [
+            'openbook' => $this->get_instance()->id,
+            'userid' => $uid,
+        ]);
+
+        if (!$overriddensecurewindowfromdate) {
+            return 0;
+        }
+
+        return $overriddensecurewindowfromdate;
+    }
+
+    /**
+     * Get the overridden allow submissions from date (if set)
+     *
+     * @param int $uid User ID to fetch overridden allow submissions from date for
+     * @return int overridden date if set or 0
+     */
+    public function user_overriddenallowsubmissionsfromdate($uid) {
+        global $DB;
+        $overriddenallowsubmissionsfromdate = $DB->get_field('openbook_overrides', 'allowsubmissionsfromdate', [
+            'openbook' => $this->get_instance()->id,
+            'userid' => $uid,
+        ]);
+
+        if (!$overriddenallowsubmissionsfromdate) {
+            return 0;
+        }
+
+        return $overriddenallowsubmissionsfromdate;
+    }
+
+    /**
+     * Get the overridden allow submissions from date (if set)
+     *
+     * @param int $uid User ID to fetch overridden allow submissions from date for
+     * @return int overridden date if set or 0
+     */
+    public function user_overriddentodate($uid) {
+        global $DB;
+
+        $overriddentodate = $DB->get_field('openbook_overrides', 'duedate', [
+            'openbook' => $this->get_instance()->id,
+            'userid' => $uid,
+        ]);
+
+        if (!$overriddentodate) {
+            return 0;
+        }
+
+        return $overriddentodate;
+    }
+
+    /**
+     * Get the overridden allow approval from date (if set)
+     *
+     * @param int $uid User ID to fetch overridden allow submissions from date for
+     * @return int overridden date if set or 0
+     */
+    public function user_overriddenapprovalfromdate($uid) {
+        global $DB;
+
+        $overriddenapprovalfromdate = $DB->get_field('openbook_overrides', 'approvalfromdate', [
+            'openbook' => $this->get_instance()->id,
+            'userid' => $uid,
+        ]);
+
+        if (!$overriddenapprovalfromdate) {
+            return 0;
+        }
+
+        return $overriddenapprovalfromdate;
+    }
+
+    /**
+     * Get the overridden allow approval to date (if set)
+     *
+     * @param int $uid User ID to fetch overridden allow submissions from date for
+     * @return int overridden date if set or 0
+     */
+    public function user_overriddenapprovaltodate($uid) {
+        global $DB;
+
+        $overriddenapprovaltodate = $DB->get_field('openbook_overrides', 'approvaltodate', [
+            'openbook' => $this->get_instance()->id,
+            'userid' => $uid,
+        ]);
+
+        if (!$overriddenapprovaltodate) {
+            return 0;
+        }
+
+        return $overriddenapprovaltodate;
     }
 
     /**
@@ -350,7 +454,7 @@ class openbook {
 
         $from = $this->get_instance()->securewindowfromdate;
         $to = $this->get_instance()->securewindowtodate;
-        $overridesecurewindowtodate = $this->user_overridensecurewindowtodate($USER->id);
+        $overridesecurewindowtodate = $this->user_overriddensecurewindowtodate($USER->id);
 
         if ($to != 0 && $overridesecurewindowtodate) {
             $to = $overridesecurewindowtodate;
@@ -1101,97 +1205,6 @@ class openbook {
     }
 
     /**
-     * Sets group approval for the specified user and returns current cumulated group approval!
-     *
-     * @param null|int $approval 0 if rejected, 1 if approved and 'null' if not set!
-     * @param int $pubfileid ID of openbook file entry in DB
-     * @param int $userid ID of user to set approval/rejection for
-     * @return array cumulated approval for specified file, approving and needed count
-     * @throws coding_exception
-     * @throws dml_exception
-     */
-    public function set_group_approval($approval, $pubfileid, $userid) {
-        global $DB;
-
-        // Normalize approval value!
-        /*if ($approval !== null) {
-            $approval = empty($approval) ? 0 : 1;
-        }*/
-
-        $approvalforgroupapproval = $approval == 1 ? 1 : 0; // $approval == 2 => $approvalforgroupapproval = 0...
-
-        $record = $DB->get_record('openbook_groupapproval', ['fileid' => $pubfileid, 'userid' => $userid]);
-        $filerec = $DB->get_record('openbook_file', ['id' => $pubfileid]);
-        if (!empty($record)) {
-            if ($record->approval === $approvalforgroupapproval) {
-                // Nothing changed, return!
-                return $filerec->studentapproval;
-            }
-            $record->approval = $approvalforgroupapproval;
-            $record->timemodified = time();
-            $DB->update_record('openbook_groupapproval', $record);
-        } else {
-            $record = new stdClass();
-            $record->fileid = $pubfileid;
-            $record->userid = $userid;
-            $record->approval = $approvalforgroupapproval;
-            $record->timecreated = time();
-            $record->timemodified = $record->timecreated;
-            $record->id = $DB->insert_record('openbook_groupapproval', $record);
-        }
-
-        // Calculate new cumulated studentapproval for caching in file table!
-        // Get group members!
-        $groupmembers = $this->get_submissionmembers($filerec->userid);
-        $stats = [];
-        $stats['approving'] = 0;
-        $stats['needed'] = count($groupmembers);
-        if (!empty($groupmembers)) {
-            [$usersql, $userparams] = $DB->get_in_or_equal(array_keys($groupmembers), SQL_PARAMS_NAMED, 'user');
-            $select = "fileid = :fileid AND approval = :approval AND userid " . $usersql;
-            $params = ['fileid' => $pubfileid, 'approval' => 0] + $userparams;
-            if ($DB->record_exists_select('openbook_groupapproval', $select, $params)) {
-                // If anyone rejected it's rejected, no matter what!
-                $approval = 2; // 2 is rejected...
-            } else {
-                if ($this->get_instance()->groupapproval == OPENBOOK_APPROVAL_SINGLE) {
-                    // If only one has to approve, we check for that!
-                    $params['approval'] = 1;
-                    if ($DB->record_exists_select('openbook_groupapproval', $select, $params)) {
-                        $approval = 1;
-                    } else {
-                        $approval = 0;
-                    }
-                } else {
-                    // All group members have to approve!
-                    $select = "fileid = :fileid AND approval IS NULL AND userid " . $usersql;
-                    $params = ['fileid' => $pubfileid] + $userparams;
-                    $approving = $DB->count_records_sql("SELECT count(DISTINCT userid)
-                                                           FROM {openbook_groupapproval}
-                                                          WHERE fileid = :fileid AND approval = 1 AND userid " . $usersql, $params);
-                    $stats['approving'] = $approving;
-                    $stats['needed'] = count($userparams);
-                    if ($approving < count($userparams)) {
-                        // Rejected if not every group member has approved the file!
-                        $approval = 0;
-                    } else {
-                        $approval = 1;
-                    }
-                }
-            }
-        } else {
-            // Group without members, so no one could approve! (Should never happen, never ever)!
-            $approval = 2;
-        }
-
-        // Update approval value and return it!
-        $filerec->studentapproval = $approval;
-        $DB->update_record('openbook_file', $filerec);
-        $stats['approval'] = $approval;
-        return $stats;
-    }
-
-    /**
      * Determine and return the teacher's approval status for the given file!
      *
      * @param stored_file $file file to determine approval status for
@@ -1524,7 +1537,6 @@ class openbook {
 
             $dataforlog = new stdClass();
             $dataforlog->openbook = $this->instance->id;
-            $dataforlog->approval = $logstatus;
             $dataforlog->userid = $USER->id;
             if ($user && !empty($user->id)) {
                 $dataforlog->reluser = $user->id;
@@ -1626,7 +1638,8 @@ class openbook {
                 $posttext = $openbook->email_statuschange_text($info, $receiver->lang, $includeheader);
                 $posthtml = $openbook->email_statuschange_html($info, $receiver->lang, $includeheader);
 
-                // TODO maybe add check here is receiver is the same as user from. Unless already checked in get_graders
+                // phpcs:disable moodle.Commenting.TodoComment
+                // TODO maybe add check here is receiver is the same as user from.
                 if (!isset(self::$pendingnotifications[OPENBOOK_NOTIFY_STATUSCHANGE][$cm->id][$receiver->id])) {
                     $message = new \core\message\message();
                     $message->component = 'mod_openbook';
@@ -1713,7 +1726,8 @@ class openbook {
                 $posttext = $openbook->email_filechange_text($info, $receiver->lang, $stridentifier, $includeheader);
                 $posthtml = $openbook->email_filechange_html($info, $receiver->lang, $stridentifier, $includeheader);
 
-                // TODO maybe add check here is receiver is the same as user from. Unless already checked in get_graders
+                // phpcs:disable moodle.Commenting.TodoComment
+                // TODO maybe add check here is receiver is the same as user from.
 
                 if (!isset(self::$pendingnotifications[OPENBOOK_NOTIFY_FILECHANGE][$cm->id][$receiver->id])) {
                     $message = new \core\message\message();
@@ -2009,46 +2023,195 @@ class openbook {
     }
 
     /**
-     * Handles calendar events for openbooks with a due date
+     * Handles calendar events for openbooks with a due date and/or approvaltodate
      * This will create, update and delete an event when necessary
      */
     public function update_calendar_event() {
         global $DB, $CFG;
+
         require_once($CFG->dirroot . '/calendar/lib.php');
 
-        $instance = $this->get_instance();
-
-        // Check whether the openbook already has a event.
-        $result = $DB->get_record('event', ['modulename' => 'openbook', 'instance' => $instance->id]);
-
-        if ($result) {
-            // Check whether the openbook still has a due date, if not delete the event.
-            if ($instance->duedate == null || $instance->duedate == 0) {
-                $DB->delete_records('event', ['modulename' => 'openbook', 'instance' => $instance->id]);
+        // Openbook start submission calendar events.
+        $event = new stdClass();
+        $event->eventtype = OPENBOOK_EVENT_TYPE_SUBMISSION_OPEN;
+        $event->type = empty($this->instance->duedate) ? CALENDAR_EVENT_TYPE_ACTION : CALENDAR_EVENT_TYPE_STANDARD;
+        if (
+            $event->id = $DB->get_field(
+                'event',
+                'id',
+                ['modulename' => 'openbook', 'instance' => $this->instance->id, 'eventtype' => $event->eventtype]
+            )
+        ) {
+            if ((!empty($this->instance->allowsubmissionsfromdate)) && ($this->instance->allowsubmissionsfromdate > 0)) {
+                // Calendar event exists so update it.
+                $event->name         = get_string('calendarsubmissionstart', 'openbook', $this->instance->name);
+                $event->description  = format_module_intro('openbook', $this->instance, $this->coursemodule->id, false);
+                $event->format       = FORMAT_HTML;
+                $event->timestart    = $this->instance->allowsubmissionsfromdate;
+                $event->timesort     = $this->instance->allowsubmissionsfromdate;
+                $event->visible      = instance_is_visible('openbook', $this->instance);
+                $event->timeduration = 0;
+                $calendarevent = calendar_event::load($event->id);
+                $calendarevent->update($event, false);
             } else {
-                $result->name = $instance->name;
-                $result->timestart = $instance->duedate;
-                $result->timesort = $instance->duedate;
-
-                $DB->update_record('event', $result);
+                // Calendar event is on longer needed.
+                $calendarevent = calendar_event::load($event->id);
+                $calendarevent->delete();
             }
-        } else if ($instance->duedate != null && $instance->duedate != 0) {
-            $event = new stdClass();
-            $event->eventtype = OPENBOOK_EVENT_TYPE_DUE;
-            $event->type = CALENDAR_EVENT_TYPE_ACTION; // Necessary to enable this event in block_myoverview.
-            $event->name = $instance->name;
-            $event->description = "";
-            $event->courseid = $instance->course;
-            $event->groupid = 0;
-            $event->userid = 0;
-            $event->modulename = 'openbook';
-            $event->instance = $instance->id;
-            $event->visible = instance_is_visible('openbook', $this->instance);
-            $event->timestart = $instance->duedate;
-            $event->timesort = $instance->duedate; // Necessary for block_myoverview.
-            $event->timeduration = 0;
+        } else {
+            // Event doesn't exist so create one.
+            if ((!empty($this->instance->allowsubmissionsfromdate)) && ($this->instance->allowsubmissionsfromdate > 0)) {
+                $event->name         = get_string('calendarsubmissionstart', 'openbook', $this->instance->name);
+                $event->description  = format_module_intro('openbook', $this->instance, $this->coursemodule->id, false);
+                $event->format       = FORMAT_HTML;
+                $event->courseid     = $this->instance->course;
+                $event->groupid      = 0;
+                $event->userid       = 0;
+                $event->modulename   = 'openbook';
+                $event->instance     = $this->instance->id;
+                $event->timestart    = $this->instance->allowsubmissionsfromdate;
+                $event->timesort     = $this->instance->allowsubmissionsfromdate;
+                $event->visible      = instance_is_visible('openbook', $this->instance);
+                $event->timeduration = 0;
+                calendar_event::create($event, false);
+            }
+        }
 
-            calendar_event::create($event);
+        // Openbook end submission calendar events.
+        $event = new stdClass();
+        $event->type = CALENDAR_EVENT_TYPE_ACTION;
+        $event->eventtype = OPENBOOK_EVENT_TYPE_SUBMISSION_CLOSE;
+        if (
+            $event->id = $DB->get_field(
+                'event',
+                'id',
+                ['modulename' => 'openbook', 'instance' => $this->instance->id, 'eventtype' => $event->eventtype]
+            )
+        ) {
+            if ((!empty($this->instance->duedate)) && ($this->instance->duedate > 0)) {
+                // Calendar event exists so update it.
+                $event->name         = get_string('calendarsubmissionend', 'openbook', $this->instance->name);
+                $event->description  = format_module_intro('openbook', $this->instance, $this->coursemodule->id, false);
+                $event->format       = FORMAT_HTML;
+                $event->timestart    = $this->instance->duedate;
+                $event->timesort     = $this->instance->duedate;
+                $event->visible      = instance_is_visible('openbook', $this->instance);
+                $event->timeduration = 0;
+                $calendarevent = calendar_event::load($event->id);
+                $calendarevent->update($event, false);
+            } else {
+                // Calendar event is on longer needed.
+                $calendarevent = calendar_event::load($event->id);
+                $calendarevent->delete();
+            }
+        } else {
+            // Event doesn't exist so create one.
+            if ((!empty($this->instance->duedate)) && ($this->instance->duedate > 0)) {
+                $event->name         = get_string('calendarsubmissionend', 'openbook', $this->instance->name);
+                $event->description  = format_module_intro('openbook', $this->instance, $this->coursemodule->id, false);
+                $event->format       = FORMAT_HTML;
+                $event->courseid     = $this->instance->course;
+                $event->groupid      = 0;
+                $event->userid       = 0;
+                $event->modulename   = 'openbook';
+                $event->instance     = $this->instance->id;
+                $event->timestart    = $this->instance->duedate;
+                $event->timesort     = $this->instance->duedate;
+                $event->visible      = instance_is_visible('openbook', $this->instance);
+                $event->timeduration = 0;
+                calendar_event::create($event, false);
+            }
+        }
+        // Openbook start approval calendar events.
+        $event = new stdClass();
+        $event->eventtype = OPENBOOK_EVENT_TYPE_APPROVAL_OPEN;
+        $event->type = empty($this->instance->approvaltodate) ? CALENDAR_EVENT_TYPE_ACTION : CALENDAR_EVENT_TYPE_STANDARD;
+        if (
+            $event->id = $DB->get_field(
+                'event',
+                'id',
+                ['modulename' => 'openbook', 'instance' => $this->instance->id, 'eventtype' => $event->eventtype]
+            )
+        ) {
+            if ((!empty($this->instance->approvalfromdate)) && ($this->instance->approvalfromdate > 0)) {
+                // Calendar event exists so update it.
+                $event->name         = get_string('calendarapprovalstart', 'openbook', $this->instance->name);
+                $event->description  = format_module_intro('openbook', $this->instance, $this->coursemodule->id, false);
+                $event->format       = FORMAT_HTML;
+                $event->timestart    = $this->instance->approvalfromdate;
+                $event->timesort     = $this->instance->approvalfromdate;
+                $event->visible      = instance_is_visible('openbook', $this->instance);
+                $event->timeduration = 0;
+                $calendarevent = calendar_event::load($event->id);
+                $calendarevent->update($event, false);
+            } else {
+                // Calendar event is on longer needed.
+                $calendarevent = calendar_event::load($event->id);
+                $calendarevent->delete();
+            }
+        } else {
+            // Event doesn't exist so create one.
+            if ((!empty($this->instance->approvalfromdate)) && ($this->instance->approvalfromdate > 0)) {
+                $event->name         = get_string('calendarapprovalstart', 'openbook', $this->instance->name);
+                $event->description  = format_module_intro('openbook', $this->instance, $this->coursemodule->id, false);
+                $event->format       = FORMAT_HTML;
+                $event->courseid     = $this->instance->course;
+                $event->groupid      = 0;
+                $event->userid       = 0;
+                $event->modulename   = 'openbook';
+                $event->instance     = $this->instance->id;
+                $event->timestart    = $this->instance->approvalfromdate;
+                $event->timesort     = $this->instance->approvalfromdate;
+                $event->visible      = instance_is_visible('openbook', $this->instance);
+                $event->timeduration = 0;
+                calendar_event::create($event, false);
+            }
+        }
+
+        // Openbook end approval calendar events.
+        $event = new stdClass();
+        $event->type = CALENDAR_EVENT_TYPE_ACTION;
+        $event->eventtype = OPENBOOK_EVENT_TYPE_APPROVAL_CLOSE;
+        if (
+            $event->id = $DB->get_field(
+                'event',
+                'id',
+                ['modulename' => 'openbook', 'instance' => $this->instance->id, 'eventtype' => $event->eventtype]
+            )
+        ) {
+            if ((!empty($this->instance->approvaltodate)) && ($this->instance->approvaltodate > 0)) {
+                // Calendar event exists so update it.
+                $event->name         = get_string('calendarapprovalend', 'openbook', $this->instance->name);
+                $event->description  = format_module_intro('openbook', $this->instance, $this->coursemodule->id, false);
+                $event->format       = FORMAT_HTML;
+                $event->timestart    = $this->instance->approvaltodate;
+                $event->timesort     = $this->instance->approvaltodate;
+                $event->visible      = instance_is_visible('openbook', $this->instance);
+                $event->timeduration = 0;
+                $calendarevent = calendar_event::load($event->id);
+                $calendarevent->update($event, false);
+            } else {
+                // Calendar event is on longer needed.
+                $calendarevent = calendar_event::load($event->id);
+                $calendarevent->delete();
+            }
+        } else {
+            // Event doesn't exist so create one.
+            if ((!empty($this->instance->approvaltodate)) && ($this->instance->approvaltodate > 0)) {
+                $event->name         = get_string('calendarapprovalend', 'openbook', $this->instance->name);
+                $event->description  = format_module_intro('openbook', $this->instance, $this->coursemodule->id, false);
+                $event->format       = FORMAT_HTML;
+                $event->courseid     = $this->instance->course;
+                $event->groupid      = 0;
+                $event->userid       = 0;
+                $event->modulename   = 'openbook';
+                $event->instance     = $this->instance->id;
+                $event->timestart    = $this->instance->approvaltodate;
+                $event->timesort     = $this->instance->approvaltodate;
+                $event->visible      = instance_is_visible('openbook', $this->instance);
+                $event->timeduration = 0;
+                calendar_event::create($event, false);
+            }
         }
     }
 
