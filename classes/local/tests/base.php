@@ -211,10 +211,63 @@ abstract class base extends advanced_testcase {
         $dataobject->userid = $userid;
         $dataobject->timecreated = $file->get_timecreated();
         $dataobject->fileid = $file->get_id();
-        $dataobject->studentapproval = 1; // Upload always means user approves.
+        $dataobject->studentapproval = 0;
         $dataobject->filename = $file->get_filename();
-        $dataobject->type = OPENBOOK_MODE_UPLOAD;
 
         return $DB->insert_record('openbook_file', $dataobject);
+    }
+
+    /**
+     * Simulate a file upload
+     *
+     * @param int $userid
+     * @param int $openbookid
+     * @param string $filename
+     * @param string $content
+     * @return bool|int
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \file_exception
+     * @throws \stored_file_creation_exception
+     */
+    protected function create_teacher_file($userid, $openbookid, $filename, $content) {
+        global $DB;
+
+        $cm = get_coursemodule_from_instance('openbook', $openbookid);
+        $context = context_module::instance($cm->id);
+        $fs = get_file_storage();
+
+        $file = new \stored_file($fs, (object) [
+            'id' => null,
+            'timecreated' => time(),
+            'timemodified' => time(),
+            'contextid' => $context->id,
+            'component' => 'mod_openbook',
+            'filearea' => 'commonteacherfiles',
+            'itemid' => $userid,
+            'userid' => $userid,
+            'filename' => $filename,
+            'filepath' => '/',
+            'filesize' => strlen($content),
+            'pathnamehash' => sha1(
+                '/' .
+                $context->id . '/' .
+                'mod_openbook' . '/' .
+                'commonteacherfiles' . '/' .
+                $userid . '/' . $filename
+            ),
+        ]);
+
+        $dataobject = new stdClass();
+        $dataobject->itemid = $userid;
+        $dataobject->contextid = $file->get_contextid();
+        $dataobject->timecreated = $file->get_timecreated();
+        $dataobject->timemodified = $file->get_timemodified();
+        $dataobject->fileid = $file->get_id();
+        $dataobject->filename = $file->get_filename();
+        $dataobject->filesize = $file->get_filesize();
+        $dataobject->pathnamehash = $file->get_pathnamehash();
+
+        return $DB->insert_record('files', $dataobject);
     }
 }

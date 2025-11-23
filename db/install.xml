@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/openbook/db" VERSION="20251112" COMMENT="XMLDB file for Moodle mod/openbook"
+<XMLDB PATH="mod/openbook/db" VERSION="20251123" COMMENT="XMLDB file for Moodle mod/openbook"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -27,9 +27,8 @@
         <FIELD NAME="notifystatuschange" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="2" SEQUENCE="false" COMMENT="Notifications about Openbook resource folder status changes" PREVIOUS="openpdffilesinpdfjs" NEXT="notifyfilechange"/>
         <FIELD NAME="notifyfilechange" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="3" SEQUENCE="false" COMMENT="Notifications about Openbook resource folder submitted files" PREVIOUS="notifystatuschange" NEXT="availabilityrestriction"/>
         <FIELD NAME="securewindowfromdate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"  SEQUENCE="false" COMMENT="Time at which files for students start being displayed in secure layout." PREVIOUS="notifyfilechange" NEXT="securewindowtodate"/>
-        <FIELD NAME="securewindowtodate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"  SEQUENCE="false" COMMENT="Time at which files for students stop being displayed in secure layout." PREVIOUS="securewindowfromdate" NEXT="showfilechangeswarning"/>
-        <FIELD NAME="showfilechangeswarning" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="false" DEFAULT="0" SEQUENCE="false" COMMENT="1 = show warning, 0 = hide warning" PREVIOUS="securewindowtodate" NEXT="timecreated"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Date/time at which the record was created" PREVIOUS="showfilechangeswarning" NEXT="timemodified"/>
+        <FIELD NAME="securewindowtodate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"  SEQUENCE="false" COMMENT="Time at which files for students stop being displayed in secure layout." PREVIOUS="securewindowfromdate" NEXT="timecreated"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Date/time at which the record was created" PREVIOUS="securewindowtodate" NEXT="timemodified"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Date/time at which the record was last modified" PREVIOUS="timecreated" NEXT="uselegacyviewer"/>
         <FIELD NAME="uselegacyviewer" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="false" DEFAULT="0" SEQUENCE="false" COMMENT="1 = use legacy viewer, 0 = use modern viewer" PREVIOUS="timemodified"/>
       </FIELDS>
@@ -48,9 +47,8 @@
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" DEFAULT="0" COMMENT="Date/time at which the record was created" PREVIOUS="userid" NEXT="fileid"/>
         <FIELD NAME="fileid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The file id" PREVIOUS="timecreated" NEXT="filename"/>
         <FIELD NAME="filename" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="The file name" PREVIOUS="fileid" NEXT="contenthash"/>
-        <FIELD NAME="contenthash" TYPE="char" LENGTH="40" NOTNULL="false" SEQUENCE="false" COMMENT="The file content hash" PREVIOUS="filename" NEXT="type"/>
-        <FIELD NAME="type" TYPE="int" LENGTH="2" NOTNULL="true" SEQUENCE="false" COMMENT="The file type" PREVIOUS="contenthash" NEXT="teacherapproval"/>
-        <FIELD NAME="teacherapproval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="3" SEQUENCE="false" COMMENT="Holds the lecturer approval" PREVIOUS="type" NEXT="studentapproval"/>
+        <FIELD NAME="contenthash" TYPE="char" LENGTH="40" NOTNULL="false" SEQUENCE="false" COMMENT="The file content hash" PREVIOUS="filename" NEXT="teacherapproval"/>
+        <FIELD NAME="teacherapproval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="3" SEQUENCE="false" COMMENT="Holds the lecturer approval" PREVIOUS="contenthash" NEXT="studentapproval"/>
         <FIELD NAME="studentapproval" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false" COMMENT="Holds the student approval" PREVIOUS="teacherapproval" NEXT="commonteacherfile"/>
         <FIELD NAME="commonteacherfile" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Whether this is a teacher files which is visible to everybody" PREVIOUS="studentapproval"/>
       </FIELDS>

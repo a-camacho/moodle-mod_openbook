@@ -205,10 +205,7 @@ class mod_openbook_mod_form extends moodleform_mod {
         );
         $mform->setDefault('obtainstudentapproval', get_config('openbook', 'obtainstudentapproval'));
         $mform->addHelpButton('obtainstudentapproval', 'obtainstudentapproval', 'openbook');
-
         $mform->hideIf('obtainstudentapproval', 'filesarepersonal', 'eq', '1');
-        $mform->hideIf('approvalfromdate', 'filesarepersonal', 'eq', '1');
-        $mform->hideIf('approvaltodate', 'filesarepersonal', 'eq', '1');
 
         $mform->addElement(
             'date_time_selector',
@@ -218,6 +215,8 @@ class mod_openbook_mod_form extends moodleform_mod {
         );
         $mform->addHelpButton('approvalfromdate', 'approvalfromdate', 'openbook');
         $mform->setDefault('approvalfromdate', time());
+        $mform->hideIf('approvalfromdate', 'obtainstudentapproval', 'eq', '0');
+        $mform->hideIf('approvalfromdate', 'filesarepersonal', 'eq', '1');
 
         $mform->addElement(
             'date_time_selector',
@@ -227,7 +226,8 @@ class mod_openbook_mod_form extends moodleform_mod {
         );
         $mform->addHelpButton('approvaltodate', 'approvaltodate', 'openbook');
         $mform->setDefault('approvaltodate', time() + 7 * 24 * 3600);
-        // Approval code end.
+        $mform->hideIf('approvaltodate', 'obtainstudentapproval', 'eq', '0');
+        $mform->hideIf('approvaltodate', 'filesarepersonal', 'eq', '1');
 
         $mform->addElement('hidden', 'alwaysshowdescription', true);
         $mform->setType('alwaysshowdescription', PARAM_BOOL);
@@ -355,16 +355,6 @@ class mod_openbook_mod_form extends moodleform_mod {
         if ($data['allowsubmissionsfromdate'] && $data['duedate']) {
             if ($data['allowsubmissionsfromdate'] > $data['duedate']) {
                 $errors['duedate'] = get_string('duedatevalidation', 'openbook');
-            }
-        }
-        if ($data['duedate'] && $data['cutoffdate']) {
-            if ($data['duedate'] > $data['cutoffdate']) {
-                $errors['cutoffdate'] = get_string('cutoffdatevalidation', 'openbook');
-            }
-        }
-        if ($data['allowsubmissionsfromdate'] && $data['cutoffdate']) {
-            if ($data['allowsubmissionsfromdate'] > $data['cutoffdate']) {
-                $errors['cutoffdate'] = get_string('cutoffdatefromdatevalidation', 'openbook');
             }
         }
 

@@ -66,7 +66,6 @@ class backup_openbook_activity_structure_step extends backup_activity_structure_
                 'notifyfilechange',
                 'securewindowfromdate',
                 'securewindowtodate',
-                'showfilechangeswarning',
                 'timecreated',
                 'timemodified',
                 'uselegacyviewer',
@@ -93,7 +92,6 @@ class backup_openbook_activity_structure_step extends backup_activity_structure_
                 'fileid',
                 'filename',
                 'contenthash',
-                'type',
                 'teacherapproval',
                 'studentapproval',
         ]);

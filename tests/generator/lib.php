@@ -50,29 +50,28 @@ class mod_openbook_generator extends testing_module_generator {
 
         $defaultsettings = [
             'name' => 'openbook',
-            'intro' => 'Introtext',
+            'intro' => 'introtext',
             'introformat' => 1,
             'alwaysshowdescription' => 1,
-            'filesarepersonal' => 0,
-            'timecreated' => $timecreated,
-            'timemodified' => $timecreated,
-            'duedate' => $timecreated + 604740, // 1 week - 1 minute later!
             'allowsubmissionsfromdate' => $timecreated,
+            'duedate' => $timecreated + 604740, // 1 week - 1 minute later!
+            'completionupload' => 1,
             'approvalfromdate' => $timecreated + 604800, // 1 week later!
             'approvaltodate' => $timecreated + 1209540, // 2 weeks - 1 minute later!
-            'securewindowfromdate' => $timecreated + 1209600, // 2 weeks later!
-            'securewindowtodate' => $timecreated + 1814400, // 3 weeks later!
-            'cutoffdate' => 0,
-            'importfrom' => -1,
-            'autoimport' => 1,
             'obtainstudentapproval' => 1,
             'maxfiles' => 5,
             'maxbytes' => 2,
             'allowedfiletypes' => '',
-            'openpdffilesinpdfjs' => 1,
-            'uselegacyviewer' => 0,
             'obtainteacherapproval' => 1,
-            'groupmode' => SEPARATEGROUPS,
+            'filesarepersonal' => 0,
+            'openpdffilesinpdfjs' => 1,
+            'notifystatuschange' => 1,
+            'notifyfilechange' => 1,
+            'securewindowfromdate' => $timecreated + 1209600, // 2 weeks later!
+            'securewindowtodate' => $timecreated + 1814400, // 3 weeks later!
+            'timecreated' => $timecreated,
+            'timemodified' => $timecreated,
+            'uselegacyviewer' => 0,
         ];
 
         foreach ($defaultsettings as $name => $value) {

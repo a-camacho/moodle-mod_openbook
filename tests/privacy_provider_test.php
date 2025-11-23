@@ -29,6 +29,7 @@
 namespace mod_openbook\local\tests;
 
 use mod_openbook\privacy\provider;
+use core_privacy\local\request\writer;
 use context_module;
 use stdClass;
 
@@ -68,9 +69,11 @@ final class privacy_provider_test extends base {
     /** @var stdClass */
     private $teacher1;
     /** @var openbook */
-    private $openbookupload;
+    private $openbook;
     /** @var openbook */
-    private $openbookupload2;
+    private $openbook2;
+    /** @var \context context_module of the openbook activity. */
+    protected $context;
 
     /**
      * Set up the common parts of the tests!
@@ -116,12 +119,12 @@ final class privacy_provider_test extends base {
 
         // Create multiple openbook instances.
         // Openbook resource folder with uploads.
-        $this->openbookupload = $this->create_instance([
-                'name' => 'Openbook Upload 1',
+        $this->openbook = $this->create_instance([
+                'name' => 'Openbook 1',
                 'course' => $this->course1,
         ]);
-        $this->openbookupload2 = $this->create_instance([
-                'name' => 'Openbook Upload 2',
+        $this->openbook2 = $this->create_instance([
+                'name' => 'Openbook 2',
                 'course' => $this->course1,
         ]);
     }
@@ -137,25 +140,25 @@ final class privacy_provider_test extends base {
     public function test_get_contexts_for_userid(): void {
         // The user will be in these contexts.
         $usercontextids = [
-            $this->openbookupload->get_context()->id,
+            $this->openbook->get_context()->id,
         ];
 
-        // User 1 uploads in openbookupload1!
+        // User 1 uploads in openbook!
         $this->create_upload(
             $this->user1->id,
-            $this->openbookupload->get_instance()->id,
+            $this->openbook->get_instance()->id,
             'upload-no-1.txt',
             'This is the first upload here!'
         );
-        // User 3 also uploads in general openbook!
+        // User 3 also uploads in openbook2!
         $this->create_upload(
             $this->user3->id,
-            $this->openbookupload2->get_instance()->id,
+            $this->openbook2->get_instance()->id,
             'upload-no-2.txt',
             'This is another upload in another openbook'
         );
 
-        // Then we check, if user 1 appears only in pubimport1, pubupload1 and pubteamimport1!
+        // Then we check, if user 1 appears only in openbook but not in openbook2!
         $contextlist = provider::get_contexts_for_userid($this->user1->id);
 
         $this->assertEquals(count($usercontextids), count($contextlist->get_contextids()));
@@ -166,9 +169,6 @@ final class privacy_provider_test extends base {
         $this->assertEquals(count($usercontextids), count($contextlist->get_contextids()));
         // There should be no difference between the contexts.
         $this->assertEmpty(array_diff($usercontextids, $contextlist->get_contextids()));
-
-        // phpcs:disable moodle.Commenting.TodoComment
-        // TODO: test for group approvals and extended due dates!
     }
 
     /**
@@ -180,15 +180,15 @@ final class privacy_provider_test extends base {
      * @throws \moodle_exception
      */
     public function test_get_users_in_context(): void {
-        // User 1 uploads in openbookupload1!
+        // User 1 uploads in openbook!
         $this->create_upload(
             $this->user1->id,
-            $this->openbookupload->get_instance()->id,
+            $this->openbook->get_instance()->id,
             'upload-no-1.txt',
             'This is the first upload here!'
         );
 
-        $uploadcm = get_coursemodule_from_instance('openbook', $this->openbookupload->get_instance()->id);
+        $uploadcm = get_coursemodule_from_instance('openbook', $this->openbook->get_instance()->id);
         $uploadctx = context_module::instance($uploadcm->id);
         $userlist = new \core_privacy\local\request\userlist($uploadctx, 'openbook');
         provider::get_users_in_context($userlist);
@@ -197,7 +197,7 @@ final class privacy_provider_test extends base {
         self::assertFalse(in_array($this->user2->id, $userids));
         self::assertFalse(in_array($this->user3->id, $userids));
 
-        $upload2cm = get_coursemodule_from_instance('openbook', $this->openbookupload2->get_instance()->id);
+        $upload2cm = get_coursemodule_from_instance('openbook', $this->openbook2->get_instance()->id);
         $upload2ctx = context_module::instance($upload2cm->id);
         $userlist2 = new \core_privacy\local\request\userlist($upload2ctx, 'openbook');
         provider::get_users_in_context($userlist2);
@@ -205,9 +205,32 @@ final class privacy_provider_test extends base {
         self::assertFalse(in_array($this->user1->id, $userids2));
         self::assertFalse(in_array($this->user2->id, $userids2));
         self::assertFalse(in_array($this->user3->id, $userids2));
+    }
 
-        // phpcs:disable moodle.Commenting.TodoComment
-        // TODO: check for extended due dates and groupapprovals!
+
+    /**
+     * The export function should handle an empty contextlist properly.
+     *
+     * @covers \mod_openbook\privacy\provider::export_user_data
+     * @return void
+     */
+    public function test_export_user_data_no_data(): void {
+        global $USER;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $approvedlist = new \core_privacy\tests\request\approved_contextlist(
+            \core_user::get_user($USER->id),
+            'mod_openbook',
+            []
+        );
+
+        provider::export_user_data($approvedlist);
+        $this->assertDebuggingNotCalled();
+
+        // No data should have been exported.
+        $writer = \core_privacy\local\request\writer::with_context(\context_system::instance());
+        $this->assertFalse($writer->has_any_data_in_any_context());
     }
 
     /**
@@ -217,9 +240,110 @@ final class privacy_provider_test extends base {
      * @return void
      */
     public function test_export_user_data_student(): void {
-        // Stop here and mark this test as incomplete.
-        self::markTestIncomplete(
-            'This test has not been implemented yet.'
+        global $DB;
+        $this->resetAfterTest();
+        $course = $this->getDataGenerator()->create_course();
+        $coursecontext = \context_course::instance($course->id);
+
+        $user = $this->getDataGenerator()->create_user();
+        $teacher = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id, 'student');
+        $this->getDataGenerator()->enrol_user($teacher->id, $course->id, 'editingteacher');
+
+        $openbook = $this->create_instance([
+            'name' => 'Openbook Privacy Test',
+            'course' => $course,
+            'filesarepersonal' => 1,
+            'openpdffilesinpdfjs' => 1,
+            'obtainteacherapproval' => 0,
+            'obtainstudentapproval' => 0,
+        ]);
+
+        $context = $openbook->get_context();
+
+        // Validate exported data for user1 (without any file uploaded).
+        $this->setUser($user);
+        $writer = writer::with_context($context);
+
+        $data = provider::get_contexts_for_userid($user->id);
+        $this->assertEmpty($data);
+
+        // Create two files for a student.
+        $this->create_upload(
+            $user->id,
+            $openbook->get_instance()->id,
+            'upload-no-1.txt',
+            'This is the first upload here!'
+        );
+        $this->create_upload(
+            $user->id,
+            $openbook->get_instance()->id,
+            'upload-no-2.txt',
+            'This is the second upload here!'
+        );
+
+        $this->setUser($teacher);
+
+        $overridedata = new \stdClass();
+        $overridedata->openbook = $openbook->get_instance()->id;
+        $overridedata->userid = $user->id;
+        $overridedata->duedate = time();
+        $overridedata->allowsubmissionsfromdate = time() - 3600;
+        $overridedata->approvalfromdate = time() + 3600;
+        $overridedata->approvaltodate = time() + 7200;
+        $overridedata->securewindowfromdate = time() + 10800;
+        $overridedata->securewindowtodate = time() + 14400;
+        $DB->insert_record('openbook_overrides', $overridedata);
+
+        /** @var \core_privacy\tests\request\content_writer $writer */
+        $writer = writer::with_context($context);
+        $this->assertFalse($writer->has_any_data());
+
+        // The student should have some text submitted.
+        // Add the course context as well to make sure there is no error.
+        $approvedlist = new \core_privacy\tests\request\approved_contextlist(
+            $user,
+            'mod_openbook',
+            [$context->id, $coursecontext->id]
+        );
+
+        provider::export_user_data($approvedlist);
+
+        // Check that we have general details about the openbook.
+        $this->assertEquals('Openbook Privacy Test', $writer->get_data()->name);
+
+        // Check override data was exported correctly.
+        $writer = writer::with_context($context);
+        $overrideexport = $writer->get_data(['Overrides']);
+        $label = get_string('privacy:metadata:userextensionallowsubmissionsfromdate', 'mod_openbook');
+        $this->assertEquals(
+            \core_privacy\local\request\transform::datetime($overridedata->allowsubmissionsfromdate),
+            $overrideexport->allowsubmissionsfromdate->{$label}
+        );
+        $label = get_string('privacy:metadata:userextensiontodate', 'mod_openbook');
+        $this->assertEquals(
+            \core_privacy\local\request\transform::datetime($overridedata->duedate),
+            $overrideexport->todate->{$label}
+        );
+        $label = get_string('privacy:metadata:userextensionapprovalfromdate', 'mod_openbook');
+        $this->assertEquals(
+            \core_privacy\local\request\transform::datetime($overridedata->approvalfromdate),
+            $overrideexport->approvalfromdate->{$label}
+        );
+        $label = get_string('privacy:metadata:userextensionapprovaltodate', 'mod_openbook');
+        $this->assertEquals(
+            \core_privacy\local\request\transform::datetime($overridedata->approvaltodate),
+            $overrideexport->approvaltodate->{$label}
+        );
+        $label = get_string('privacy:metadata:userextensionsecurewindowfromdate', 'mod_openbook');
+        $this->assertEquals(
+            \core_privacy\local\request\transform::datetime($overridedata->securewindowfromdate),
+            $overrideexport->securewindowfromdate->{$label}
+        );
+        $label = get_string('privacy:metadata:userextensionsecurewindowtodate', 'mod_openbook');
+        $this->assertEquals(
+            \core_privacy\local\request\transform::datetime($overridedata->securewindowtodate),
+            $overrideexport->securewindowtodate->{$label}
         );
     }
 
@@ -230,10 +354,72 @@ final class privacy_provider_test extends base {
      * @return void
      */
     public function test_export_user_data_teacher(): void {
-        // Stop here and mark this test as incomplete.
-        self::markTestIncomplete(
-            'This test has not been implemented yet.'
+        global $DB;
+        $this->resetAfterTest();
+        $course = $this->getDataGenerator()->create_course();
+        $coursecontext = \context_course::instance($course->id);
+
+        $user = $this->getDataGenerator()->create_user();
+        $teacher = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id, 'student');
+        $this->getDataGenerator()->enrol_user($teacher->id, $course->id, 'editingteacher');
+
+        $openbook = $this->create_instance([
+            'name' => 'Openbook Privacy Test',
+            'course' => $course,
+            'filesarepersonal' => 1,
+            'openpdffilesinpdfjs' => 1,
+            'obtainteacherapproval' => 0,
+            'obtainstudentapproval' => 0,
+        ]);
+
+        $context = $openbook->get_context();
+
+        // Validate exported data for teacher1 (without any attempt).
+        $this->setUser($user);
+        $writer = writer::with_context($context);
+
+        $data = provider::get_contexts_for_userid($user->id);
+        $this->assertEmpty($data);
+
+        // Create two files for a teacher.
+        $this->create_teacher_file(
+            $user->id,
+            $openbook->get_instance()->id,
+            'upload-no-1.txt',
+            'This is the first upload here!'
         );
+        $this->create_teacher_file(
+            $user->id,
+            $openbook->get_instance()->id,
+            'upload-no-2.txt',
+            'This is the second upload here!'
+        );
+
+        // The teacher should have some text submitted.
+        // Add the course context as well to make sure there is no error.
+        $approvedlist = new \core_privacy\tests\request\approved_contextlist(
+            $user,
+            'mod_openbook',
+            [$context->id, $coursecontext->id]
+        );
+
+        provider::export_user_data($approvedlist);
+
+        // Check that we have general details about the openbook.
+        $this->assertEquals('Openbook Privacy Test', $writer->get_data()->name);
+
+        /** @var \core_privacy\tests\request\content_writer $writer */
+        $writer = writer::with_context($context);
+        $this->assertTrue($writer->has_any_data());
+
+        // The teacher should have some text submitted.
+        $approvedlist = new \core_privacy\tests\request\approved_contextlist(
+            $teacher,
+            'mod_openbook',
+            [$context->id, $coursecontext->id]
+        );
+        provider::export_user_data($approvedlist);
     }
 
     /**
@@ -243,10 +429,65 @@ final class privacy_provider_test extends base {
      * @return void
      */
     public function test_delete_data_for_all_users_in_context(): void {
-        // Stop here and mark this test as incomplete.
-        self::markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+        global $DB;
+        $this->resetAfterTest();
+        $course = $this->getDataGenerator()->create_course();
+
+        $user1 = $this->getDataGenerator()->create_user();
+        $user2 = $this->getDataGenerator()->create_user();
+        $teacher = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user1->id, $course->id, 'student');
+        $this->getDataGenerator()->enrol_user($user2->id, $course->id, 'student');
+        $this->getDataGenerator()->enrol_user($teacher->id, $course->id, 'editingteacher');
+
+        $openbook = $this->create_instance([
+            'name' => 'Openbook Privacy Test',
+            'course' => $course,
+            'filesarepersonal' => 1,
+            'openpdffilesinpdfjs' => 1,
+            'obtainteacherapproval' => 0,
+            'obtainstudentapproval' => 0,
+        ]);
+
+        $context = $openbook->get_context();
+
+        $this->setUser($teacher);
+
+        // Override data for two users.
+        $overridedata = new \stdClass();
+        $overridedata->openbook = $openbook->get_instance()->id;
+        $overridedata->userid = $user1->id;
+        $overridedata->duedate = time();
+        $overridedata->allowsubmissionsfromdate = time() - 3600;
+        $overridedata->approvalfromdate = time() + 3600;
+        $overridedata->approvaltodate = time() + 7200;
+        $overridedata->securewindowfromdate = time() + 10800;
+        $overridedata->securewindowtodate = time() + 14400;
+        $DB->insert_record('openbook_overrides', $overridedata);
+
+        $overridedata = new \stdClass();
+        $overridedata->openbook = $openbook->get_instance()->id;
+        $overridedata->userid = $user2->id;
+        $overridedata->duedate = time();
+        $overridedata->allowsubmissionsfromdate = time() - 3600;
+        $overridedata->approvalfromdate = time() + 3600;
+        $overridedata->approvaltodate = time() + 7200;
+        $overridedata->securewindowfromdate = time() + 10800;
+        $overridedata->securewindowtodate = time() + 14400;
+        $DB->insert_record('openbook_overrides', $overridedata);
+
+        // Delete all user data for this Openbook resources folder.
+        provider::delete_data_for_all_users_in_context($context);
+
+        // Check all relevant tables.
+        $records = $DB->get_records('openbook_file');
+        $this->assertEmpty($records);
+
+        // Check that overrides and the calendar events are deleted.
+        $records = $DB->get_records('openbook_overrides');
+        $this->assertEmpty($records);
+        $records = $DB->get_records('event');
+        $this->assertEmpty($records);
     }
 
     /**
@@ -256,10 +497,87 @@ final class privacy_provider_test extends base {
      * @return void
      */
     public function test_delete_data_for_user(): void {
-        // Stop here and mark this test as incomplete.
-        self::markTestIncomplete(
-            'This test has not been implemented yet.'
+        global $DB;
+        $this->resetAfterTest();
+        $course = $this->getDataGenerator()->create_course();
+
+        $coursecontext = \context_course::instance($course->id);
+
+        $user1 = $this->getDataGenerator()->create_user();
+        $user2 = $this->getDataGenerator()->create_user();
+        $teacher = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user1->id, $course->id, 'student');
+        $this->getDataGenerator()->enrol_user($user2->id, $course->id, 'student');
+        $this->getDataGenerator()->enrol_user($teacher->id, $course->id, 'editingteacher');
+        $openbook = $this->create_instance([
+            'name' => 'Openbook Privacy Test',
+            'course' => $course,
+            'filesarepersonal' => 1,
+            'openpdffilesinpdfjs' => 1,
+            'obtainteacherapproval' => 0,
+            'obtainstudentapproval' => 0,
+        ]);
+
+        $context = $openbook->get_context();
+
+        $this->setUser($teacher);
+
+        // Override data for two users.
+        $overridedata = new \stdClass();
+        $overridedata->openbook = $openbook->get_instance()->id;
+        $overridedata->userid = $user1->id;
+        $overridedata->duedate = time();
+        $overridedata->allowsubmissionsfromdate = time() - 3600;
+        $overridedata->approvalfromdate = time() + 3600;
+        $overridedata->approvaltodate = time() + 7200;
+        $overridedata->securewindowfromdate = time() + 10800;
+        $overridedata->securewindowtodate = time() + 14400;
+        $DB->insert_record('openbook_overrides', $overridedata);
+
+        $overridedata = new \stdClass();
+        $overridedata->openbook = $openbook->get_instance()->id;
+        $overridedata->userid = $user2->id;
+        $overridedata->duedate = time();
+        $overridedata->allowsubmissionsfromdate = time() - 3600;
+        $overridedata->approvalfromdate = time() + 3600;
+        $overridedata->approvaltodate = time() + 7200;
+        $overridedata->securewindowfromdate = time() + 10800;
+        $overridedata->securewindowtodate = time() + 14400;
+        $DB->insert_record('openbook_overrides', $overridedata);
+
+        // Create two files for a student.
+        $this->create_upload(
+            $user1->id,
+            $openbook->get_instance()->id,
+            'upload-no-1.txt',
+            'This is the first upload here!'
         );
+        $this->create_upload(
+            $user2->id,
+            $openbook->get_instance()->id,
+            'upload-no-2.txt',
+            'This is the second upload here!'
+        );
+
+        // Delete user 2's data.
+        $approvedlist = new \core_privacy\tests\request\approved_contextlist(
+            $user2,
+            'mod_openbook',
+            [$context->id, $coursecontext->id]
+        );
+        provider::delete_data_for_user($approvedlist);
+
+        // Check all relevant tables.
+        $records = $DB->get_records('openbook_file');
+        foreach ($records as $record) {
+            $this->assertEquals($user1->id, $record->userid);
+            $this->assertNotEquals($user2->id, $record->userid);
+        }
+        $records = $DB->get_records('openbook_overrides');
+        foreach ($records as $record) {
+            $this->assertEquals($user1->id, $record->userid);
+            $this->assertNotEquals($user2->id, $record->userid);
+        }
     }
 
     /**
@@ -277,13 +595,13 @@ final class privacy_provider_test extends base {
         // User 1 uploads in openbookupload1!
         $this->create_upload(
             $this->user1->id,
-            $this->openbookupload->get_instance()->id,
+            $this->openbook->get_instance()->id,
             'upload-no-1.txt',
             'This is the first upload here!'
         );
         $this->create_upload(
             $this->user2->id,
-            $this->openbookupload->get_instance()->id,
+            $this->openbook->get_instance()->id,
             'upload-no-2.txt',
             'This is the second upload here!'
         );
@@ -293,12 +611,12 @@ final class privacy_provider_test extends base {
             2,
             $DB->count_records(
                 'openbook_file',
-                ['openbook' => $this->openbookupload->get_instance()->id]
+                ['openbook' => $this->openbook->get_instance()->id]
             )
         );
 
         $userlist = new \core_privacy\local\request\approved_userlist(
-            $this->openbookupload->get_context(),
+            $this->openbook->get_context(),
             'openbook',
             [$this->user1->id]
         );
@@ -307,12 +625,12 @@ final class privacy_provider_test extends base {
             1,
             $DB->count_records(
                 'openbook_file',
-                ['openbook' => $this->openbookupload->get_instance()->id]
+                ['openbook' => $this->openbook->get_instance()->id]
             )
         );
         provider::delete_data_for_users($userlist);
         $userlist = new \core_privacy\local\request\approved_userlist(
-            $this->openbookupload->get_context(),
+            $this->openbook->get_context(),
             'openbook',
             [$this->user1->id, $this->user2->id, $this->user3->id]
         );
@@ -321,7 +639,7 @@ final class privacy_provider_test extends base {
             0,
             $DB->count_records(
                 'openbook_file',
-                ['openbook' => $this->openbookupload->get_instance()->id],
+                ['openbook' => $this->openbook->get_instance()->id],
             )
         );
     }
