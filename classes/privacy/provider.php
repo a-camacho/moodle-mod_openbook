@@ -463,12 +463,10 @@ class provider implements core_userlist_provider, metadataprovider, pluginprovid
             $ids = $DB->get_fieldset_sql($sql, $params);
 
             if (!empty($ids)) {
-                [$insql, $inparams] = $DB->get_in_or_equal($ids);
+                [$insql, $inparams] = $DB->get_in_or_equal(array_unique($ids));
                 // Get all openbook overrides and delete them!
-                $DB->delete_records_select('openbook_overrides', 'id ' . $insql, $inparams);
+                $DB->delete_records_select('openbook_overrides', 'openbook ' . $insql, $inparams);
             }
-            $sql = "SELECT * FROM {openbook_overrides}";
-            $params = [];
 
             // Now delete all events!
             $sql = "SELECT DISTINCT e.id
@@ -481,11 +479,15 @@ class provider implements core_userlist_provider, metadataprovider, pluginprovid
             $params = ['modulename' => 'openbook', 'contextmodule' => CONTEXT_MODULE, 'contextid' => $context->id];
             $ids = $DB->get_fieldset_sql($sql, $params);
             // If we have id results then we can proceed.
+            $sql = "SELECT COUNT(*) FROM {event} WHERE modulename = 'openbook'";
+            $params = [];
             if (!empty($ids)) {
                 [$insql, $inparams] = $DB->get_in_or_equal($ids);
                 // Get all openbook events and delete them!
                 $DB->delete_records_select('event', 'id ' . $insql, $inparams);
             }
+            $sql = "SELECT COUNT(*) FROM {event} WHERE modulename = 'openbook'";
+            $params = [];
         }
     }
 
@@ -566,7 +568,7 @@ class provider implements core_userlist_provider, metadataprovider, pluginprovid
             $overrides = $DB->get_records('openbook_overrides', ['openbook' => $openbook->id, 'userid' => $user->id]);
             if ($overrides) {
                 $overrideids = array_keys($overrides);
-                $DB->delete_records_list('openbook_file', 'id', $overrideids);
+                $DB->delete_records_list('openbook_overrides', 'id', $overrideids);
             }
         }
     }

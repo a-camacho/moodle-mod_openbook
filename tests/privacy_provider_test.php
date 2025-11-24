@@ -486,7 +486,7 @@ final class privacy_provider_test extends base {
         // Check that overrides and the calendar events are deleted.
         $records = $DB->get_records('openbook_overrides');
         $this->assertEmpty($records);
-        $records = $DB->get_records('event');
+        $records = $DB->get_records('event', ['modulename' => 'openbook', 'instance' => $openbook->get_instance()->id]);
         $this->assertEmpty($records);
     }
 
