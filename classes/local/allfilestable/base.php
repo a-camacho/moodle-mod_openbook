@@ -271,7 +271,7 @@ class base extends \table_sql {
     public function get_student_files_count() {
         global $DB;
 
-        $openbook_id = $this->countparams['openbook'];
+        $openbookid = $this->countparams['openbook'];
 
         $sql = "SELECT COUNT(id)
                 FROM {openbook_file}
