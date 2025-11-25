@@ -277,7 +277,7 @@ class base extends \table_sql {
                 FROM {openbook_file}
                 WHERE openbook = ?";
 
-        return $DB->count_records_sql($sql, [$openbook_id]);
+        return $DB->count_records_sql($sql, [$openbookid]);
     }
 
     /**
