@@ -28,7 +28,7 @@
 // phpcs:disable moodle.Files.LangFilesOrdering.UnexpectedComment
 // phpcs:disable moodle.Files.LangFilesOrdering.IncorrectOrder
 
-$string['allfilesnotshowing'] = 'All files table not showing because files are personal.';
+$string['sharedfilesnotshowing'] = 'Shared files table is hidden because files are personal.';
 
 $string['availabilityrestriction'] = 'Apply availability restrictions to user list';
 $string['availabilityrestriction_admin'] = 'Default setting for availability restrictions to user list';

@@ -28,6 +28,8 @@
 // phpcs:disable moodle.Files.LangFilesOrdering.UnexpectedComment
 // phpcs:disable moodle.Files.LangFilesOrdering.IncorrectOrder
 
+$string['sharedfilesnotshowing'] = 'Le tableau des fichiers partagés est masqué car les fichiers sont personnels.';
+
 $string['availabilityrestriction'] = 'Appliquer des restrictions de disponibilité à la liste des utilisateurs';
 $string['availabilityrestriction_admin'] = 'Paramètre par défaut pour les restrictions de disponibilité sur la liste des utilisateurs';
 $string['availabilityrestriction_help'] = 'Les utilisateurs qui ne peuvent pas accéder à l\'activité en raison de restrictions de disponibilité seront retirés de la liste.<br> Cela inclut uniquement les conditions marquées comme appliquées aux listes d\'utilisateurs. Par exemple, les conditions de groupe sont incluses, mais les conditions de date ne le sont pas.';
