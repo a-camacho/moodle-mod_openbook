@@ -246,7 +246,7 @@ class base extends \table_sql {
             'contextid' => $this->context->id,
             'component' => $component,
             'filearea'  => $filearea,
-            'dirname'   => '.'
+            'dirname'   => '.',
         ];
 
         return $DB->count_records_sql($sql, $params);
