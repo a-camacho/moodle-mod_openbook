@@ -230,8 +230,26 @@ class base extends \table_sql {
      */
     public function get_count() {
         global $DB;
-        $grandtotal = $DB->count_records_sql($this->countsql, $this->countparams);
-        return $grandtotal;
+
+        $filearea = 'commonteacherfiles';
+        $component = 'mod_openbook';
+
+        $sql = "SELECT COUNT(id)
+                  FROM {files}
+                 WHERE contextid = :contextid
+                   AND component = :component
+                   AND filearea = :filearea
+                   AND filename != :dirname
+                   AND filesize > 0";
+
+        $params = [
+            'contextid' => $this->context->id,
+            'component' => $component,
+            'filearea'  => $filearea,
+            'dirname'   => '.',
+        ];
+
+        return $DB->count_records_sql($sql, $params);
     }
 
     /**

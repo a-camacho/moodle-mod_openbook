@@ -34,7 +34,7 @@
         "studentcount": 25,
         "allfiles_empty": false,
         "allfiles_url": "https://example.com/mod/openbook/files.php",
-        "allfilescount": 17,
+        "studentfilescount": 17,
         "approvalrequiredcount": 3,
         "showteacherfiles": true,
         "teacherfilescount": 3
@@ -73,7 +73,7 @@
             </tr>
             <tr>
                 <th>{{#str}}submittedbystudents,openbook{{/str}}</th>
-                <td>{{^allfiles_empty}}<a href="{{allfiles_url}}">{{allfilescount}}</a>{{/allfiles_empty}}{{#allfiles_empty}}0{{/allfiles_empty}}</td>
+                <td>{{^allfiles_empty}}<a href="{{allfiles_url}}">{{studentfilescount}}</a>{{/allfiles_empty}}{{#allfiles_empty}}0{{/allfiles_empty}}</td>
             </tr>
             {{#showapprovalrequired}}
                 <tr>
@@ -83,8 +83,8 @@
             {{/showapprovalrequired}}
             {{#showteacherfiles}}
             <tr>
-                <th>{{#str}}teacher_files,openbook{{/str}}</th>
-                <td><a href="{{allfiles_url}}">{{teacherfilescount}}</a></td>
+                <th>{{#str}}submittedbyteachers,openbook{{/str}}</th>
+                <td>{{teacherfilescount}}</td>
             </tr>
             {{/showteacherfiles}}
         {{/isteacher}}
