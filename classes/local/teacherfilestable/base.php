@@ -231,7 +231,7 @@ class base extends \table_sql {
     public function get_count() {
         global $DB;
 
-        $filearea = 'commonteacherfiles'; // Le nom confirmé par votre debug (ou 'teacherfiles' selon votre code)
+        $filearea = 'commonteacherfiles';
         $component = 'mod_openbook';
 
         $sql = "SELECT COUNT(id)
