@@ -257,12 +257,27 @@ class base extends \table_sql {
     }
 
     /**
-     * Get count
+     * Get table lines count (number of students having uploaded documents)
      */
-    public function get_count() {
+    public function get_lines_count() {
         global $DB;
         $grandtotal = $DB->count_records_sql($this->countsql, $this->countparams);
         return $grandtotal;
+    }
+
+    /**
+     * Get table lines count (number of files submitted by students)
+     */
+    public function get_student_files_count() {
+        global $DB;
+
+        $openbook_id = $this->countparams['openbook'];
+
+        $sql = "SELECT COUNT(id)
+                FROM {openbook_file}
+                WHERE openbook = ?";
+
+        return $DB->count_records_sql($sql, [$openbook_id]);
     }
 
     /**

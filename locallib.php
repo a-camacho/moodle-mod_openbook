@@ -653,6 +653,7 @@ class openbook {
         $table = new \mod_openbook\local\teacherfilestable\upload($uniqueid . $this->coursemodule->id, $this, $filter);
 
         $this->allfilespage = $oldallfilespage;
+
         return $table;
     }
 
@@ -954,7 +955,7 @@ class openbook {
         $tableoutput = ob_get_contents();
         ob_end_clean();
 
-        $norowsfound = $table->get_count() == 0;
+        $norowsfound = $table->get_lines_count() == 0;
         $nofilesfound = $table->get_totalfilescount() == 0;
 
         /* Download all file submissions button */

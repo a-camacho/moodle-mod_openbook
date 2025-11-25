@@ -250,12 +250,13 @@ if (has_capability('mod/openbook:approve', $context)) {
     // TODO : Count only students ?
     $templatecontext->studentcount = count($openbook->get_users([], true));
     $allfilestable = $openbook->get_allfilestable(OPENBOOK_FILTER_ALLFILES, true);
-    $templatecontext->allfilescount = $allfilestable->get_count();
+    $templatecontext->studentfilescount = $allfilestable->get_student_files_count();
+    $templatecontext->studentscount = $allfilestable->get_lines_count();
     $templatecontext->allfiles_url = (new moodle_url(
         '/mod/openbook/view.php',
         ['id' => $cm->id, 'filter' => OPENBOOK_FILTER_ALLFILES, 'allfilespage' => 1]
     ))->out(false);
-    $templatecontext->allfiles_empty = $templatecontext->allfilescount == 0;
+    $templatecontext->allfiles_empty = $templatecontext->studentfilescount == 0;
     if ($openbookinstance->obtainteacherapproval == 1) {
         $templatecontext->viewall_approvalneeded_url = (new moodle_url(
             '/mod/openbook/view.php',
@@ -263,9 +264,9 @@ if (has_capability('mod/openbook:approve', $context)) {
         ))->out(false);
         $templatecontext->showapprovalrequired = true;
         $notapprovedtable = $openbook->get_allfilestable(OPENBOOK_FILTER_APPROVALREQUIRED, true);
-        $templatecontext->approvalrequiredcount = $notapprovedtable->get_count();
+        $templatecontext->approvalrequiredcount = $notapprovedtable->get_lines_count();
     }
-    $teacherfilestable = $openbook->get_allfilestable(OPENBOOK_FILTER_APPROVALREQUIRED, true);
+    $teacherfilestable = $openbook->get_teacherfilestable(OPENBOOK_FILTER_APPROVALREQUIRED, true);
     $templatecontext->teacherfilescount = $teacherfilestable->get_count();
     if ($templatecontext->teacherfilescount > 0) {
         $templatecontext->showteacherfiles = true;
