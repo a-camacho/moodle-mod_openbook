@@ -247,7 +247,6 @@ if ($openbookinstance->duedate > 0) {
 $templatecontext->isteacher = false;
 if (has_capability('mod/openbook:approve', $context)) {
     $templatecontext->isteacher = true;
-    // TODO : Count only students ?
     $templatecontext->studentcount = count($openbook->get_users([], true));
     $allfilestable = $openbook->get_allfilestable(OPENBOOK_FILTER_ALLFILES, true);
     $templatecontext->studentfilescount = $allfilestable->get_student_files_count();
@@ -324,24 +323,28 @@ if (!$allfilespage) {
 
 $contenthtml = '';
 
-if (has_capability('mod/openbook:approve', $context) || $openbookinstance->filesarepersonal == 0) {
+if (!$allfilespage) {
+    if ($openbookinstance->filesarepersonal == 0) {
+        $contenthtml = $allfilesform;
+    } else {
+        $contenthtml = get_string('sharedfilesnotshowing', 'openbook');
+    }
+    $containerdata = [
+        'elementid'  => 'id_allfilescontainer',
+        'titlecontent'   => $allfilespage ? get_string('allfiles', 'openbook') : get_string('publicfiles', 'openbook'),
+        'sectioncontent' => $contenthtml,
+        'open'    => true,
+    ];
+    if (file_exists("{$CFG->dirroot}/lib/templates/local/collapsable_section.mustache")) {
+        echo $OUTPUT->render_from_template('core/local/collapsable_section', $containerdata);
+    } else {
+        echo $OUTPUT->render_from_template('mod_openbook/collapsible', $containerdata);
+    }
+} else if ($allfilespage && has_capability('mod/openbook:approve', $context)) {
+    $templatecontext->title = get_string('allfiles', 'openbook');
+    echo '<h3>' . get_string('allfiles', 'openbook') . '</h3>';
     $contenthtml = $allfilesform;
-} else {
-    /* TODO: Make sure all files are not available, no just hidden */
-    $contenthtml = get_string('allfilesnotshowing', 'openbook');
-}
-
-$containerdata = [
-    'elementid'  => 'id_allfilescontainer',
-    'titlecontent'   => get_string('publicfiles', 'openbook'),
-    'sectioncontent' => $contenthtml,
-    'open'    => true,
-];
-
-if (file_exists("{$CFG->dirroot}/lib/templates/local/collapsable_section.mustache")) {
-    echo $OUTPUT->render_from_template('core/local/collapsable_section', $containerdata);
-} else {
-    echo $OUTPUT->render_from_template('mod_openbook/collapsible', $containerdata);
+    echo $allfilesform;
 }
 
 echo $OUTPUT->footer();

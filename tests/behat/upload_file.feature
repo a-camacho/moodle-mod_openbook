@@ -42,6 +42,8 @@ Feature: Upload file in openbook
     And I should see "empty.txt"
     And I log out
     And I am on the "Openbook resource folder" "openbook activity" page logged in as teacher1
+    And I should not see "empty.txt"
+    And I click on "1" "link" in the "Files submitted by students" "table_row"
     And I should see "empty.txt"
     And I log out
     And I am on the "Openbook resource folder" "openbook activity" page logged in as student1
