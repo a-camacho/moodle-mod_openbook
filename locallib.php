@@ -562,9 +562,13 @@ class openbook {
         global $DB;
 
         $customusers = '';
+        $openbookfilesand = '';
+        $params = [];
 
         if (is_array($users) && count($users) > 0) {
-            $customusers = " and u.id IN (" . implode(', ', $users) . ") ";
+            [$usersql, $userparams] = $DB->get_in_or_equal($users, SQL_PARAMS_NAMED);
+            $customusers = " AND u.id " . $usersql;
+            $params = array_merge($params, $userparams);
         } else if ($users === false) {
             return [];
         }
@@ -573,7 +577,8 @@ class openbook {
         $currentgroup = groups_get_activity_group($this->get_coursemodule(), true);
 
         // Get all ppl that are allowed to submit assignments.
-        [$esql, $params] = get_enrolled_sql($this->context, 'mod/openbook:view', $currentgroup);
+        [$esql, $groupparams] = get_enrolled_sql($this->context, 'mod/openbook:view', $currentgroup);
+        $params = array_merge($params, $groupparams);
 
         $allfilespage = $ignoreallfilespage || $this->allfilespage;
 
@@ -586,11 +591,14 @@ class openbook {
                     'LEFT JOIN (' . $esql . ') eu ON eu.id=u.id ' .
                     'WHERE u.deleted = 0 AND eu.id=u.id ' . $customusers;
         } else {
+            [$openbookfilessql, $openbookfilesparams] = $DB->get_in_or_equal([$this->get_instance()->id], SQL_PARAMS_NAMED);
+            $openbookfilesand = 'AND files.openbook ' . $openbookfilessql . ' ';
             $sql = 'SELECT u.id FROM {user} u ' .
                     'LEFT JOIN (' . $esql . ') eu ON eu.id=u.id ' .
                     'LEFT JOIN {openbook_file} files ON (u.id = files.userid) ' .
                     'WHERE u.deleted = 0 AND eu.id=u.id ' . $customusers .
-                    'AND files.openbook = ' . $this->get_instance()->id . ' ';
+                    $openbookfilesand;
+            $params = array_merge($params, $openbookfilesparams);
 
             $where = '';
             if ($this->get_instance()->obtainteacherapproval == 1) {
@@ -614,9 +622,8 @@ class openbook {
             if (mb_strlen($where) > 0) {
                 $sql .= 'AND ' . $where . ' ';
             }
-            $sql .= 'GROUP BY u.id';
+            $sql .= ' GROUP BY u.id';
         }
-
         $users = $DB->get_records_sql($sql, $params);
 
         if (empty($users)) {
