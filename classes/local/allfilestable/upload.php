@@ -58,5 +58,4 @@ class upload extends base {
 
         return [$columns, $headers, $helpicons];
     }
-
 }
