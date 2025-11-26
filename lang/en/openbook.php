@@ -205,6 +205,7 @@ $string['add_uploads'] = 'Add files';
 $string['edit_uploads'] = 'Edit/upload files';
 $string['edit_teacher_uploads'] = 'Edit/upload teacher files';
 $string['edit_timeover'] = 'Files can be edited/uploaded only during the editing period.';
+$string['edit_notcapable'] = 'Editing period is open but you are not allowed to edit or upload files.';
 $string['approval_timeover'] = 'You don\'t have any file waiting for sharing approval or approval time is over.';
 $string['approval_timeover_description'] = 'Sharing approval';
 $string['noentries'] = 'No entries';
@@ -368,3 +369,6 @@ $string['calendarsubmissionstart'] = '{$a} opens for file uploads';
 $string['calendarsubmissionend'] = '{$a} closes for file uploads';
 $string['calendarapprovalstart'] = '{$a} opens for file approvals';
 $string['calendarapprovalend'] = '{$a} closes for file approvals';
+
+$string['answered'] = 'Answered';
+$string['notanswered'] = 'Not answered';

@@ -208,7 +208,8 @@ $string['myfiles'] = 'Mes fichiers';
 $string['mygroupfiles'] = 'Fichiers de mon groupe';
 $string['add_uploads'] = 'Ajouter des fichiers';
 $string['edit_uploads'] = 'Modifier/téléverser des fichiers';
-$string['edit_timeover'] = 'Les fichiers ne peuvent être modifiés que pendant la période d\'édition.';
+$string['edit_timeover'] = 'Les fichiers ne peuvent être modifiés ou téléversés que pendant la période d\'édition.';
+$string['edit_notcapable'] = 'La période d\'édition semble ouverte mais vous n\'avez pas la permission d\'éditer ou uploader des fichiers.';
 $string['approval_timeover_description'] = 'Approbation de partage';
 $string['approval_timeover'] = 'Vous n\'avez aucun fichier en attente d\'approbation de partage ou la période d\'approbation est terminée.';
 $string['noentries'] = 'Aucune entrée';
@@ -371,3 +372,6 @@ $string['override:user:choose'] = 'Choisissez un utilisateur';
 $string['override:nothingtochange'] = 'Aucun paramètre ne peut être modifié avec les réglages actuels de l’activité !';
 $string['override:delete:ask'] = 'Êtes-vous sûr de vouloir supprimer la prolongation pour {$a->userorgroup} {$a->fullname} ?';
 $string['override:delete:success'] = 'Prolongation supprimée avec succès !';
+
+$string['answered'] = 'Répondu';
+$string['notanswered'] = 'Non répondu';
