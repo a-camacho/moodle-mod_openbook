@@ -88,8 +88,8 @@ final class allfilestable_test extends base {
             'obtainstudentapproval' => 0,
         ]);
 
-        // Exercise SUT!
         $output = $openbook->display_allfilesform();
+
         self::assertFalse(strpos($output, "Nothing to display"));
 
         // Teardown fixture!
