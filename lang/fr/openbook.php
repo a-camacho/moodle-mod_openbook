@@ -326,7 +326,6 @@ $string['privacy:path:files'] = 'Fichiers';
 $string['privacy:path:resources'] = 'Ressources';
 $string['privacy:type:upload'] = 'Fichier téléchargé';
 $string['privacy:type:import'] = 'Fichier importé';
-$string['privacy:type:onlinetext'] = 'Texte en ligne importé';
 $string['privacy:metadata:groupapproval'] = 'Stocke les informations sur l’approbation ou le rejet des fichiers par les membres du groupe, importées d’une soumission de groupe.';
 $string['privacy:metadata:openbookfileexplanation'] = 'Les fichiers et les soumissions de texte en ligne converties pour ce plugin sont stockés via l’API des fichiers de Moodle.';
 $string['privacy:metadata:extduedates'] = 'Stocke les informations sur les dates d’échéance modifiées ou prolongées pour mod_openbook.';

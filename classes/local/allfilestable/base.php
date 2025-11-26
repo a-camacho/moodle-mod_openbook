@@ -669,8 +669,7 @@ FROM
                     '/mod/openbook/view.php',
                     ['id' => $this->cm->id, 'download' => $file->get_id()],
                 );
-                $filerow[] = \html_writer::link($url, $file->get_filename()) .
-                        $this->add_onlinetext_preview($values->id, $file->get_id());
+                $filerow[] = \html_writer::link($url, $file->get_filename());
 
                 $filetable->data[] = $filerow;
             }
@@ -749,8 +748,7 @@ FROM
                     $url,
                     $displayname,
                     ['target' => '_blank', 'rel' => 'noopener noreferrer', 'title' => $filename]
-                )
-                . $this->add_onlinetext_preview($values->id, $file->get_id(), []);
+                );
 
                 $filetable->data[] = $filerow;
             }
