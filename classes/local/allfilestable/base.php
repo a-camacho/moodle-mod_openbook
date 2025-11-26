@@ -61,7 +61,6 @@ class base extends \table_sql {
     protected $totalfiles = null;
     /** @var string[] of cached itemnames */
     protected $itemnames = [];
-
     /** @var int activity's groupmode */
     protected $groupmode = 0;
     /** @var int current group if group mode is active */
@@ -669,8 +668,7 @@ FROM
                     '/mod/openbook/view.php',
                     ['id' => $this->cm->id, 'download' => $file->get_id()],
                 );
-                $filerow[] = \html_writer::link($url, $file->get_filename()) .
-                        $this->add_onlinetext_preview($values->id, $file->get_id());
+                $filerow[] = \html_writer::link($url, $file->get_filename());
 
                 $filetable->data[] = $filerow;
             }
@@ -749,8 +747,7 @@ FROM
                     $url,
                     $displayname,
                     ['target' => '_blank', 'rel' => 'noopener noreferrer', 'title' => $filename]
-                )
-                . $this->add_onlinetext_preview($values->id, $file->get_id(), []);
+                );
 
                 $filetable->data[] = $filerow;
             }

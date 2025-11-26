@@ -79,10 +79,6 @@
     position: absolute;
 }
 
-.path-mod-openbook table.openbooks .onlinetextpreview {
-    padding-left: 0.5rem;
-}
-
 /* .. ie */
 .ie#page-mod-openbook-view fieldset#id_allfiles {
     display: block;
