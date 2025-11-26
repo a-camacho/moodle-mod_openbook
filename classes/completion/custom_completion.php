@@ -49,15 +49,13 @@ class custom_completion extends activity_custom_completion {
 
         $openbook = new \openbook($cm, $cm->course, \context_module::instance($cm->id));
         $status = false;
-        if ($openbook->get_mode() == OPENBOOK_MODE_FILEUPLOAD) {
-            $filescount = $DB->count_records('openbook_file', [
-                'openbook' => $openbook->get_instance()->id,
-                'userid' => $userid,
-            ]);
-            $status = $filescount > 0;
-        } else {
-            $status = true;
-        }
+
+        $filescount = $DB->count_records('openbook_file', [
+            'openbook' => $openbook->get_instance()->id,
+            'userid' => $userid,
+        ]);
+        $status = $filescount > 0;
+
         return $status ? COMPLETION_COMPLETE : COMPLETION_INCOMPLETE;
     }
 
