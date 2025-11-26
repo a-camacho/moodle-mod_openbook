@@ -40,7 +40,7 @@ class openbook_file_deleted extends \core\event\base {
      * Init event objecttable
      */
     protected function init() {
-        $this->data['crud'] = 'u';
+        $this->data['crud'] = 'd';
         $this->data['objecttable'] = 'openbook_file';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
     }
