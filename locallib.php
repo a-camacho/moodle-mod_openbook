@@ -160,43 +160,45 @@ class openbook {
     /**
      * Display dates which limit submission timespan
      */
-    public function display_availability() {
-        global $USER, $OUTPUT;
-
-        // Display availability dates.
-        $textsuffix = ($this->instance->mode == OPENBOOK_MODE_IMPORT) ? "_import" : "_upload";
-
-        echo $OUTPUT->box_start('generalbox boxaligncenter', 'dates');
-        echo '<table>';
-        if ($this->instance->allowsubmissionsfromdate) {
-            echo '<tr><td class="c0">' . get_string('allowsubmissionsfromdate' . $textsuffix, 'openbook') . ':</td>';
-            echo '    <td class="c1">' . userdate($this->instance->allowsubmissionsfromdate) . '</td></tr>';
-        }
-        if ($this->instance->duedate) {
-            echo '<tr><td class="c0">' . get_string('duedate' . $textsuffix, 'openbook') . ':</td>';
-            echo '    <td class="c1">' . userdate($this->instance->duedate) . '</td></tr>';
-        }
-
-        $override = $this->override_get_currentuserorgroup();
-        if ($override) {
-            if ($override->submissionoverride) {
-                echo '<tr><td class="c0">' . get_string('submissionoverride', 'openbook') . ':</td>';
-                echo '    <td class="c1">' . $override->submissionoverride . '</td></tr>';
-            }
-            if ($override->approvaloverride) {
-                echo '<tr><td class="c0">' . get_string('approvaloverride', 'openbook') . ':</td>';
-                echo '    <td class="c1">' . $override->approvaloverride . '</td></tr>';
-            }
-            if ($override->securewindowoverride) {
-                echo '<tr><td class="c0">' . get_string('submissionoverride', 'openbook') . ':</td>';
-                echo '    <td class="c1">' . $override->securewindowoverride . '</td></tr>';
-            }
-        }
-
-        echo '</table>';
-
-        echo $OUTPUT->box_end();
-    }
+    // public function display_availability() {
+    //     global $USER, $OUTPUT;
+    //
+    //     // Display availability dates.
+    //     $textsuffix = "_upload";
+    //
+    //     echo $OUTPUT->box_start('generalbox boxaligncenter', 'dates');
+    //     var_dump(2);
+    //     exit;
+    //     echo '<table>';
+    //     if ($this->instance->allowsubmissionsfromdate) {
+    //         echo '<tr><td class="c0">' . get_string('allowsubmissionsfromdate' . $textsuffix, 'openbook') . ':</td>';
+    //         echo '    <td class="c1">' . userdate($this->instance->allowsubmissionsfromdate) . '</td></tr>';
+    //     }
+    //     if ($this->instance->duedate) {
+    //         echo '<tr><td class="c0">' . get_string('duedate' . $textsuffix, 'openbook') . ':</td>';
+    //         echo '    <td class="c1">' . userdate($this->instance->duedate) . '</td></tr>';
+    //     }
+    //
+    //     $override = $this->override_get_currentuserorgroup();
+    //     if ($override) {
+    //         if ($override->submissionoverride) {
+    //             echo '<tr><td class="c0">' . get_string('submissionoverride', 'openbook') . ':</td>';
+    //             echo '    <td class="c1">' . $override->submissionoverride . '</td></tr>';
+    //         }
+    //         if ($override->approvaloverride) {
+    //             echo '<tr><td class="c0">' . get_string('approvaloverride', 'openbook') . ':</td>';
+    //             echo '    <td class="c1">' . $override->approvaloverride . '</td></tr>';
+    //         }
+    //         if ($override->securewindowoverride) {
+    //             echo '<tr><td class="c0">' . get_string('submissionoverride', 'openbook') . ':</td>';
+    //             echo '    <td class="c1">' . $override->securewindowoverride . '</td></tr>';
+    //         }
+    //     }
+    //
+    //     echo '</table>';
+    //
+    //     echo $OUTPUT->box_end();
+    // }
 
     /**
      * Display Link to upload form if submission date is open
