@@ -40,7 +40,6 @@ $string['modulename_help'] = 'The openbook resource folder offers the following 
 
 $string['eventopenbookfiledeleted'] = 'Openbook resource folder file deleted';
 $string['eventopenbookfileuploaded'] = 'Openbook resource folder file uploaded';
-$string['eventopenbookfileimported'] = 'Openbook resource folder file imported';
 $string['eventopenbookduedateextended'] = 'Openbook resource folder due-date extended';
 $string['eventopenbookapprovalchanged'] = 'Openbook resource folder file approval changed';
 
@@ -72,8 +71,8 @@ $string['notify:statuschange'] = 'Notifications about Openbook resource folder s
 $string['notify:statuschange_help'] = ' Depends on the setting, if enabled, students and/or teachers will receive a notification when the Openbook resource folder status of one of the files is changed.';
 $string['notify:statuschange_admin'] = 'Default notification setting for Openbook resource folder status changes';
 $string['notify:filechange'] = 'Notifications about submitted files';
-$string['notify:filechange_help'] = 'Depends on the setting, if enabled, students and/or teachers will receive a notification when students upload or change a file, or when a file is imported or updated from an assignment activity.';
-$string['notify:filechange_admin'] = 'Default notification setting for file changes - submitted or imported';
+$string['notify:filechange_help'] = 'Depends on the setting, if enabled, students and/or teachers will receive a notification when students upload or change a file.';
+$string['notify:filechange_admin'] = 'Default notification setting for file changes';
 
 $string['email:statuschange:header'] = 'The Openbook resource folder status of the following file(s) for <b>\'{$a->openbook}\'</b> was changed on {$a->dayupdated} at {$a->timeupdated} by <b>{$a->username}</b>:<br /><ul>';
 $string['email:statuschange:filename'] = '<li>\'{$a->filename}\' to \'<b>{$a->apstatus}</b>\'</li>';
@@ -81,8 +80,6 @@ $string['email:statuschange:footer'] = '</ul>';
 $string['email:statuschange:subject'] = 'Openbook resource folder status changed';
 $string['email:filechange_upload:header'] = '<b>{$a->username}</b> has uploaded the following file(s) to <b>\'{$a->openbook}\'</b> on {$a->dayupdated} at {$a->timeupdated}:<br /><ul>';
 $string['email:filechange_upload:subject'] = 'File(s) uploaded';
-$string['email:filechange_import:header'] = 'The following file(s) from Assignment <b>\'{$a->assign}\'</b> was/were imported into <b>\'{$a->openbook}\'</b> on {$a->dayupdated} at {$a->timeupdated}:<br /><ul>';
-$string['email:filechange_import:subject'] = 'File(s) imported';
 $string['email:filechange:footer'] = '</ul><br />Please check if your permission for Openbook resource folder is required.';
 
 $string['uploaded'] = 'Uploaded';
@@ -127,13 +124,6 @@ $string['obtainstudentapproval_no'] = 'Automatic';
 $string['obtainstudentapproval_yes'] = 'Required';
 $string['obtainapproval_automatic'] = 'Automatic';
 $string['obtainapproval_required'] = 'Required';
-$string['obtaingroupapproval'] = 'Approval by group';
-$string['obtaingroupapproval_help'] = 'This option determines how the publication (visibility) of file submissions by groups takes place: <br /><ul><li><strong>Automatic</strong> - no approval from group members is required. In the spirit of copyright law, we ask that you request approval to publish files from students in a separate way.</li><li><strong>Required from at least ONE member</strong> - at least one group member needs to approve</li><li><strong>Required from ALL members</strong> - all group members need to approve</li></ul>';
-$string['obtaingroupapproval_all'] = 'Required from ALL members';
-$string['obtaingroupapproval_single'] = 'Required from at least ONE member';
-$string['obtaingroupapproval_title'] = 'Group approval';
-$string['obtaingroupapproval_admin'] = 'Default group approval setting';
-$string['obtaingroupapproval_admin_desc'] = 'This setting determines the default approval setting for group members. This setting becomes relevant <strong>only</strong> when the mode is set to "Import files from an assignment activity" and the assignment has group submission.';
 
 $string['approvalfromdate'] = 'Approval from';
 $string['approvalfromdate_help'] = 'Approval status cannot be changed before this date. This setting is only relevant when Student approval is not automatic.';
@@ -145,13 +135,12 @@ $string['maxfiles_help'] = 'Each student will be able to upload up to this numbe
 $string['configmaxfiles'] = 'Default maximum number of attachments allowed per user.';
 $string['maxbytes'] = 'Maximum attachment size';
 $string['maxbytes_help'] = 'Files uploaded by students may be up to this size.';
-$string['configmaxbytes'] = 'Default maximum size for all files in the student folder.';
+$string['configmaxbytes'] = 'Default maximum size for all files in the openbook resources folder.';
 $string['uploadnotopen'] = 'File upload is closed!';
 
 $string['reset_userdata'] = 'All data';
 
 // Strings from the file mod_form.
-$string['configautoimport'] = 'If you prefer to have student submissions be automatically imported into student folder instances. This feature can be enabled/disabled for each student folder instance separately.';
 $string['availability'] = 'Editing period (upload or approval)';
 $string['submissionsettings'] = 'Submission settings';
 $string['allowsubmissionsfromdate'] = 'Upload from';
@@ -175,7 +164,7 @@ $string['securewindowtodatevalidation'] = 'End date must be after secure window 
 $string['courseuploadlimit'] = 'Course upload limit';
 $string['allowedfiletypes'] = 'Accepted file types';
 $string['allowedfiletypes_help'] = 'Accepted file types can be restricted by entering a comma-separated list of mimetypes, e.g. \'video/mp4, audio/mp3, image/png, image/jpeg\', or file extensions including a dot, e.g. \'.png, .jpg\'. If the field is left empty, then all file types are allowed.';
-$string['allowedfiletypes_err'] = 'Check input! Invalid file extensions or seperators';
+$string['allowedfiletypes_err'] = 'Check input! Invalid file extensions or separators';
 
 $string['currentlynotapproved'] = '* Currently not approved or rejected to publication.';
 
@@ -186,21 +175,16 @@ $string['completionupload'] = 'Student must upload a file';
 $string['completiondetail:upload'] = 'Upload a file';
 
 // Strings from the File index.php.
-$string['noopenbooksincourse'] = 'There is no student folder instance in this course.';
+$string['noopenbooksincourse'] = 'There is no openbook resources folder instance in this course.';
 
 // Strings from the File view.php.
 $string['allowsubmissionsfromdate_upload'] = 'Upload from';
 $string['duedate_upload'] = 'Upload until';
 $string['extensionto'] = 'Extension to';
 $string['filedetails'] = 'Details';
-$string['assignment_notfound'] = 'The assignment from which files were imported, could no longer be found.';
-$string['assignment_notset'] = 'No assignment has been chosen.';
-$string['updatefiles'] = 'Update files';
-$string['updatefileswarning'] = 'Already imported files will be replaced or deleted if the original files in the assignment were refreshed or deleted. The student\'s settings like the approval for publishing remain as they are.';
 $string['myfiles'] = 'Own files';
 $string['teacherfiles'] = 'Teacher files that are visible to everybody';
 $string['teacher_files'] = 'Teacher files';
-$string['mygroupfiles'] = 'My group\'s files';
 $string['add_uploads'] = 'Add files';
 $string['edit_uploads'] = 'Edit/upload files';
 $string['edit_teacher_uploads'] = 'Edit/upload teacher files';
@@ -223,16 +207,6 @@ $string['notice_upload_studentrequired_teacherrequired'] = 'All files you upload
 $string['notice_upload_studentrequired_teachernotrequired'] = 'All files you upload here will be visible and accessible only to you. They will only be shared (visible to other students) <strong>after your approval.</strong>';
 $string['notice_upload_studentnotrequired_teacherrequired'] = 'All files you upload here will be published (visible to all students) only <strong>after teacher approval.</strong>';
 $string['notice_upload_studentnotrequired_teachernotrequired'] = 'All files you upload here will be published (visible to everyone) <strong>automatically.</strong>';
-
-$string['notice_import_studentrequired_teacherrequired'] = 'The files will be published (will be made visible for everyone) after <strong>your approval and the approval of teachers.</strong> Teachers reserve the right to reject the publication of your files at any time.';
-$string['notice_import_studentrequired_teachernotrequired'] = 'The files will be published (will be made visible for everyone) after <strong>your approval.</strong>';
-$string['notice_import_studentnotrequired_teacherrequired'] = 'The files will be published (will be made visible for everyone) only <strong>after the approval of teachers.</strong> Teachers reserve the right to reject the publication of your files at any time.';
-$string['notice_import_studentnotrequired_teachernotrequired'] = 'The files will be published (will be made visible to everyone) <strong>automatically.</strong>';
-
-$string['notice_group_all_teacherrequired'] = 'The files will only be published for all students with the approval of <strong>ALL group members and the teacher.</strong> Teachers reserve the right to reject the publication of your files at any time.';
-$string['notice_group_all_teachernotrequired'] = 'The files will only be published for all students with the approval of <strong>ALL group members.</strong>';
-$string['notice_group_one_teacherrequired'] = 'The files will only be published for all students with the approval of <strong>at LEAST ONE group member and the teacher.</strong> Teachers reserve the right to reject the publication of your files at any time.';
-$string['notice_group_one_teachernotrequired'] = 'The files will only be published for all students with the approval of <strong>at LEAST ONE group member.</strong>';
 
 // Strings for approval.
 
@@ -313,7 +287,7 @@ $string['details'] = 'Details';
 $string['privacy:metadata:openbookperpage'] = 'How many entries should be displayed on a single table page!';
 $string['privacy:path:files'] = 'Files';
 $string['privacy:metadata:openbookfileexplanation'] = 'Files for this plugin get stored via Moodle\'s file API.';
-$string['privacy:metadata:files'] = 'Stores information (identifier, whom it belongs, where it came from, hash of content, file name and if approved by teacher and/or student) about the files uploaded/imported into mod_openbook.';
+$string['privacy:metadata:files'] = 'Stores information (identifier, whom it belongs, where it came from, hash of content, file name and if approved by teacher and/or student) about the files uploaded into mod_openbook.';
 $string['privacy:metadata:fileid'] = 'Identifier of the file.';
 $string['privacy:metadata:userid'] = 'Identifier of the user.';
 $string['privacy:metadata:timecreated'] = 'The time and date the data record was created.';
@@ -356,7 +330,6 @@ $string['override:submission:to'] = 'Allow submissions until {$a->to}';
 $string['override:approval:fromto'] = 'Approval from {$a->from} until {$a->to}';
 $string['override:approval:from'] = 'Approval from {$a->from}';
 $string['override:approval:to'] = 'Approval until {$a->to}';
-$string['override:group:choose'] = 'Choose a group';
 $string['override:user:choose'] = 'Choose a user';
 $string['override:securewindow:fromto'] = 'Secure window from {$a->from} until {$a->to}';
 $string['override:securewindow:from'] = 'Secure window from {$a->from}';

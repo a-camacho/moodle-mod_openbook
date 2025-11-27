@@ -1694,7 +1694,7 @@ class openbook {
             $openbook = new openbook($cm);
         }
 
-        $stridentifier = 'filechange_import';
+        $stridentifier = 'filechange_upload';
 
         $notifyfilechange = $openbook->get_instance()->notifyfilechange;
         $receivers = [];
