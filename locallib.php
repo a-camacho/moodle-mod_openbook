@@ -926,7 +926,10 @@ class openbook {
         $page = optional_param('page', 0, PARAM_INT);
 
         $formattrs = [];
-        $formattrs['action'] = new moodle_url('/mod/openbook/view.php', ['allfilespage' => $this->allfilespage]);
+        $formattrs['action'] = new moodle_url(
+            '/mod/openbook/view.php',
+            ['allfilespage' => $this->allfilespage, 'filter' => $filter],
+        );
         $formattrs['id'] = 'fastg';
         $formattrs['method'] = 'post';
         $formattrs['class'] = 'mform';

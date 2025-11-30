@@ -31,8 +31,9 @@ require_once($CFG->dirroot . '/mod/openbook/mod_openbook_allfiles_form.php');
 
 $id = required_param('id', PARAM_INT); // Course Module ID.
 $allfilespage = optional_param('allfilespage', 0, PARAM_BOOL);
+$filter = optional_param('filter', 0, PARAM_ALPHANUM);
 
-$url = new moodle_url('/mod/openbook/view.php', ['id' => $id, 'allfilespage' => $allfilespage]);
+$url = new moodle_url('/mod/openbook/view.php', ['id' => $id, 'allfilespage' => $allfilespage, 'filter' => $filter]);
 $cm = get_coursemodule_from_id('openbook', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
 
