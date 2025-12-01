@@ -106,15 +106,10 @@ class mod_openbook_mod_form extends moodleform_mod {
         $options = ['optional' => true];
         $mform->addElement('date_time_selector', 'allowsubmissionsfromdate', $name, $options);
         $mform->addHelpButton('allowsubmissionsfromdate', 'allowsubmissionsfromdate', 'openbook');
-        $mform->setDefault('allowsubmissionsfromdate', time());
 
         $name = get_string('duedate', 'openbook');
         $mform->addElement('date_time_selector', 'duedate', $name, ['optional' => true]);
         $mform->addHelpButton('duedate', 'duedate', 'openbook');
-        $mform->setDefault('duedate', time() + 7 * 24 * 3600);
-
-        $mform->addElement('hidden', 'cutoffdate', false);
-        $mform->setType('cutoffdate', PARAM_BOOL);
 
         // Approval settings start.
         $mform->addElement('header', 'approvalsettings', get_string('approvalsettings', 'openbook'));
@@ -214,7 +209,6 @@ class mod_openbook_mod_form extends moodleform_mod {
             ['optional' => true]
         );
         $mform->addHelpButton('approvalfromdate', 'approvalfromdate', 'openbook');
-        $mform->setDefault('approvalfromdate', time());
         $mform->hideIf('approvalfromdate', 'obtainstudentapproval', 'eq', '0');
         $mform->hideIf('approvalfromdate', 'filesarepersonal', 'eq', '1');
 
@@ -225,7 +219,6 @@ class mod_openbook_mod_form extends moodleform_mod {
             ['optional' => true]
         );
         $mform->addHelpButton('approvaltodate', 'approvaltodate', 'openbook');
-        $mform->setDefault('approvaltodate', time() + 7 * 24 * 3600);
         $mform->hideIf('approvaltodate', 'obtainstudentapproval', 'eq', '0');
         $mform->hideIf('approvaltodate', 'filesarepersonal', 'eq', '1');
 
@@ -269,8 +262,6 @@ class mod_openbook_mod_form extends moodleform_mod {
             ['optional' => true]
         );
         $mform->addHelpButton('securewindowfromdate', 'securewindowfromdate', 'openbook');
-        $mform->setDefault('securewindowfromdate', time());
-
         $mform->addElement(
             'date_time_selector',
             'securewindowtodate',
@@ -278,14 +269,12 @@ class mod_openbook_mod_form extends moodleform_mod {
             ['optional' => true]
         );
         $mform->addHelpButton('securewindowtodate', 'securewindowtodate', 'openbook');
-        $mform->setDefault('securewindowtodate', time() + 7 * 24 * 3600);
 
         // Standard coursemodule elements.
         $this->standard_coursemodule_elements();
 
         // Buttons.
         $this->add_action_buttons();
-        $PAGE->requires->js_call_amd('mod_openbook/modform');
     }
 
     /**
