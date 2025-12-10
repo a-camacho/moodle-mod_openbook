@@ -305,11 +305,15 @@ if (!$allfilespage) {
 if (!$allfilespage) {
     $teacherfilesform = $openbook->display_teacherfilesform();
 
+    // Moodle 5.0+ uses Bootstrap 5 (visually-hidden), earlier versions use Bootstrap 4 (sr-only).
+    $bs5 = ($CFG->version >= 2025041400);
+
     $data = [
         'elementid'  => 'id_teacherfilescontainer',
         'titlecontent'   => get_string('teacher_files', 'openbook'),
         'sectioncontent' => $teacherfilesform,
         'open'    => true,
+        'bs5'    => $bs5,
     ];
 
     if (file_exists("{$CFG->dirroot}/lib/templates/local/collapsable_section.mustache")) {
@@ -329,11 +333,15 @@ if (!$allfilespage) {
     } else {
         $contenthtml = get_string('sharedfilesnotshowing', 'openbook');
     }
+    // Moodle 5.0+ uses Bootstrap 5 (visually-hidden), earlier versions use Bootstrap 4 (sr-only).
+    $bs5 = ($CFG->version >= 2025041400);
+
     $containerdata = [
         'elementid'  => 'id_allfilescontainer',
         'titlecontent'   => $allfilespage ? get_string('allfiles', 'openbook') : get_string('publicfiles', 'openbook'),
         'sectioncontent' => $contenthtml,
         'open'    => true,
+        'bs5'    => $bs5,
     ];
     if (file_exists("{$CFG->dirroot}/lib/templates/local/collapsable_section.mustache")) {
         echo $OUTPUT->render_from_template('core/local/collapsable_section', $containerdata);

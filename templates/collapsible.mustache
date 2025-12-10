@@ -32,20 +32,22 @@
     * open Whether the collapsible object is open
     * titlecontent The title.
     * sectioncontent The content.
+    * bs5 Whether Bootstrap 5 is used (Moodle 5.0+)
 
     Example context (json):
     {
         "elementid": 7,
         "open": true,
         "titlecontent": "Title",
-        "sectioncontent": "Content"
+        "sectioncontent": "Content",
+        "bs5": true
     }
 
 }}
 <div class="mb-2">
 
     <div class="d-flex align-items-center mb-2 position-relative">
-        <a data-bs-toggle="collapse"
+        <a data-{{#bs5}}bs-{{/bs5}}toggle="collapse"
            href="#{{elementid}}"
            role="button"
            aria-expanded="{{#open}}true{{/open}}{{^open}}false{{/open}}"
@@ -58,7 +60,8 @@
                 <span class="dir-rtl-hide"><i class="icon fa fa-chevron-right fa-fw " aria-hidden="true"></i></span>
                 <span class="dir-ltr-hide"><i class="icon fa fa-chevron-left fa-fw " aria-hidden="true"></i></span>
             </span>
-            <span class="visually-hidden">{{titlecontent}}</span>
+            {{#bs5}}<span class="visually-hidden">{{titlecontent}}</span>{{/bs5}}
+            {{^bs5}}<span class="sr-only">{{titlecontent}}</span>{{/bs5}}
         </a>
         <h3 class="m-0">{{titlecontent}}</h3>
     </div>
