@@ -724,7 +724,7 @@ class openbook {
                 html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]) .
                 html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'filter', 'value' => $filter]);
 
-        $output .= html_writer::start_tag('fieldset', ['class' => 'clearfix collapsible', 'id' => 'id_allfiles']);
+        $output .= html_writer::start_tag('fieldset', ['class' => 'clearfix', 'id' => 'id_allfiles']);
 
         // $teacherfiles = get_string('teacher_files', 'openbook');
         // $title = $teacherfiles;
@@ -941,7 +941,7 @@ class openbook {
                 html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]) .
                 html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'filter', 'value' => $filter]);
 
-        $output .= html_writer::start_tag('fieldset', ['class' => 'clearfix collapsible', 'id' => 'id_allfiles']);
+        $output .= html_writer::start_tag('fieldset', ['class' => 'clearfix', 'id' => 'id_allfiles']);
         $allfiles = get_string('allfiles', 'openbook');
 
         // $publicfiles = get_string('publicfiles', 'openbook');

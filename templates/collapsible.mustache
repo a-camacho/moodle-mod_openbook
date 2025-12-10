@@ -45,11 +45,13 @@
 <div class="mb-2">
 
     <div class="d-flex align-items-center mb-2 position-relative">
-        <a data-bs-toggle="collapse"
+        <a data-toggle="collapse"
+           data-bs-toggle="collapse"
            href="#{{elementid}}"
            role="button"
            aria-expanded="{{#open}}true{{/open}}{{^open}}false{{/open}}"
            aria-controls="{{elementid}}"
+           aria-labelledby="{{elementid}}_title"
            class="btn btn-icon me-3 icons-collapse-expand fheader {{^open}}collapsed{{/open}}">
             <span class="expanded-icon icon-no-margin p-2" title="{{#str}}collapse, core{{/str}}">
                 <i class="icon fa fa-chevron-down fa-fw " aria-hidden="true"></i>
@@ -58,9 +60,8 @@
                 <span class="dir-rtl-hide"><i class="icon fa fa-chevron-right fa-fw " aria-hidden="true"></i></span>
                 <span class="dir-ltr-hide"><i class="icon fa fa-chevron-left fa-fw " aria-hidden="true"></i></span>
             </span>
-            <span class="visually-hidden">{{titlecontent}}</span>
         </a>
-        <h3 class="m-0">{{titlecontent}}</h3>
+        <h3 class="m-0" id="{{elementid}}_title">{{titlecontent}}</h3>
     </div>
 
     <div class="collapse {{#open}}show{{/open}}" id="{{elementid}}">
