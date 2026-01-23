@@ -117,7 +117,6 @@ class overview extends \core_courseformat\activityoverviewbase {
         );
     }
 
-
     /**
      * Get the secure window overview item.
      *
@@ -160,10 +159,20 @@ class overview extends \core_courseformat\activityoverviewbase {
 
         $currentanswerscount = $this->manager->count_all_users_answered();
 
+        if (
+            class_exists(button::class) &&
+            (new \ReflectionClass(button::class))->hasConstant('BODY_OUTLINE')
+        ) {
+            $bodyoutline = button::BODY_OUTLINE;
+            $buttonclass = $bodyoutline->classes();
+        } else {
+            $buttonclass = "btn btn-outline-secondary";
+        }
+
         $content = new action_link(
             url: new \moodle_url('/mod/openbook/view.php', ['id' => $this->cm->id, 'allfilespage' => 1]),
             text: get_string('allfiles', 'openbook'),
-            attributes: ['class' => button::SECONDARY_OUTLINE->classes()],
+            attributes: ['class' => $buttonclass],
         );
 
         return new overviewitem(
