@@ -36,8 +36,20 @@ $string['availabilityrestriction_help'] = 'Users who cannot access the activity 
 $string['availabilityrestriction_admin_desc'] = 'Users who cannot access the activity due to availability restrictions will be removed from the list.<br>This only includes conditions which are marked as being applied to user lists. For example, group conditions are included but date conditions are not included.';
 $string['modulename'] = 'Openbook resource folder';
 $string['pluginname'] = 'Openbook resource folder';
-$string['modulename_help'] = 'The openbook resource folder offers the following features:<br><ul><li>Students can upload files. The time period can be restricted by the teacher.</li><li>The files will be published automatically or after students and/or teachers approval for publishing. If allowed, students can choose to make the file visible for all participants, otherwise each student will only see her/his uploaded document(s).</li><li>Students and/or teachers will receive a notification when students upload or change a file. Furthermore students and/or teachers will receive a notification about any changes of the openbook folder status.</li><li>PDF files in the openbook resource folder can be chosen to be opened in a PDF.js.</li><li>Teacher can set up a time period in which the opened documents are displayed in a secure window, i.e. a window without Moodle navigation etcetera.</li></li></ul>';
+$string['modulename_help'] = '###### Key features
+- Allows students to upload files within a teacher-defined submission period
+- Supports automatic or approval-based publishing of files, with optional student sharing settings
+- Sends notifications to students and teachers about uploads and status changes
+- Enables secure display of documents in a Moodle "secure window" for controlled access
+- Offers PDF.js integration for viewing PDF files directly in the browser
 
+###### Ways to use it
+- Collect student documents for later access during exams or assignments
+- Share resources among students with optional approval workflows
+- Restrict document access to secure mode for high-stakes assessments
+- Provide a central repository for student submissions with flexible visibility settings
+- Facilitate collaborative resource sharing while maintaining teacher control';
+$string['modulename_summary'] = 'Allows students to upload and share files in a central course space with flexible approval workflows and then provide secure viewing options, for example during exams.';
 $string['eventopenbookfiledeleted'] = 'Openbook resource folder file deleted';
 $string['eventopenbookfileuploaded'] = 'Openbook resource folder file uploaded';
 $string['eventopenbookduedateextended'] = 'Openbook resource folder due-date extended';
