@@ -26,9 +26,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2025112600;
+$plugin->version  = 2026020500;
 $plugin->requires = 2024100700;
 $plugin->component = 'mod_openbook';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release  = "v5.1-r1";
+$plugin->release  = "v5.1-r2";
 $plugin->supported = [405, 501];
