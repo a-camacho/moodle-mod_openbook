@@ -236,10 +236,16 @@ $templatecontext->obtainstudentapproval = $openbookinstance->obtainstudentapprov
     ? get_string('obtainstudentapproval_yes', 'openbook')
     : get_string('obtainstudentapproval_no', 'openbook');
 
-if ($openbookinstance->duedate > 0) {
-    $timeremainingdiff = $openbookinstance->duedate - time();
+$effectiveduedate = $openbookinstance->duedate;
+$override = $openbook->override_get_currentuserorgroup();
+if ($override && $override->submissionoverride && $override->duedate > 0) {
+    $effectiveduedate = $override->duedate;
+}
+
+if ($effectiveduedate > 0) {
+    $timeremainingdiff = $effectiveduedate - time();
     if ($timeremainingdiff > 0) {
-        $templatecontext->timeremaining = format_time($openbookinstance->duedate - time());
+        $templatecontext->timeremaining = format_time($effectiveduedate - time());
     } else {
         $templatecontext->timeremaining = get_string('overdue', 'openbook');
     }
