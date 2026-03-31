@@ -17,16 +17,15 @@
 {{!
     @template mod_openbook/overview
 
-    Openbook resource folder's overrides template.
+    Openbook resource folder's overview template.
 
-    The purpose of this template is to the contents of the overrides.
+    The purpose of this template is to display the teacher overview table.
 
     Example context (json):
     {
         "isteacher": true,
         "showapprovalrequired": true,
         "viewall_approvalneeded_url": "https://example.com/mod/openbook/approvalneeded.php",
-        "myfilesform": "<form>...teacher files form...</form>",
         "filesarepersonal": "Yes",
         "obtainteacherapproval": "Yes",
         "obtainstudentapprovaltitle": "Student approval required",
@@ -44,17 +43,9 @@
     {{#showapprovalrequired}}
         <a href="{{viewall_approvalneeded_url}}" class="btn btn-primary">{{#str}}giveapproval,openbook{{/str}}</a>
     {{/showapprovalrequired}}
-{{/isteacher}}
-{{^isteacher}}
-    {{{myfilesform}}}
-{{/isteacher}}
-<div class="py-3">
-    {{#isteacher}}
+    <div class="py-3">
         <h3>{{#str}}overview,openbook{{/str}}</h3>
-
-    {{/isteacher}}
-    <table class="table table-striped w-100">
-        {{#isteacher}}
+        <table class="table table-striped w-100">
             <tr>
                 <th>{{#str}}filesarepersonal,openbook{{/str}}</th>
                 <td>{{filesarepersonal}}</td>
@@ -87,9 +78,6 @@
                 <td>{{teacherfilescount}}</td>
             </tr>
             {{/showteacherfiles}}
-        {{/isteacher}}
-    </table>
-</div>
-{{#isteacher}}
-    {{{myfilesform}}}
+        </table>
+    </div>
 {{/isteacher}}

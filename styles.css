@@ -56,11 +56,11 @@
     padding-left: 10px;
 }
 
-#page-mod-openbook-view fieldset#id_myfiles table {
+#page-mod-openbook-view #id_myfilescontainer table {
     margin-left: 8px;
 }
 
-#page-mod-openbook-view fieldset#id_myfiles table#myfilestable td {
+#page-mod-openbook-view #id_myfilescontainer table#myfilestable td {
     padding: 5px;
 }
 
@@ -180,7 +180,7 @@
     font-style: italic;
 }
 
-#page-mod-openbook-view fieldset#id_myfiles .notice {
+#page-mod-openbook-view #id_myfilescontainer .notice {
     font-style: italic;
     margin-bottom: 6px;
     padding: 8px;

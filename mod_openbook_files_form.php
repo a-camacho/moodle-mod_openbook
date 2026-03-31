@@ -85,8 +85,6 @@ class mod_openbook_files_form extends moodleform {
         $table = $openbook->get_filestable();
 
         $headerstring = get_string('myfiles', 'openbook');
-        $mform->addElement('header', 'myfiles', $headerstring);
-        $mform->setExpanded('myfiles');
 
         $PAGE->requires->js_call_amd('mod_openbook/filesform', 'initializer', []);
         $PAGE->requires->js_call_amd('mod_openbook/alignrows', 'initializer', []);
