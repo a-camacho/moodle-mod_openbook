@@ -6,31 +6,31 @@
   <TABLES>
     <TABLE NAME="openbook" COMMENT="Defines Openbook resource folder">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="Standard Moodle primary key." NEXT="course"/>
-        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="ID of the course this activity is part of." PREVIOUS="course" NEXT="name"/>
-        <FIELD NAME="name" TYPE="char" LENGTH="1333" NOTNULL="true" SEQUENCE="false" COMMENT="Openbook resource folder name." PREVIOUS="course" NEXT="intro"/>
-        <FIELD NAME="intro" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Openbook resource folder introduction text." PREVIOUS="name" NEXT="introformat"/>
-        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Openbook resource folder intro text format." PREVIOUS="intro" NEXT="alwaysshowdescription"/>
-        <FIELD NAME="alwaysshowdescription" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="If false the Openbook resource folder intro will only be displayed after the allowsubmissionsfromdate date. If true it will always be displayed." PREVIOUS="introformat" NEXT="allowsubmissionsfromdate"/>
-        <FIELD NAME="allowsubmissionsfromdate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Time at which students may start uploading files." PREVIOUS="alwaysshowdescription" NEXT="duedate"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="Standard Moodle primary key."/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="ID of the course this activity is part of."/>
+        <FIELD NAME="name" TYPE="char" LENGTH="1333" NOTNULL="true" SEQUENCE="false" COMMENT="Openbook resource folder name."/>
+        <FIELD NAME="intro" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Openbook resource folder introduction text."/>
+        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Openbook resource folder intro text format."/>
+        <FIELD NAME="alwaysshowdescription" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="If false the Openbook resource folder intro will only be displayed after the allowsubmissionsfromdate date. If true it will always be displayed."/>
+        <FIELD NAME="allowsubmissionsfromdate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Time at which students may start uploading files."/>
         <FIELD NAME="duedate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Time by which students must have uploaded their files."/>
-        <FIELD NAME="completionupload" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="If this field is set to 1, then the activity will be automatically marked as 'complete' once the user uploads a file." PREVIOUS="duedate" NEXT="approvalfromdate"/>
-        <FIELD NAME="approvalfromdate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"  SEQUENCE="false" COMMENT="Time at which lecturers may start approving files." PREVIOUS="completionupload" NEXT="approvaltodate"/>
-        <FIELD NAME="approvaltodate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"  SEQUENCE="false" COMMENT="Time by which lecturers must have approved the student's files." PREVIOUS="approvalfromdate" NEXT="obtainstudentapproval"/>
-        <FIELD NAME="obtainstudentapproval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Whether approval from students is automatic or manually required" PREVIOUS="approvaltodate" NEXT="maxfiles"/>
-        <FIELD NAME="maxfiles" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Maximum number of submitted files" PREVIOUS="obtainstudentapproval" NEXT="maxbytes"/>
-        <FIELD NAME="maxbytes" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Maximum size of the submitted files" PREVIOUS="maxfiles" NEXT="allowedfiletypes"/>
-        <FIELD NAME="allowedfiletypes" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="" SEQUENCE="false" COMMENT="File types that are allowed in this penbook resource folder" PREVIOUS="maxbytes" NEXT="obtainteacherapproval"/>
-        <FIELD NAME="obtainteacherapproval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Whether approval from lecturers is automatic or manually required" PREVIOUS="allowedfiletypes" NEXT="filesarepersonal"/>
-        <FIELD NAME="filesarepersonal" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Whether the uploaded files are personal or can be shared with the community (class or group)" PREVIOUS="obtainteacherapproval" NEXT="openpdffilesinpdfjs"/>
-        <FIELD NAME="openpdffilesinpdfjs" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Whether files should be opened with PDF.js" PREVIOUS="filesarepersonal" NEXT="notifystatuschange"/>
-        <FIELD NAME="notifystatuschange" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="2" SEQUENCE="false" COMMENT="Notifications about Openbook resource folder status changes" PREVIOUS="openpdffilesinpdfjs" NEXT="notifyfilechange"/>
-        <FIELD NAME="notifyfilechange" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="3" SEQUENCE="false" COMMENT="Notifications about Openbook resource folder submitted files" PREVIOUS="notifystatuschange" NEXT="availabilityrestriction"/>
-        <FIELD NAME="securewindowfromdate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"  SEQUENCE="false" COMMENT="Time at which files for students start being displayed in secure layout." PREVIOUS="notifyfilechange" NEXT="securewindowtodate"/>
-        <FIELD NAME="securewindowtodate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"  SEQUENCE="false" COMMENT="Time at which files for students stop being displayed in secure layout." PREVIOUS="securewindowfromdate" NEXT="timecreated"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Date/time at which the record was created" PREVIOUS="securewindowtodate" NEXT="timemodified"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Date/time at which the record was last modified" PREVIOUS="timecreated" NEXT="uselegacyviewer"/>
-        <FIELD NAME="uselegacyviewer" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="false" DEFAULT="0" SEQUENCE="false" COMMENT="1 = use legacy viewer, 0 = use modern viewer" PREVIOUS="timemodified"/>
+        <FIELD NAME="completionupload" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="If this field is set to 1, then the activity will be automatically marked as 'complete' once the user uploads a file."/>
+        <FIELD NAME="approvalfromdate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"  SEQUENCE="false" COMMENT="Time at which lecturers may start approving files."/>
+        <FIELD NAME="approvaltodate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"  SEQUENCE="false" COMMENT="Time by which lecturers must have approved the student's files."/>
+        <FIELD NAME="obtainstudentapproval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Whether approval from students is automatic or manually required"/>
+        <FIELD NAME="maxfiles" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Maximum number of submitted files"/>
+        <FIELD NAME="maxbytes" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Maximum size of the submitted files"/>
+        <FIELD NAME="allowedfiletypes" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="" SEQUENCE="false" COMMENT="File types that are allowed in this penbook resource folder"/>
+        <FIELD NAME="obtainteacherapproval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Whether approval from lecturers is automatic or manually required"/>
+        <FIELD NAME="filesarepersonal" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Whether the uploaded files are personal or can be shared with the community (class or group)"/>
+        <FIELD NAME="openpdffilesinpdfjs" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Whether files should be opened with PDF.js"/>
+        <FIELD NAME="notifystatuschange" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="2" SEQUENCE="false" COMMENT="Notifications about Openbook resource folder status changes"/>
+        <FIELD NAME="notifyfilechange" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="3" SEQUENCE="false" COMMENT="Notifications about Openbook resource folder submitted files"/>
+        <FIELD NAME="securewindowfromdate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"  SEQUENCE="false" COMMENT="Time at which files for students start being displayed in secure layout."/>
+        <FIELD NAME="securewindowtodate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"  SEQUENCE="false" COMMENT="Time at which files for students stop being displayed in secure layout."/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Date/time at which the record was created"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Date/time at which the record was last modified"/>
+        <FIELD NAME="uselegacyviewer" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="1 = use legacy viewer, 0 = use modern viewer"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -41,16 +41,16 @@
     </TABLE>
     <TABLE NAME="openbook_file" COMMENT="Defines Openbook resource folder files">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="Standard Moodle primary key." NEXT="openbook"/>
-        <FIELD NAME="openbook" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Openbook resource folder instance id" PREVIOUS="id" NEXT="userid"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Owner of that Openbook resource folder file" PREVIOUS="openbook" NEXT="timecreated"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" DEFAULT="0" COMMENT="Date/time at which the record was created" PREVIOUS="userid" NEXT="fileid"/>
-        <FIELD NAME="fileid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The file id" PREVIOUS="timecreated" NEXT="filename"/>
-        <FIELD NAME="filename" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="The file name" PREVIOUS="fileid" NEXT="contenthash"/>
-        <FIELD NAME="contenthash" TYPE="char" LENGTH="40" NOTNULL="false" SEQUENCE="false" COMMENT="The file content hash" PREVIOUS="filename" NEXT="teacherapproval"/>
-        <FIELD NAME="teacherapproval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="3" SEQUENCE="false" COMMENT="Holds the lecturer approval" PREVIOUS="contenthash" NEXT="studentapproval"/>
-        <FIELD NAME="studentapproval" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false" COMMENT="Holds the student approval" PREVIOUS="teacherapproval" NEXT="commonteacherfile"/>
-        <FIELD NAME="commonteacherfile" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Whether this is a teacher files which is visible to everybody" PREVIOUS="studentapproval"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="Standard Moodle primary key."/>
+        <FIELD NAME="openbook" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Openbook resource folder instance id"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Owner of that Openbook resource folder file"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" DEFAULT="0" COMMENT="Date/time at which the record was created"/>
+        <FIELD NAME="fileid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The file id"/>
+        <FIELD NAME="filename" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="The file name"/>
+        <FIELD NAME="contenthash" TYPE="char" LENGTH="40" NOTNULL="false" SEQUENCE="false" COMMENT="The file content hash"/>
+        <FIELD NAME="teacherapproval" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="3" SEQUENCE="false" COMMENT="Holds the lecturer approval"/>
+        <FIELD NAME="studentapproval" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false" COMMENT="Holds the student approval"/>
+        <FIELD NAME="commonteacherfile" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Whether this is a teacher files which is visible to everybody"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -62,16 +62,16 @@
     </TABLE>
     <TABLE NAME="openbook_overrides" COMMENT="The overrides to Openbook resource folder settings.">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="Standard Moodle primary key." NEXT="openbook"/>
-        <FIELD NAME="openbook" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Foreign key references openbook.id" PREVIOUS="id" NEXT="groupid"/>
-        <FIELD NAME="groupid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Foreign key references groups.id.  Can be null if this is a per-user override." PREVIOUS="openbook" NEXT="userid"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Foreign key references user.id.  Can be null if this is a per-group override." PREVIOUS="groupid" NEXT="allowsubmissionsfromdate"/>
-        <FIELD NAME="allowsubmissionsfromdate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Time at which students may start attempting this openbook. Can be null, in which case the openbook default is used." PREVIOUS="userid" NEXT="duedate"/>
-        <FIELD NAME="duedate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Time by which students must have completed their attempt.  Can be null, in which case the openbook default is used." PREVIOUS="allowsubmissionsfromdate" NEXT="approvalfromdate"/>
-        <FIELD NAME="approvalfromdate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="duedate" NEXT="approvaltodate"/>
-        <FIELD NAME="approvaltodate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="approvalfromdate" NEXT="securewindowfromdate"/>
-        <FIELD NAME="securewindowfromdate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="approvaltodate" NEXT="securewindowtodate"/>
-        <FIELD NAME="securewindowtodate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="securewindowfromdate"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="Standard Moodle primary key."/>
+        <FIELD NAME="openbook" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Foreign key references openbook.id"/>
+        <FIELD NAME="groupid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Foreign key references groups.id.  Can be null if this is a per-user override."/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Foreign key references user.id.  Can be null if this is a per-group override."/>
+        <FIELD NAME="allowsubmissionsfromdate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Time at which students may start attempting this openbook. Can be null, in which case the openbook default is used."/>
+        <FIELD NAME="duedate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Time by which students must have completed their attempt.  Can be null, in which case the openbook default is used."/>
+        <FIELD NAME="approvalfromdate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="approvaltodate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="securewindowfromdate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="securewindowtodate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
