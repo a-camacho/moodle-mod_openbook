@@ -292,7 +292,7 @@ if (has_capability('moodle/course:update', context_course::instance($course->id)
     $templatecontext->myfilestitle = get_string('teacherfiles', 'openbook');
 }
 
-/* Show "own files" table */
+/* Prepare "own files" data */
 
 $filestable = $openbook->get_filestable();
 
@@ -306,58 +306,103 @@ if (!$allfilespage) {
     echo $OUTPUT->render_from_template('mod_openbook/overview', $templatecontext);
 }
 
-/* Show "teacher files" table */
+// Moodle 5.0+ uses Bootstrap 5 (visually-hidden), earlier versions use Bootstrap 4 (sr-only).
+$bs5 = ($CFG->version >= 2025041400);
+$issecurewindow = $openbook->is_securewindow_enforced();
+$usecoretemplate = file_exists("{$CFG->dirroot}/lib/templates/local/collapsable_section.mustache");
+
+/* Show "own files" collapsible section */
 
 if (!$allfilespage) {
-    $teacherfilesform = $openbook->display_teacherfilesform();
+    $showmyfiles = true;
+    if ($issecurewindow && !$templatecontext->hasmyfiles && !$openbook->is_open()) {
+        $showmyfiles = false;
+    }
 
-    // Moodle 5.0+ uses Bootstrap 5 (visually-hidden), earlier versions use Bootstrap 4 (sr-only).
-    $bs5 = ($CFG->version >= 2025041400);
-
-    $data = [
-        'elementid'  => 'id_teacherfilescontainer',
-        'titlecontent'   => get_string('teacher_files', 'openbook'),
-        'sectioncontent' => $teacherfilesform,
-        'open'    => true,
-        'bs5'    => $bs5,
-    ];
-
-    if (file_exists("{$CFG->dirroot}/lib/templates/local/collapsable_section.mustache")) {
-        echo $OUTPUT->render_from_template('core/local/collapsable_section', $data);
-    } else {
-        echo $OUTPUT->render_from_template('mod_openbook/collapsible', $data);
+    if ($showmyfiles) {
+        $myfilesdata = [
+            'elementid'  => 'id_myfilescontainer',
+            'titlecontent'   => $templatecontext->myfilestitle,
+            'sectioncontent' => $templatecontext->myfilesform,
+            'open'    => true,
+            'bs5'    => $bs5,
+        ];
+        if ($usecoretemplate) {
+            echo $OUTPUT->render_from_template('core/local/collapsable_section', $myfilesdata);
+        } else {
+            echo $OUTPUT->render_from_template('mod_openbook/collapsible', $myfilesdata);
+        }
     }
 }
 
-/* Show "files shared by students" table */
-
-$contenthtml = '';
+/* Show "teacher files" collapsible section */
 
 if (!$allfilespage) {
-    if ($openbookinstance->filesarepersonal == 0) {
-        $contenthtml = $allfilesform;
-    } else {
-        $contenthtml = get_string('sharedfilesnotshowing', 'openbook');
+    $showteacherfilessection = true;
+    if ($issecurewindow) {
+        $teacherfilestablecheck = $openbook->get_teacherfilestable(OPENBOOK_FILTER_NOFILTER, true);
+        if ($teacherfilestablecheck->get_count() == 0) {
+            $showteacherfilessection = false;
+        }
     }
-    // Moodle 5.0+ uses Bootstrap 5 (visually-hidden), earlier versions use Bootstrap 4 (sr-only).
-    $bs5 = ($CFG->version >= 2025041400);
 
-    $containerdata = [
-        'elementid'  => 'id_allfilescontainer',
-        'titlecontent'   => $allfilespage ? get_string('allfiles', 'openbook') : get_string('publicfiles', 'openbook'),
-        'sectioncontent' => $contenthtml,
-        'open'    => true,
-        'bs5'    => $bs5,
-    ];
-    if (file_exists("{$CFG->dirroot}/lib/templates/local/collapsable_section.mustache")) {
-        echo $OUTPUT->render_from_template('core/local/collapsable_section', $containerdata);
-    } else {
-        echo $OUTPUT->render_from_template('mod_openbook/collapsible', $containerdata);
+    if ($showteacherfilessection) {
+        $teacherfilesform = $openbook->display_teacherfilesform();
+
+        $data = [
+            'elementid'  => 'id_teacherfilescontainer',
+            'titlecontent'   => get_string('teacher_files', 'openbook'),
+            'sectioncontent' => $teacherfilesform,
+            'open'    => true,
+            'bs5'    => $bs5,
+        ];
+
+        if ($usecoretemplate) {
+            echo $OUTPUT->render_from_template('core/local/collapsable_section', $data);
+        } else {
+            echo $OUTPUT->render_from_template('mod_openbook/collapsible', $data);
+        }
+    }
+}
+
+/* Show "files shared by students" collapsible section */
+
+if (!$allfilespage) {
+    $showsharedfiles = true;
+    if ($issecurewindow) {
+        if ($openbookinstance->filesarepersonal == 1) {
+            $showsharedfiles = false;
+        } else {
+            $sharedfilestable = $openbook->get_allfilestable(OPENBOOK_FILTER_APPROVED, true);
+            if ($sharedfilestable->get_student_files_count() == 0) {
+                $showsharedfiles = false;
+            }
+        }
+    }
+
+    if ($showsharedfiles) {
+        if ($openbookinstance->filesarepersonal == 0) {
+            $contenthtml = $allfilesform;
+        } else {
+            $contenthtml = $OUTPUT->box(get_string('sharedfilesnotshowing', 'openbook'));
+        }
+
+        $containerdata = [
+            'elementid'  => 'id_allfilescontainer',
+            'titlecontent'   => get_string('publicfiles', 'openbook'),
+            'sectioncontent' => $contenthtml,
+            'open'    => true,
+            'bs5'    => $bs5,
+        ];
+        if ($usecoretemplate) {
+            echo $OUTPUT->render_from_template('core/local/collapsable_section', $containerdata);
+        } else {
+            echo $OUTPUT->render_from_template('mod_openbook/collapsible', $containerdata);
+        }
     }
 } else if ($allfilespage && has_capability('mod/openbook:approve', $context)) {
     $templatecontext->title = get_string('allfiles', 'openbook');
     echo '<h3>' . get_string('allfiles', 'openbook') . '</h3>';
-    $contenthtml = $allfilesform;
     echo $allfilesform;
 }
 

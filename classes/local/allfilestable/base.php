@@ -232,7 +232,7 @@ class base extends \table_sql {
 
         $this->print_initials_bar();
 
-        echo $OUTPUT->box(get_string('nofilestodisplay', 'openbook'), 'fst-italic');
+        echo $OUTPUT->box(get_string('nofilestodisplay', 'openbook'));
     }
 
     /**
