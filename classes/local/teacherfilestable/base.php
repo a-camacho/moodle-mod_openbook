@@ -604,8 +604,8 @@ class base extends \table_sql {
             pathinfo($values->filename, PATHINFO_EXTENSION) == 'pdf'
         ) {
             $pdfviewer = ($this->openbook->get_uselegacyviewer_status() == "1")
-                ? 'pdfjs-5.4.394-legacy-dist'
-                : 'pdfjs-5.4.394-dist';
+                ? 'pdfjs-5.6.205-legacy-dist'
+                : 'pdfjs-5.6.205-dist';
 
             $pluginfilerawurl = \moodle_url::make_pluginfile_url(
                 $contextid,
