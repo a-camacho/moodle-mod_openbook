@@ -109,14 +109,14 @@ class mod_openbook_files_form extends moodleform {
                 userdate($openbookinstance->approvaltodate) : false;
         }
 
-        if ($openbookinstance->duedate > 0 || ($override && $override->submissionoverride && $override->duedate > 0)) {
-            if ($override && $override->submissionoverride && $override->duedate > 0) {
-                $timeremainingdiff = $override->duedate - time();
-            } else {
-                $timeremainingdiff = $openbookinstance->duedate - time();
-            }
+        $effectiveduedate = $openbookinstance->duedate;
+        if ($override && $override->submissionoverride && $override->duedate > 0) {
+            $effectiveduedate = $override->duedate;
+        }
+        if ($effectiveduedate > 0) {
+            $timeremainingdiff = $effectiveduedate - time();
             if ($timeremainingdiff > 0) {
-                $timeremaining = format_time($openbookinstance->duedate - time());
+                $timeremaining = format_time($effectiveduedate - time());
             } else {
                 $timeremaining = get_string('overdue', 'openbook');
             }
