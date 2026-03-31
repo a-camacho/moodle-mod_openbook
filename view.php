@@ -384,7 +384,7 @@ if (!$allfilespage) {
         if ($openbookinstance->filesarepersonal == 0) {
             $contenthtml = $allfilesform;
         } else {
-            $contenthtml = get_string('sharedfilesnotshowing', 'openbook');
+            $contenthtml = $OUTPUT->box(get_string('sharedfilesnotshowing', 'openbook'));
         }
 
         $containerdata = [
