@@ -73,6 +73,10 @@ class base extends \table_sql {
     protected $invalid = '';
     /** @var string student visible pix-icon */
     protected $studvisibleyes = '';
+    /** @var string student visible private pix-icons */
+    protected $studvisibleyesprivate = '';
+    /** @var string student visible shared pix-icons */
+    protected $studvisibleyesshared = '';
     /** @var string student not visible pix-icon */
     protected $studvisibleno = '';
     /** @var string[] select box options */
@@ -185,6 +189,27 @@ class base extends \table_sql {
             'text-success',
             get_string('visibleforstudents_yes', 'openbook')
         );
+
+        $this->studvisibleyesprivate = self::approval_icon(
+            'check',
+            'text-success',
+            get_string('visibleforstudents_yes_private', 'openbook')
+        ) . self::approval_icon(
+            'user',
+            'text-success',
+            get_string('visibleforstudents_yes_private', 'openbook')
+        );
+
+        $this->studvisibleyesshared = self::approval_icon(
+            'check',
+            'text-success',
+            get_string('visibleforstudents_yes_shared', 'openbook')
+        ) . self::approval_icon(
+            'share-from-square',
+            'text-success',
+            get_string('visibleforstudents_yes_shared', 'openbook')
+        );
+
         $this->studvisibleno = self::approval_icon(
             'times',
             'text-danger',
@@ -928,8 +953,12 @@ FROM
 
             // Visible for students.
 
-            if ($this->openbook->has_filepermission($file->get_id())) {
-                $row[] = $this->studvisibleyes;
+            if ($this->openbook->teacher_approval($file) == 1) {
+                if ($this->openbook->student_approval($file) == 1) {
+                    $row[] = $this->studvisibleyesshared;
+                } else {
+                    $row[] = $this->studvisibleyesprivate;
+                }
             } else {
                 $row[] = $this->studvisibleno;
             }
