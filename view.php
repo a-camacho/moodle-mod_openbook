@@ -369,10 +369,14 @@ if (!$allfilespage) {
 
 if (!$allfilespage) {
     $showsharedfiles = true;
-    if ($issecurewindow && $openbookinstance->filesarepersonal == 1) {
-        $sharedfilestable = $openbook->get_allfilestable(OPENBOOK_FILTER_APPROVED, true);
-        if ($sharedfilestable->get_student_files_count() == 0) {
+    if ($issecurewindow) {
+        if ($openbookinstance->filesarepersonal == 1) {
             $showsharedfiles = false;
+        } else {
+            $sharedfilestable = $openbook->get_allfilestable(OPENBOOK_FILTER_APPROVED, true);
+            if ($sharedfilestable->get_student_files_count() == 0) {
+                $showsharedfiles = false;
+            }
         }
     }
 
