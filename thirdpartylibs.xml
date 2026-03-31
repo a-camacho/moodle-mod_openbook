@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <libraries>
     <library>
-        <location>pdfjs-5.4.394-dist</location>
+        <location>pdfjs-5.6.205-dist</location>
         <name>PDF.js</name>
         <description>PDF.js is a Portable Document Format (PDF) viewer that is built with HTML5</description>
         <version>5.4.394</version>
@@ -9,7 +9,7 @@
         <repository>https://github.com/mozilla/pdf.js</repository>
     </library>
     <library>
-        <location>pdfjs-5.4.394-legacy-dist</location>
+        <location>pdfjs-5.6.205-legacy-dist</location>
         <name>PDF.js</name>
         <description>PDF.js is a Portable Document Format (PDF) viewer that is built with HTML5</description>
         <version>5.4.394</version>

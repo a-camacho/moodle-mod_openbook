@@ -758,8 +758,8 @@ FROM
                     $file->get_mimetype() == "application/pdf"
                 ) {
                     $pdfviewer = ($this->openbook->get_uselegacyviewer_status() == "1")
-                        ? 'pdfjs-5.4.394-legacy-dist'
-                        : 'pdfjs-5.4.394-dist';
+                        ? 'pdfjs-5.6.205-legacy-dist'
+                        : 'pdfjs-5.6.205-dist';
                     $pdfjsurl = new \moodle_url('/mod/openbook/' . $pdfviewer . '/web/viewer.html', [
                         'file' => $pluginurl->out(),
                     ]);
