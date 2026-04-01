@@ -289,7 +289,7 @@ $templatecontext->filesarepersonal = $openbookinstance->filesarepersonal == 1
 $templatecontext->myfilestitle = get_string('myfiles', 'openbook');
 
 if (has_capability('moodle/course:update', context_course::instance($course->id))) {
-    $templatecontext->myfilestitle = get_string('teacherfiles', 'openbook');
+    $templatecontext->myfilestitle = get_string('myownfiles', 'openbook');
 }
 
 /* Show "own files" table */
