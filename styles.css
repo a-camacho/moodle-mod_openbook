@@ -246,9 +246,6 @@
     display: none !important; /* stylelint-disable-line declaration-no-important */
 }
 
-#page-mod-openbook-upload #fitem_id_guideline .form-inline {
-    align-items: flex-end !important; /* stylelint-disable-line declaration-no-important */
-}
 
 #page-mod-openbook-view.allfilespage .activity-header {
     display: none;
