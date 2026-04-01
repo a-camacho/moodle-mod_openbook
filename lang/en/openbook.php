@@ -195,7 +195,6 @@ $string['duedate_upload'] = 'Upload until';
 $string['extensionto'] = 'Extension to';
 $string['filedetails'] = 'Details';
 $string['myfiles'] = 'Own files';
-$string['teacherfiles'] = 'Teacher files that are visible to everybody';
 $string['teacher_files'] = 'Teacher files';
 $string['add_uploads'] = 'Add files';
 $string['edit_uploads'] = 'Edit/upload files';
