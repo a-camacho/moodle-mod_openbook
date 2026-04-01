@@ -246,8 +246,7 @@
     display: none !important; /* stylelint-disable-line declaration-no-important */
 }
 
-
-#fitem_id_guideline .form-control-static {
+#page-mod-openbook-upload #fitem_id_guideline .form-inline {
     padding-top: calc(.375rem + var(--bs-border-width));
     border-top-width: 0;
 }
