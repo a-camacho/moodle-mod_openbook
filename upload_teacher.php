@@ -67,21 +67,19 @@ $entry->definitionformat = FORMAT_HTML;
 $maxfiles = $openbook->get_instance()->maxfiles;
 $maxbytes = $openbook->get_instance()->maxbytes;
 
-$acceptedfiletypes = $openbook->get_accepted_types();
-
 $definitionoptions = [
         'trusttext' => true,
         'subdirs' => false,
         'maxfiles' => $maxfiles,
         'maxbytes' => $maxbytes,
         'context' => $context,
-        'accepted_types' => $acceptedfiletypes,
+        'accepted_types' => '*',
 ];
 $attachmentoptions = [
         'subdirs' => false,
         'maxfiles' => $maxfiles,
         'maxbytes' => $maxbytes,
-        'accepted_types' => $acceptedfiletypes,
+        'accepted_types' => '*',
 ];
 
 $entry = file_prepare_standard_editor(

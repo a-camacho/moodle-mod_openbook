@@ -61,35 +61,6 @@ class mod_openbook_upload_form_teacher extends moodleform {
             $attachmentoptions,
         );
 
-        // Add notice of allowed file types if they're restricted!
-        if (!empty($attachmentoptions['accepted_types']) && $attachmentoptions['accepted_types'] !== '*') {
-            $text = html_writer::tag('p', get_string('filesofthesetypes', 'openbook'));
-            $text .= html_writer::start_tag('ul');
-
-            $typesets = $openbook->get_configured_typesets();
-            foreach ($typesets as $type) {
-                $a = new stdClass();
-                $extensions = file_get_typegroup('extension', $type);
-                $typetext = html_writer::tag('li', $type);
-                // Only bother checking if it's a mimetype or group if it has extensions in the group.
-                if (!empty($extensions)) {
-                    if (strpos($type, '/') !== false) {
-                        $a->name = get_mimetype_description($type);
-                        $a->extlist = implode(' ', $extensions);
-                        $typetext = html_writer::tag('li', $a->name . ' &mdash; ' . $a->extlist);
-                    } else if (get_string_manager()->string_exists("group:$type", 'mimetypes')) {
-                        $a->name = get_string("group:$type", 'mimetypes');
-                        $a->extlist = implode(' ', $extensions);
-                        $typetext = html_writer::tag('li', $a->name . ' &mdash; ' . $a->extlist);
-                    }
-                }
-                $text .= $typetext;
-            }
-
-            $text .= html_writer::end_tag('ul');
-            $mform->addElement('static', '', '', $text);
-        }
-
         // Hidden params.
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
