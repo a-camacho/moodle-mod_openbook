@@ -299,7 +299,8 @@ class base extends \table_sql {
 
         $sql = "SELECT COUNT(id)
                 FROM {openbook_file}
-                WHERE openbook = ?";
+                WHERE openbook = ?
+                AND (commonteacherfile = 0 OR commonteacherfile IS NULL)";
 
         return $DB->count_records_sql($sql, [$openbookid]);
     }
@@ -330,18 +331,19 @@ class base extends \table_sql {
         $params = $params + $userparams + ['openbook' => $this->cm->instance];
 
         $having = '';
+        $excludeteacherfiles = 'AND (files.commonteacherfile = 0 OR files.commonteacherfile IS NULL) ';
         if ($this->filter == OPENBOOK_FILTER_NOFILTER) {
             $from = '{user} u ' .
                 'LEFT JOIN {openbook_file} files ON u.id = files.userid AND ' .
-                'files.openbook = :openbook ';
+                'files.openbook = :openbook ' . $excludeteacherfiles;
         } else if ($this->filter == OPENBOOK_FILTER_ALLFILES) {
             $from = '{user} u ' .
                 'JOIN {openbook_file} files ON u.id = files.userid AND ' .
-                'files.openbook = :openbook ';
+                'files.openbook = :openbook ' . $excludeteacherfiles;
         } else if ($this->filter == OPENBOOK_FILTER_APPROVED) {
             $from = '{user} u ' .
                 'JOIN {openbook_file} files ON u.id = files.userid AND ' .
-                'files.openbook = :openbook ';
+                'files.openbook = :openbook ' . $excludeteacherfiles;
             if ($this->obtainteacherapproval == 1) {
                 $from .= ' AND files.teacherapproval = 1 ';
             }
@@ -351,17 +353,17 @@ class base extends \table_sql {
         } else if ($this->filter == OPENBOOK_FILTER_REJECTED) {
             $from = '{user} u ' .
                 'JOIN {openbook_file} files ON u.id = files.userid AND ' .
-                'files.openbook = :openbook ' .
+                'files.openbook = :openbook ' . $excludeteacherfiles .
                 'AND files.teacherapproval = 2 ';
         } else if ($this->filter == OPENBOOK_FILTER_APPROVALREQUIRED) {
             $from = '{user} u ' .
                 'JOIN {openbook_file} files ON u.id = files.userid AND ' .
-                'files.openbook = :openbook ' .
+                'files.openbook = :openbook ' . $excludeteacherfiles .
                 'AND (files.teacherapproval = 3 OR files.teacherapproval IS NULL OR files.teacherapproval = 0) ';
         } else if ($this->filter == OPENBOOK_FILTER_NOFILES) {
             $from = '{user} u ' .
                 'LEFT JOIN {openbook_file} files ON u.id = files.userid AND ' .
-                'files.openbook = :openbook ';
+                'files.openbook = :openbook ' . $excludeteacherfiles;
             $having = ' HAVING timemodified IS NULL ';
         }
 
