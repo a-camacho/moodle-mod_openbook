@@ -182,11 +182,7 @@ if ($mform->is_cancelled()) {
             $dataobject->studentapproval = 0;
             $dataobject->teacherapproval = 0;
             $dataobject->filename = $file->get_filename();
-            if (has_capability('mod/openbook:uploadcommonteacherfile', $context)) {
-                $dataobject->commonteacherfile = true;
-            } else {
-                $dataobject->commonteacherfile = false;
-            }
+            $dataobject->commonteacherfile = false;
 
             $dataobject->id = $DB->insert_record('openbook_file', $dataobject);
 
