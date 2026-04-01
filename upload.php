@@ -161,7 +161,7 @@ if ($mform->is_cancelled()) {
 
     $filescount = count($values);
     $rows = $DB->get_records('openbook_file', ['openbook' => $openbook->get_instance()->id,
-        'userid' => $USER->id]);
+        'userid' => $USER->id, 'commonteacherfile' => 0]);
 
     // Find new files and store in db.
     foreach ($files as $file) {
