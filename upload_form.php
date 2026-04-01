@@ -51,8 +51,8 @@ class mod_openbook_upload_form extends moodleform {
         }
 
         $headerstring = get_string('myfiles', 'openbook');
-
         $mform->addElement('header', 'myfiles', $headerstring);
+        $mform->addElement('static', 'guideline', get_string('guideline', 'openbook'), $text);
 
         $mform->addElement(
             'filemanager',
