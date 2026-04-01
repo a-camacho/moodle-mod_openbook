@@ -726,10 +726,6 @@ class openbook {
 
         $output .= html_writer::start_tag('fieldset', ['class' => 'clearfix collapsible', 'id' => 'id_allfiles']);
 
-        // $teacherfiles = get_string('teacher_files', 'openbook');
-        // $title = $teacherfiles;
-        // $output .= html_writer::tag('legend', $title, ['class' => 'ftoggler h3']);
-
         $output .= html_writer::start_div('fcontainer clearfix mb-3');
 
         $f = groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/openbook/view.php?id=' . $cm->id, true);
