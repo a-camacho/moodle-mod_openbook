@@ -44,8 +44,8 @@ Feature: I can use Openbook resource folder groupwise with separate groups
     And I should see "Own files"
     And I should see "Teacher files"
     And I follow "Edit/upload teacher files"
-    And I should see "Teacher files that are visible to everybody"
-    And I upload "mod/openbook/tests/fixtures/teacher_file.pdf" file to "Teacher files that are visible to everybody" filemanager
+    And I should see "Teacher files"
+    And I upload "mod/openbook/tests/fixtures/teacher_file.pdf" file to "Teacher files" filemanager
     And I press "Save changes"
     And I should see "teacher_file.pdf"
     And I log out

@@ -38,7 +38,7 @@ Feature: Testing secure window integration in openbook activity
     And I press "Save and return to course"
     And I am on the "Openbook resource folder activity" "mod_openbook > View" page logged in as "teacher1"
     And I follow "Edit/upload teacher files"
-    And I upload "mod/openbook/tests/fixtures/teacher_file.pdf" file to "Teacher files that are visible to everybody" filemanager
+    And I upload "mod/openbook/tests/fixtures/teacher_file.pdf" file to "Teacher files" filemanager
     And I press "Save changes"
     And "Acceptance test site" "link" should exist
     And I log out
@@ -86,7 +86,7 @@ Feature: Testing secure window integration in openbook activity
     And I press "Save and return to course"
     And I am on the "Openbook resource folder activity" "mod_openbook > View" page logged in as "teacher1"
     And I follow "Edit/upload teacher files"
-    And I upload "mod/openbook/tests/fixtures/teacher_file.pdf" file to "Teacher files that are visible to everybody" filemanager
+    And I upload "mod/openbook/tests/fixtures/teacher_file.pdf" file to "Teacher files" filemanager
     And I press "Save changes"
     And "Acceptance test site" "link" should exist
     And I log out
