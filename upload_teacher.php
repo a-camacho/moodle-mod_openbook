@@ -59,7 +59,7 @@ if (!has_capability('mod/openbook:uploadcommonteacherfile', $openbook->get_conte
 }
 
 $entry = new stdClass();
-$entry->id = $USER->id;
+$entry->id = $openbook->get_instance()->id;
 
 $entry->definition = '';
 $entry->definitionformat = FORMAT_HTML;
@@ -67,21 +67,19 @@ $entry->definitionformat = FORMAT_HTML;
 $maxfiles = $openbook->get_instance()->maxfiles;
 $maxbytes = $openbook->get_instance()->maxbytes;
 
-$acceptedfiletypes = $openbook->get_accepted_types();
-
 $definitionoptions = [
         'trusttext' => true,
         'subdirs' => false,
         'maxfiles' => $maxfiles,
         'maxbytes' => $maxbytes,
         'context' => $context,
-        'accepted_types' => $acceptedfiletypes,
+        'accepted_types' => '*',
 ];
 $attachmentoptions = [
         'subdirs' => false,
         'maxfiles' => $maxfiles,
         'maxbytes' => $maxbytes,
-        'accepted_types' => $acceptedfiletypes,
+        'accepted_types' => '*',
 ];
 
 $entry = file_prepare_standard_editor(
@@ -151,7 +149,7 @@ if ($mform->is_cancelled()) {
 
     $filescount = count($values);
     $rows = $DB->get_records('openbook_file', ['openbook' => $openbook->get_instance()->id,
-        'userid' => $USER->id]);
+        'userid' => $USER->id, 'commonteacherfile' => 1]);
 
     // Find new files and store in db.
     foreach ($files as $file) {
@@ -173,11 +171,7 @@ if ($mform->is_cancelled()) {
             $dataobject->teacherapproval = 0;
             $dataobject->filename = $file->get_filename();
             $dataobject->type = OPENBOOK_MODE_UPLOAD;
-            if (has_capability('mod/openbook:uploadcommonteacherfile', $context)) {
-                $dataobject->commonteacherfile = true;
-            } else {
-                $dataobject->commonteacherfile = false;
-            }
+            $dataobject->commonteacherfile = true;
 
             $dataobject->id = $DB->insert_record('openbook_file', $dataobject);
 

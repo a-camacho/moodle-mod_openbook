@@ -161,7 +161,7 @@ if ($mform->is_cancelled()) {
 
     $filescount = count($values);
     $rows = $DB->get_records('openbook_file', ['openbook' => $openbook->get_instance()->id,
-        'userid' => $USER->id]);
+        'userid' => $USER->id, 'commonteacherfile' => 0]);
 
     // Find new files and store in db.
     foreach ($files as $file) {
@@ -182,11 +182,7 @@ if ($mform->is_cancelled()) {
             $dataobject->studentapproval = 0;
             $dataobject->teacherapproval = 0;
             $dataobject->filename = $file->get_filename();
-            if (has_capability('mod/openbook:uploadcommonteacherfile', $context)) {
-                $dataobject->commonteacherfile = true;
-            } else {
-                $dataobject->commonteacherfile = false;
-            }
+            $dataobject->commonteacherfile = false;
 
             $dataobject->id = $DB->insert_record('openbook_file', $dataobject);
 

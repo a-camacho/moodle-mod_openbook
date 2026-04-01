@@ -311,7 +311,7 @@ class base extends \table_sql {
 
                 if (!empty($allmembers)) {
                     [$insql, $insqlparams] = $DB->get_in_or_equal(array_column($allmembers, 'id'), SQL_PARAMS_NAMED, 'user');
-                    $where .= " AND files.itemid " . $insql;
+                    $where .= " AND files.userid " . $insql;
                     $params = array_merge($params, $insqlparams);
                 }
             }

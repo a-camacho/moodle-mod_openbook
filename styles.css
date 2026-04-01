@@ -246,8 +246,10 @@
     display: none !important; /* stylelint-disable-line declaration-no-important */
 }
 
-#page-mod-openbook-upload #fitem_id_guideline .form-inline {
-    align-items: flex-end !important; /* stylelint-disable-line declaration-no-important */
+
+#fitem_id_guideline .form-control-static {
+    padding-top: calc(.375rem + var(--bs-border-width));
+    border-top-width: 0;
 }
 
 #page-mod-openbook-view.allfilespage .activity-header {

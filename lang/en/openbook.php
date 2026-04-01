@@ -195,7 +195,6 @@ $string['duedate_upload'] = 'Upload until';
 $string['extensionto'] = 'Extension to';
 $string['filedetails'] = 'Details';
 $string['myfiles'] = 'Own files';
-$string['teacherfiles'] = 'Teacher files that are visible to everybody';
 $string['teacher_files'] = 'Teacher files';
 $string['add_uploads'] = 'Add files';
 $string['edit_uploads'] = 'Edit/upload files';
@@ -286,7 +285,7 @@ $string['reset'] = 'Revert';
 
 // Strings from the file upload.php.
 $string['filesofthesetypes'] = 'Files of these types may be added:';
-$string['guideline'] = 'Openbook resource folder of file submissions';
+$string['guideline'] = 'Submission approval';
 $string['published_immediately'] = 'Approve automatically';
 $string['published_aftercheck'] = 'Approval from teachers required';
 $string['save_changes'] = 'Save changes';

@@ -61,7 +61,7 @@ Feature: Upload file as teacher in openbook
     And I press "Save and display"
     And I am on the "Openbook resource folder" "openbook activity" page
     And I follow "Edit/upload teacher files"
-    And I upload "mod/openbook/tests/fixtures/teacher_file.pdf" file to "Teacher files that are visible to everybody" filemanager
+    And I upload "mod/openbook/tests/fixtures/teacher_file.pdf" file to "Teacher files" filemanager
     And I press "Save changes"
     And I log out
     And I am on the "Openbook resource folder" "openbook activity" page logged in as student1
@@ -78,8 +78,8 @@ Feature: Upload file as teacher in openbook
     And I should see "Own files"
     And I should see "Teacher files"
     And I follow "Edit/upload teacher files"
-    And I should see "Teacher files that are visible to everybody"
-    And I upload "mod/openbook/tests/fixtures/teacher_file.pdf" file to "Teacher files that are visible to everybody" filemanager
+    And I should see "Teacher files"
+    And I upload "mod/openbook/tests/fixtures/teacher_file.pdf" file to "Teacher files" filemanager
     And I press "Save changes"
     And I should see "teacher_file.pdf"
     And I log out
@@ -88,7 +88,7 @@ Feature: Upload file as teacher in openbook
     And I should see "Teacher files"
     And I follow "Edit/upload teacher files"
     And I should see "Teacher files"
-    And I upload "mod/openbook/tests/fixtures/teacher_file_2.pdf" file to "Teacher files that are visible to everybody" filemanager
+    And I upload "mod/openbook/tests/fixtures/teacher_file_2.pdf" file to "Teacher files" filemanager
     And I press "Save changes"
     Then I should see "teacher_file.pdf"
     And I should see "teacher_file_2.pdf"
