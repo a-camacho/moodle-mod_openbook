@@ -247,6 +247,11 @@
 }
 
 
+#fitem_id_guideline .form-control-static {
+    padding-top: calc(.375rem + var(--bs-border-width));
+    border-top-width: 0;
+}
+
 #page-mod-openbook-view.allfilespage .activity-header {
     display: none;
 }
