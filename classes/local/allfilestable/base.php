@@ -364,7 +364,7 @@ class base extends \table_sql {
             $from = '{user} u ' .
                 'LEFT JOIN {openbook_file} files ON u.id = files.userid AND ' .
                 'files.openbook = :openbook ' . $excludeteacherfiles;
-            $having = ' HAVING timemodified IS NULL ';
+            $having = ' HAVING MAX(files.timecreated) IS NULL ';
         }
 
         $where = "u.id " . $sqluserids;
