@@ -4,6 +4,10 @@ moodle-theme_boost_union
 Changes
 -------
 
+### v5.2-r2
+
+* 2026-04-28 - Bugfix: Fix 'No file submission' filter under PostgreSQL
+
 ### v5.2-r1
 
 * 2026-04-01 - Bugfix: Exclude teacher files from student file counts, resolves #86
