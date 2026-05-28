@@ -192,27 +192,5 @@ class restore_openbook_activity_structure_step extends restore_activity_structur
             ];
             $DB->set_field('openbook_file', 'fileid', $file->get_id(), $contingencies);
         }
-
-        // Now we correct the itemids of the files!
-        $rs = $DB->get_recordset('openbook_file', ['openbook' => $pubid]);
-        foreach ($rs as $record) {
-            $file = $fs->get_file_by_id($record->fileid);
-            if ($file->get_itemid() != $record->userid) {
-                $dataobject = (object)['id' => $record->fileid, 'itemid' => $record->userid];
-                $DB->update_record('files', $dataobject);
-            }
-        }
-        $rs->close();
-
-        // And we correct the directories!
-        $rs = $DB->get_recordset('files', [
-                'contextid' => $contextid,
-                'component' => 'mod_openbook',
-                'filename' => '.']);
-        foreach ($rs as $record) {
-            $record->itemid = $this->get_mappingid('user', $record->itemid, $record->itemid); // We may need to update user ID!
-            $DB->update_record('files', $record);
-        }
-        $rs->close();
     }
 }
