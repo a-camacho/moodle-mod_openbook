@@ -367,6 +367,22 @@ function mod_openbook_pluginfile(
         return false;
     }
 
+    // For the per-user attachment area, enforce ownership / approval.
+    // The commonteacherfiles area is intended to be readable by anyone with view.
+    if ($filearea === 'attachment') {
+        global $USER, $CFG;
+        require_once($CFG->dirroot . '/mod/openbook/locallib.php');
+
+        $isowner = ((int)$itemid === (int)$USER->id);
+        $canapprove = has_capability('mod/openbook:approve', $context);
+        if (!$isowner && !$canapprove) {
+            $openbook = new openbook($cm, $course, $context);
+            if (!$openbook->has_filepermission($file->get_id())) {
+                return false;
+            }
+        }
+    }
+
     send_stored_file($file, 0, 0, true, $options);
 
     // Wont be reached!
