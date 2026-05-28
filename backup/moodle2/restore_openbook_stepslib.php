@@ -86,9 +86,6 @@ class restore_openbook_activity_structure_step extends restore_activity_structur
             $data->approvaltodate = $this->apply_date_offset($data->approvaltodate);
         }
 
-        // Delete importfrom after restore.
-        $data->importfrom = -1;
-
         $newitemid = $DB->insert_record('openbook', $data);
 
         $this->apply_activity_instance($newitemid);
