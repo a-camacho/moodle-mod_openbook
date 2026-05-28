@@ -78,7 +78,13 @@ class provider implements core_userlist_provider, metadataprovider, pluginprovid
             'studentapproval' => 'privacy:metadata:studentapproval',
         ], 'privacy:metadata:files');
 
-        $collection->add_user_preference('openbook_perpage', 'privacy:metadata:openbookperpage');
+        // Per-instance preferences are stored as 'mod-openbook-perpage-<instanceid>',
+        // 'mod-openbook-allfiles-<instanceid>' and 'mod-openbook-teacherfiles-<instanceid>'.
+        // We declare those three families instead of a single 'openbook_perpage' key
+        // that the plugin never actually writes.
+        $collection->add_user_preference('mod-openbook-perpage', 'privacy:metadata:perpage');
+        $collection->add_user_preference('mod-openbook-allfiles', 'privacy:metadata:allfilestable');
+        $collection->add_user_preference('mod-openbook-teacherfiles', 'privacy:metadata:teacherfilestable');
 
         // Link to subplugins.
         $collection->add_subsystem_link('core_files', [], 'privacy:metadata:openbookfileexplanation');
@@ -293,10 +299,27 @@ class provider implements core_userlist_provider, metadataprovider, pluginprovid
      * @throws \coding_exception
      */
     public static function export_user_preferences(int $userid) {
-        $openbookperpage = get_user_preferences('openbook_perpage', null, $userid);
+        global $DB;
 
-        if ($openbookperpage !== null) {
-            writer::export_user_preference('openbook_perpage', (string)$openbookperpage);
+        // The plugin stores per-instance preferences keyed by activity id, so we
+        // iterate the user's preferences and export every one whose name matches
+        // one of our prefixes. Using $DB->sql_like keeps this database-agnostic.
+        $prefixes = [
+            'mod-openbook-perpage-',
+            'mod-openbook-allfiles-',
+            'mod-openbook-teacherfiles-',
+        ];
+
+        foreach ($prefixes as $prefix) {
+            $select = 'userid = :userid AND ' . $DB->sql_like('name', ':name');
+            $params = [
+                'userid' => $userid,
+                'name' => $DB->sql_like_escape($prefix) . '%',
+            ];
+            $records = $DB->get_records_select('user_preferences', $select, $params, '', 'id, name, value');
+            foreach ($records as $record) {
+                writer::export_user_preference('mod_openbook', $record->name, (string)$record->value, $record->name);
+            }
         }
     }
 

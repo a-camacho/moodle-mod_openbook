@@ -297,7 +297,9 @@ $string['total'] = 'Total';
 $string['details'] = 'Details';
 
 // Strings for privacy-API.
-$string['privacy:metadata:openbookperpage'] = 'How many entries should be displayed on a single table page!';
+$string['privacy:metadata:perpage'] = 'How many entries should be displayed on a single table page, per activity instance.';
+$string['privacy:metadata:allfilestable'] = 'Sorting, pagination, and filter state for the all-files table, per activity instance.';
+$string['privacy:metadata:teacherfilestable'] = 'Sorting, pagination, and filter state for the teacher-files table, per activity instance.';
 $string['privacy:path:files'] = 'Files';
 $string['privacy:metadata:openbookfileexplanation'] = 'Files for this plugin get stored via Moodle\'s file API.';
 $string['privacy:metadata:files'] = 'Stores information (identifier, whom it belongs, where it came from, hash of content, file name and if approved by teacher and/or student) about the files uploaded into mod_openbook.';
