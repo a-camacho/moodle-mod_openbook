@@ -174,6 +174,40 @@ final class access_control_test extends base {
     }
 
     /**
+     * Approving fileids in instance A must not flip approval flags of files in instance B.
+     *
+     * @covers \openbook::update_files_teacherapproval
+     */
+    public function test_update_files_teacherapproval_is_instance_scoped(): void {
+        global $DB;
+
+        $openbookA = $this->create_instance(['filesarepersonal' => 0,
+                'obtainteacherapproval' => 1, 'obtainstudentapproval' => 0]);
+        $openbookB = $this->create_instance(['filesarepersonal' => 0,
+                'obtainteacherapproval' => 1, 'obtainstudentapproval' => 0]);
+
+        $studentA = $this->students[0];
+        $studentB = $this->students[1];
+        $this->create_upload($studentA->id, $openbookA->get_instance()->id, 'a.txt', 'A');
+        $this->create_upload($studentB->id, $openbookB->get_instance()->id, 'b.txt', 'B');
+
+        $afileid = $this->get_stored_fileid_for($openbookA->get_instance()->id, $studentA->id, 'a.txt');
+        $bfileid = $this->get_stored_fileid_for($openbookB->get_instance()->id, $studentB->id, 'b.txt');
+
+        self::setUser($this->editingteachers[0]);
+        // Teacher in instance A submits a payload mixing A's own file with B's file id.
+        $openbookA->update_files_teacherapproval([$afileid => '1', $bfileid => '1']);
+
+        $afterA = (int)$DB->get_field('openbook_file', 'teacherapproval',
+                ['openbook' => $openbookA->get_instance()->id, 'fileid' => $afileid]);
+        $afterB = (int)$DB->get_field('openbook_file', 'teacherapproval',
+                ['openbook' => $openbookB->get_instance()->id, 'fileid' => $bfileid]);
+
+        self::assertSame(1, $afterA, 'A\'s own file was approved as expected.');
+        self::assertSame(0, $afterB, 'B\'s file must NOT be touched by A\'s approval form.');
+    }
+
+    /**
      * Resolve the stored_file id for a previously-created upload.
      *
      * create_upload() returns the inserted openbook_file row id, but the tests need

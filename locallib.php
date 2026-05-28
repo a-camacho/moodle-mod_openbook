@@ -1510,9 +1510,14 @@ class openbook {
         foreach ($files as $fileid => $newfileaction) {
             $x = $DB->get_record(
                 'openbook_file',
-                ['fileid' => $fileid],
+                ['fileid' => $fileid, 'openbook' => $this->instance->id],
                 $fields = "fileid,userid,teacherapproval,id,studentapproval,filename"
             );
+
+            // Silently skip file ids that do not belong to this openbook instance.
+            if (!$x) {
+                continue;
+            }
 
             $oldteacherapproval = $x->teacherapproval;
             $oldstudentapproval = $x->studentapproval;
@@ -1577,9 +1582,11 @@ class openbook {
             }
 
             if ($teacherapprove || $teacherreject) {
-                $DB->set_field('openbook_file', 'teacherapproval', $newteacherapproval, ['fileid' => $fileid]);
+                $DB->set_field('openbook_file', 'teacherapproval', $newteacherapproval,
+                        ['fileid' => $fileid, 'openbook' => $this->instance->id]);
             } else { // Reset student approval.
-                $DB->set_field('openbook_file', 'studentapproval', 0, ['fileid' => $fileid]);
+                $DB->set_field('openbook_file', 'studentapproval', 0,
+                        ['fileid' => $fileid, 'openbook' => $this->instance->id]);
             }
 
             if ($this->instance->notifystatuschange != 0) {
