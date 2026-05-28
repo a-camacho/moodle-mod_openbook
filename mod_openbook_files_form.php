@@ -139,15 +139,13 @@ class mod_openbook_files_form extends moodleform {
             if (!empty($table) && $table->changepossible()) {
                 $buttonarray = [];
 
-                // The confirm prompt is wired up by amd/src/filesform.js using the data-* attribute.
+                $onclick = 'return confirm("' . get_string('savestudentapprovalwarning', 'openbook') . '")';
+
                 $buttonarray[] = &$mform->createElement(
                     'submit',
                     'submitbutton',
                     get_string('savechanges'),
-                    [
-                        'data-mod-openbook' => 'confirm-submit',
-                        'data-mod-openbook-confirm-message' => get_string('savestudentapprovalwarning', 'openbook'),
-                    ]
+                    ['onClick' => $onclick]
                 );
                 $buttonarray[] = &$mform->createElement(
                     'reset',

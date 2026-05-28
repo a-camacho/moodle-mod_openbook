@@ -26,7 +26,7 @@
 /**
  * @module mod_openbook/filesform
  */
-define(['jquery', 'core/log', 'core/notification', 'core/str'], function($, log, Notification, Str) {
+define(['jquery', 'core/log'], function($, log) {
 
     /**
      * @constructor
@@ -49,50 +49,6 @@ define(['jquery', 'core/log', 'core/notification', 'core/str'], function($, log,
                     instance.usersel.prop('checked', false);
                 }, 100);
             }
-        });
-
-        // Auto-submit selects tagged by mod_openbook_allfiles_form (group filter, etc.).
-        $(document).on('change', 'select[data-mod-openbook="autosubmit-select"]', function() {
-            var $form = $(this).closest('form');
-            if ($form.length) {
-                $form[0].submit();
-            }
-        });
-
-        // Auto-submit the per-page / filter preferences form.
-        $(document).on('change', 'select[data-mod-openbook="optionspref-autosubmit"]', function() {
-            $('form.optionspref').first().submit();
-        });
-
-        // "Select all/none" master checkbox toggles every .userselection checkbox.
-        $(document).on('click change', '#selectallnone', function() {
-            $('.userselection').prop('checked', this.checked);
-        });
-
-        // Submit buttons that require a confirmation prompt — uses Moodle's core/notification
-        // modal instead of window.confirm() (ESLint no-alert) and is CSP-friendly.
-        $(document).on('click', '[data-mod-openbook="confirm-submit"]', function(e) {
-            var button = this;
-            if ($(button).data('mod-openbook-confirmed') === true) {
-                // Already confirmed — let the form submit proceed.
-                return true;
-            }
-            var message = $(button).data('mod-openbook-confirm-message') || '';
-            if (!message) {
-                return true;
-            }
-            e.preventDefault();
-            Str.get_strings([
-                {key: 'confirm', component: 'moodle'},
-                {key: 'yes', component: 'moodle'},
-                {key: 'no', component: 'moodle'},
-            ]).then(function(strings) {
-                return Notification.confirm(strings[0], message, strings[1], strings[2], function() {
-                    $(button).data('mod-openbook-confirmed', true);
-                    $(button).closest('form').trigger('submit');
-                });
-            }).catch(Notification.exception);
-            return false;
         });
         if (this.attemptstable.length > 0) {
             var $rows = this.attemptstable.children('tbody').children('tr');

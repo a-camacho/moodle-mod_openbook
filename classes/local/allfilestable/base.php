@@ -241,9 +241,9 @@ class base extends \table_sql {
      * @return array Array with column names, column headers and help icons
      */
     protected function get_columns() {
-        // The toggle behaviour is attached by amd/src/filesform.js via the id.
         $selectallnone = \html_writer::checkbox('selectallnone', false, false, '', [
                 'id' => 'selectallnone',
+                'onClick' => 'toggle_userselection()',
         ]);
 
         $columns = ['selection', 'fullname'];
