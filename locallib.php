@@ -1161,12 +1161,15 @@ class openbook {
         $haspermission = false;
 
         if ($filepermissions) {
-            if ($userid != 0) {
-                // Everyone is allowed to view their own files.
-                $haspermission = true;
-            }
+            $isowner = ($userid != 0 && (int)$filepermissions->userid === (int)$userid);
 
-            /* TODO: Define if user is not uploader, and files are personal, no permission */
+            if ($isowner) {
+                // Caller owns this file.
+                $haspermission = true;
+            } else if ($this->get_instance()->filesarepersonal == 1) {
+                // Non-owners can never see a personal file, regardless of approval state.
+                return false;
+            }
 
             $obtainteacherapproval = $this->get_instance()->obtainteacherapproval;
             $obtainstudentapproval = $this->get_instance()->obtainstudentapproval;
@@ -1331,24 +1334,37 @@ class openbook {
         $conditions['fileid'] = $fileid;
         $record = $DB->get_record('openbook_file', $conditions);
 
+        // The requested file id must be registered in this openbook instance.
+        if (!$record) {
+            throw new \moodle_exception('invalidfileid', 'mod_openbook');
+        }
+
+        // The stored file must actually live in this module's context and attachment area.
+        $fs = get_file_storage();
+        $file = $fs->get_file_by_id($fileid);
+        if (!$file
+                || $file->is_directory()
+                || (int)$file->get_contextid() !== (int)$this->get_context()->id
+                || $file->get_component() !== 'mod_openbook'
+                || $file->get_filearea() !== 'attachment') {
+            throw new \moodle_exception('invalidfileid', 'mod_openbook');
+        }
+
         $allowed = false;
 
         if (has_capability('mod/openbook:approve', $this->get_context())) {
             // Teachers has to see the files to know if they can allow them.
             $allowed = true;
         } else if ($this->has_filepermission($fileid, $USER->id)) {
-            // File is publicly viewable or is owned by the user.
+            // File is owned by the caller or fully approved per the instance settings.
             $allowed = true;
         }
 
         if ($allowed) {
-            $fs = get_file_storage();
-            $file = $fs->get_file_by_id($fileid);
-            $itemid = $file->get_itemid();
             send_file($file, $file->get_filename(), null, 0, false, true, $file->get_mimetype(), false);
             die();
         } else {
-            throw new \moodle_exception('You are not allowed to see this file', 'mod_openbook');
+            throw new \moodle_exception('nopermissiontoshow', 'error');
         }
     }
 

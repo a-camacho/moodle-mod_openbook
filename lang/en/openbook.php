@@ -358,3 +358,5 @@ $string['calendarapprovalend'] = '{$a} closes for file approvals';
 
 $string['answered'] = 'Answered';
 $string['notanswered'] = 'Not answered';
+
+$string['invalidfileid'] = 'The requested file id does not belong to this activity.';
