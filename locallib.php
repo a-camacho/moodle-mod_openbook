@@ -1285,11 +1285,12 @@ class openbook {
         // The stored file must actually live in this module's context and attachment area.
         $fs = get_file_storage();
         $file = $fs->get_file_by_id($fileid);
-        if (!$file
+        $invalid = !$file
                 || $file->is_directory()
                 || (int)$file->get_contextid() !== (int)$this->get_context()->id
                 || $file->get_component() !== 'mod_openbook'
-                || $file->get_filearea() !== 'attachment') {
+                || $file->get_filearea() !== 'attachment';
+        if ($invalid) {
             throw new \moodle_exception('invalidfileid', 'mod_openbook');
         }
 
@@ -1506,12 +1507,11 @@ class openbook {
                 throw new Exception("Coding exception while sending notification: " . $e->getMessage());
             }
 
+            $scope = ['fileid' => $fileid, 'openbook' => $this->instance->id];
             if ($teacherapprove || $teacherreject) {
-                $DB->set_field('openbook_file', 'teacherapproval', $newteacherapproval,
-                        ['fileid' => $fileid, 'openbook' => $this->instance->id]);
+                $DB->set_field('openbook_file', 'teacherapproval', $newteacherapproval, $scope);
             } else { // Reset student approval.
-                $DB->set_field('openbook_file', 'studentapproval', 0,
-                        ['fileid' => $fileid, 'openbook' => $this->instance->id]);
+                $DB->set_field('openbook_file', 'studentapproval', 0, $scope);
             }
 
             if ($this->instance->notifystatuschange != 0) {
