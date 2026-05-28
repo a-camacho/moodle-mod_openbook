@@ -154,11 +154,18 @@ function openbook_delete_instance($id) {
         return false;
     }
 
-    $fs = get_file_storage();
-
-    $fs->delete_area_files($openbook->id, 'mod_openbook', 'attachment');
+    // Resolve the module context so we can delete file areas correctly.
+    // delete_area_files() expects a context id, not the activity instance id.
+    $cm = get_coursemodule_from_instance('openbook', $openbook->id, 0, false, IGNORE_MISSING);
+    if ($cm) {
+        $context = context_module::instance($cm->id);
+        $fs = get_file_storage();
+        $fs->delete_area_files($context->id, 'mod_openbook', 'attachment');
+        $fs->delete_area_files($context->id, 'mod_openbook', 'commonteacherfiles');
+    }
 
     $DB->delete_records('openbook_file', ['openbook' => $openbook->id]);
+    $DB->delete_records('openbook_overrides', ['openbook' => $openbook->id]);
 
     $DB->delete_records('event', ['modulename' => 'openbook', 'instance' => $openbook->id]);
 
