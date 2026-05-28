@@ -50,6 +50,34 @@ define(['jquery', 'core/log'], function($, log) {
                 }, 100);
             }
         });
+
+        // Auto-submit selects tagged by mod_openbook_allfiles_form (group filter, etc.).
+        $(document).on('change', 'select[data-mod-openbook="autosubmit-select"]', function() {
+            var $form = $(this).closest('form');
+            if ($form.length) {
+                $form[0].submit();
+            }
+        });
+
+        // Auto-submit the per-page / filter preferences form.
+        $(document).on('change', 'select[data-mod-openbook="optionspref-autosubmit"]', function() {
+            $('form.optionspref').first().submit();
+        });
+
+        // "Select all/none" master checkbox toggles every .userselection checkbox.
+        $(document).on('click change', '#selectallnone', function() {
+            $('.userselection').prop('checked', this.checked);
+        });
+
+        // Submit buttons that require a confirm() prompt.
+        $(document).on('click', '[data-mod-openbook="confirm-submit"]', function(e) {
+            var message = $(this).data('mod-openbook-confirm-message') || '';
+            if (message && !window.confirm(message)) {
+                e.preventDefault();
+                return false;
+            }
+            return true;
+        });
         if (this.attemptstable.length > 0) {
             var $rows = this.attemptstable.children('tbody').children('tr');
             var needsapprovalcount = 0;
