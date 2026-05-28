@@ -43,7 +43,6 @@ require_once($CFG->dirroot . '/mod/openbook/locallib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class access_control_test extends base {
-
     /**
      * Owner can be detected through has_filepermission() regardless of approval state.
      *
@@ -57,7 +56,7 @@ final class access_control_test extends base {
         ]);
         $owner = $this->students[0];
 
-        $fileid = $this->create_upload($owner->id, $openbook->get_instance()->id, 'owned.txt', 'hello');
+        $this->create_upload($owner->id, $openbook->get_instance()->id, 'owned.txt', 'hello');
         $fileid = $this->get_stored_fileid_for($openbook->get_instance()->id, $owner->id, 'owned.txt');
 
         self::assertTrue($openbook->has_filepermission($fileid, $owner->id));
@@ -123,8 +122,8 @@ final class access_control_test extends base {
 
         $this->create_upload($owner->id, $openbook->get_instance()->id, 'approved.txt', 'shared');
         $fileid = $this->get_stored_fileid_for($openbook->get_instance()->id, $owner->id, 'approved.txt');
-        $DB->set_field('openbook_file', 'teacherapproval', 1,
-                ['openbook' => $openbook->get_instance()->id, 'fileid' => $fileid]);
+        $scope = ['openbook' => $openbook->get_instance()->id, 'fileid' => $fileid];
+        $DB->set_field('openbook_file', 'teacherapproval', 1, $scope);
 
         self::assertTrue($openbook->has_filepermission($fileid, $other->id));
         // And the visibility-only path (userid=0) also succeeds.
@@ -137,19 +136,25 @@ final class access_control_test extends base {
      * @covers \openbook::download_file
      */
     public function test_download_file_rejects_cross_instance_fileid(): void {
-        $openbookA = $this->create_instance(['filesarepersonal' => 0,
-                'obtainteacherapproval' => 0, 'obtainstudentapproval' => 0]);
-        $openbookB = $this->create_instance(['filesarepersonal' => 0,
-                'obtainteacherapproval' => 0, 'obtainstudentapproval' => 0]);
+        $openbooka = $this->create_instance([
+            'filesarepersonal' => 0,
+            'obtainteacherapproval' => 0,
+            'obtainstudentapproval' => 0,
+        ]);
+        $openbookb = $this->create_instance([
+            'filesarepersonal' => 0,
+            'obtainteacherapproval' => 0,
+            'obtainstudentapproval' => 0,
+        ]);
 
         $student = $this->students[0];
-        $this->create_upload($student->id, $openbookB->get_instance()->id, 'in-b.txt', 'B-content');
-        $bfileid = $this->get_stored_fileid_for($openbookB->get_instance()->id, $student->id, 'in-b.txt');
+        $this->create_upload($student->id, $openbookb->get_instance()->id, 'in-b.txt', 'B-content');
+        $bfileid = $this->get_stored_fileid_for($openbookb->get_instance()->id, $student->id, 'in-b.txt');
 
         // Student tries to fetch B's file via instance A's download_file().
         self::setUser($student);
         $this->expectException(moodle_exception::class);
-        $openbookA->download_file($bfileid);
+        $openbooka->download_file($bfileid);
     }
 
     /**
@@ -159,18 +164,24 @@ final class access_control_test extends base {
      * @covers \openbook::download_file
      */
     public function test_download_file_rejects_cross_instance_for_teacher(): void {
-        $openbookA = $this->create_instance(['filesarepersonal' => 0,
-                'obtainteacherapproval' => 0, 'obtainstudentapproval' => 0]);
-        $openbookB = $this->create_instance(['filesarepersonal' => 0,
-                'obtainteacherapproval' => 0, 'obtainstudentapproval' => 0]);
+        $openbooka = $this->create_instance([
+            'filesarepersonal' => 0,
+            'obtainteacherapproval' => 0,
+            'obtainstudentapproval' => 0,
+        ]);
+        $openbookb = $this->create_instance([
+            'filesarepersonal' => 0,
+            'obtainteacherapproval' => 0,
+            'obtainstudentapproval' => 0,
+        ]);
 
         $student = $this->students[0];
-        $this->create_upload($student->id, $openbookB->get_instance()->id, 'in-b.txt', 'B-content');
-        $bfileid = $this->get_stored_fileid_for($openbookB->get_instance()->id, $student->id, 'in-b.txt');
+        $this->create_upload($student->id, $openbookb->get_instance()->id, 'in-b.txt', 'B-content');
+        $bfileid = $this->get_stored_fileid_for($openbookb->get_instance()->id, $student->id, 'in-b.txt');
 
         self::setUser($this->editingteachers[0]);
         $this->expectException(moodle_exception::class);
-        $openbookA->download_file($bfileid);
+        $openbooka->download_file($bfileid);
     }
 
     /**
@@ -181,30 +192,38 @@ final class access_control_test extends base {
     public function test_update_files_teacherapproval_is_instance_scoped(): void {
         global $DB;
 
-        $openbookA = $this->create_instance(['filesarepersonal' => 0,
-                'obtainteacherapproval' => 1, 'obtainstudentapproval' => 0]);
-        $openbookB = $this->create_instance(['filesarepersonal' => 0,
-                'obtainteacherapproval' => 1, 'obtainstudentapproval' => 0]);
+        $openbooka = $this->create_instance([
+            'filesarepersonal' => 0,
+            'obtainteacherapproval' => 1,
+            'obtainstudentapproval' => 0,
+        ]);
+        $openbookb = $this->create_instance([
+            'filesarepersonal' => 0,
+            'obtainteacherapproval' => 1,
+            'obtainstudentapproval' => 0,
+        ]);
 
-        $studentA = $this->students[0];
-        $studentB = $this->students[1];
-        $this->create_upload($studentA->id, $openbookA->get_instance()->id, 'a.txt', 'A');
-        $this->create_upload($studentB->id, $openbookB->get_instance()->id, 'b.txt', 'B');
+        $studenta = $this->students[0];
+        $studentb = $this->students[1];
+        $this->create_upload($studenta->id, $openbooka->get_instance()->id, 'a.txt', 'A');
+        $this->create_upload($studentb->id, $openbookb->get_instance()->id, 'b.txt', 'B');
 
-        $afileid = $this->get_stored_fileid_for($openbookA->get_instance()->id, $studentA->id, 'a.txt');
-        $bfileid = $this->get_stored_fileid_for($openbookB->get_instance()->id, $studentB->id, 'b.txt');
+        $afileid = $this->get_stored_fileid_for($openbooka->get_instance()->id, $studenta->id, 'a.txt');
+        $bfileid = $this->get_stored_fileid_for($openbookb->get_instance()->id, $studentb->id, 'b.txt');
+
+        $bscope = ['openbook' => $openbookb->get_instance()->id, 'fileid' => $bfileid];
+        $beforeb = (int)$DB->get_field('openbook_file', 'teacherapproval', $bscope);
 
         self::setUser($this->editingteachers[0]);
         // Teacher in instance A submits a payload mixing A's own file with B's file id.
-        $openbookA->update_files_teacherapproval([$afileid => '1', $bfileid => '1']);
+        $openbooka->update_files_teacherapproval([$afileid => '1', $bfileid => '1']);
 
-        $afterA = (int)$DB->get_field('openbook_file', 'teacherapproval',
-                ['openbook' => $openbookA->get_instance()->id, 'fileid' => $afileid]);
-        $afterB = (int)$DB->get_field('openbook_file', 'teacherapproval',
-                ['openbook' => $openbookB->get_instance()->id, 'fileid' => $bfileid]);
+        $ascope = ['openbook' => $openbooka->get_instance()->id, 'fileid' => $afileid];
+        $aftera = (int)$DB->get_field('openbook_file', 'teacherapproval', $ascope);
+        $afterb = (int)$DB->get_field('openbook_file', 'teacherapproval', $bscope);
 
-        self::assertSame(1, $afterA, 'A\'s own file was approved as expected.');
-        self::assertSame(0, $afterB, 'B\'s file must NOT be touched by A\'s approval form.');
+        self::assertSame(1, $aftera, 'A\'s own file was approved as expected.');
+        self::assertSame($beforeb, $afterb, 'B\'s file must NOT be touched by A\'s approval form.');
     }
 
     /**

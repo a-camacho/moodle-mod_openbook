@@ -26,7 +26,7 @@
 /**
  * @module mod_openbook/filesform
  */
-define(['jquery', 'core/log'], function($, log) {
+define(['jquery', 'core/log', 'core/notification', 'core/str'], function($, log, Notification, Str) {
 
     /**
      * @constructor
@@ -69,14 +69,30 @@ define(['jquery', 'core/log'], function($, log) {
             $('.userselection').prop('checked', this.checked);
         });
 
-        // Submit buttons that require a confirm() prompt.
+        // Submit buttons that require a confirmation prompt — uses Moodle's core/notification
+        // modal instead of window.confirm() (ESLint no-alert) and is CSP-friendly.
         $(document).on('click', '[data-mod-openbook="confirm-submit"]', function(e) {
-            var message = $(this).data('mod-openbook-confirm-message') || '';
-            if (message && !window.confirm(message)) {
-                e.preventDefault();
-                return false;
+            var button = this;
+            if ($(button).data('mod-openbook-confirmed') === true) {
+                // Already confirmed — let the form submit proceed.
+                return true;
             }
-            return true;
+            var message = $(button).data('mod-openbook-confirm-message') || '';
+            if (!message) {
+                return true;
+            }
+            e.preventDefault();
+            Str.get_strings([
+                {key: 'confirm', component: 'moodle'},
+                {key: 'yes', component: 'moodle'},
+                {key: 'no', component: 'moodle'},
+            ]).then(function(strings) {
+                return Notification.confirm(strings[0], message, strings[1], strings[2], function() {
+                    $(button).data('mod-openbook-confirmed', true);
+                    $(button).closest('form').trigger('submit');
+                });
+            }).catch(Notification.exception);
+            return false;
         });
         if (this.attemptstable.length > 0) {
             var $rows = this.attemptstable.children('tbody').children('tr');
