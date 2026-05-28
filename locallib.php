@@ -2264,14 +2264,15 @@ class openbook {
             $overrides = $DB->get_records('openbook_overrides', ['openbook' => $this->instance->id]);
         } else {
             $userfieldssql = $userfieldsapi->get_sql('u', true, '', 'userid', false);
-            $overrides = $DB->get_records_sql("
-                    SELECT o.*, {$userfieldssql->selects}
-                      FROM {openbook_overrides} o
-                      JOIN {user} u ON o.userid = u.id
-                           {$userfieldssql->joins}
-                     WHERE o.openbook = :openbookid
-                     ORDER BY u.lastname, u.firstname",
-                    array_merge(['openbookid' => $this->instance->id], (array) $userfieldssql->params));
+            $overrides = $DB->get_records_sql(
+                "SELECT o.*, {$userfieldssql->selects}
+                   FROM {openbook_overrides} o
+                   JOIN {user} u ON o.userid = u.id
+                        {$userfieldssql->joins}
+                  WHERE o.openbook = :openbookid
+                  ORDER BY u.lastname, u.firstname",
+                array_merge(['openbookid' => $this->instance->id], (array) $userfieldssql->params)
+            );
         }
         $context->overridesempty = count($overrides) == 0;
         $context->overrides = [];
