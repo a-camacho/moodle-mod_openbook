@@ -846,9 +846,9 @@ class openbook {
 
         $mform = new MoodleQuickForm('optionspref', 'post', $formaction, '', ['class' => 'optionspref']);
 
-        $attributes = [];
-
-        $attributes['onChange'] = "document.querySelector('form.optionspref').submit()";
+        // The submit-on-change behaviour is attached by amd/src/filesform.js
+        // via the data-mod-openbook="optionspref-autosubmit" attribute.
+        $attributes = ['data-mod-openbook' => 'optionspref-autosubmit'];
 
         $mform->addElement('hidden', 'updatepref');
         $mform->setDefault('updatepref', 1);
@@ -1046,23 +1046,9 @@ class openbook {
             $output .= html_writer::end_div();
         }
 
-        // Select all/none.
-        $output .= html_writer::start_tag('div', ['class' => 'checkboxcontroller']) . "
-            <script type=\"text/javascript\">
-                function toggle_userselection() {
-                    var checkboxes = document.getElementsByClassName('userselection');
-                    var sel = document.getElementById('selectallnone');
-
-                    if (checkboxes.length > 0) {
-                        checkboxes[0].checked = sel.checked;
-
-                        for(var i = 1; i < checkboxes.length;i++) {
-                            checkboxes[i].checked = checkboxes[0].checked;
-                        }
-                    }
-                }
-            </script>";
-
+        // Select all/none. The toggle is wired up by amd/src/filesform.js
+        // (delegated change listener on #selectallnone).
+        $output .= html_writer::start_tag('div', ['class' => 'checkboxcontroller']);
         $output .= html_writer::end_div();
 
         $output .= html_writer::end_div();
@@ -1079,9 +1065,9 @@ class openbook {
         );
         $mform = new MoodleQuickForm('optionspref', 'post', $formaction, '', ['class' => 'optionspref']);
 
-        $attributes = [];
-
-        $attributes['onChange'] = "document.querySelector('form.optionspref').submit()";
+        // The submit-on-change behaviour is attached by amd/src/filesform.js
+        // via the data-mod-openbook="optionspref-autosubmit" attribute.
+        $attributes = ['data-mod-openbook' => 'optionspref-autosubmit'];
 
         $mform->addElement('hidden', 'updatepref');
         $mform->setDefault('updatepref', 1);

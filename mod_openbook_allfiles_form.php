@@ -47,7 +47,8 @@ class mod_openbook_allfiles_form extends moodleform {
     protected function definition() {
         $mform = $this->_form;
         $mform->disable_form_change_checker();
-        $generatedform = str_replace('<select', '<select onchange=\'this.form.submit()\'', $this->_customdata['form']);
+        // Tag the select(s) inside the rendered form so the AMD module can attach an onchange listener.
+        $generatedform = str_replace('<select', '<select data-mod-openbook="autosubmit-select"', $this->_customdata['form']);
         $mform->addElement('html', $generatedform);
     }
 }
