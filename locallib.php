@@ -2233,10 +2233,6 @@ class openbook {
 
         $context->newoverrideurl = (new moodle_url($editurl, ['overrideid' => -1]))->out(false);
 
-        $overrides = $DB->get_records('openbook_overrides', ['openbook' => $this->instance->id]);
-        $context->overridesempty = count($overrides) == 0;
-        $context->overrides = [];
-
         // phpcs:disable moodle.Commenting.TodoComment
         // TODO: this has to be done in https://github.com/a-camacho/moodle-mod_openbook/issues/11
         $isgroupmode = false;
@@ -2250,6 +2246,36 @@ class openbook {
             $context->addoverridetitle = get_string('override:add:user', 'mod_openbook');
         }
 
+        // Identity fields driven by the site's "showuseridentity" policy — same mechanic as mod_quiz overrides.
+        $extrauserfields = [];
+        $context->identityheaders = [];
+        if (!$isgroupmode) {
+            $userfieldsapi = \core_user\fields::for_identity($this->context)->with_name()->with_userpic();
+            $extrauserfields = $userfieldsapi->get_required_fields([\core_user\fields::PURPOSE_IDENTITY]);
+            foreach ($extrauserfields as $field) {
+                $context->identityheaders[] = [
+                    'colclass' => 'col' . $field,
+                    'header'   => \core_user\fields::get_display_name($field),
+                ];
+            }
+        }
+
+        if ($isgroupmode) {
+            $overrides = $DB->get_records('openbook_overrides', ['openbook' => $this->instance->id]);
+        } else {
+            $userfieldssql = $userfieldsapi->get_sql('u', true, '', 'userid', false);
+            $overrides = $DB->get_records_sql("
+                    SELECT o.*, {$userfieldssql->selects}
+                      FROM {openbook_overrides} o
+                      JOIN {user} u ON o.userid = u.id
+                           {$userfieldssql->joins}
+                     WHERE o.openbook = :openbookid
+                     ORDER BY u.lastname, u.firstname",
+                    array_merge(['openbookid' => $this->instance->id], (array) $userfieldssql->params));
+        }
+        $context->overridesempty = count($overrides) == 0;
+        $context->overrides = [];
+
         $userurl = new moodle_url('/user/view.php', ['course' => $this->course->id]);
 
         if (!empty($overrides)) {
@@ -2257,11 +2283,15 @@ class openbook {
                 if ($isgroupmode) {
                     $group = $DB->get_record('groups', ['id' => $override->groupid]);
                     $override->fullname = $group->name;
+                    $override->identityvalues = [];
                 } else {
-                    $user = $DB->get_record('user', ['id' => $override->userid]);
-                    $override->fullname = fullname($user);
+                    $override->fullname = fullname($override);
                     $userurl->param('id', $override->userid);
                     $override->userurl = $userurl->out(false);
+                    $override->identityvalues = [];
+                    foreach ($extrauserfields as $field) {
+                        $override->identityvalues[] = ['value' => s($override->$field)];
+                    }
                 }
                 $override->editurl = (new moodle_url($editurl, ['overrideid' => $override->id]))->out(false);
                 $override->deleteurl = (new moodle_url($deleteurl, ['overrideid' => $override->id]))->out(false);
