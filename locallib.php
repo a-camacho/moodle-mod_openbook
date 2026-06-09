@@ -1511,6 +1511,10 @@ class openbook {
                 $dataforlog->reluser = 0;
             }
             $dataforlog->fileid = $fileid;
+            // Record the new status so the log event description is complete (matches the
+            // student self-approval path in view.php); otherwise the log report later
+            // fails with "Undefined array key 'approval'".
+            $dataforlog->approval = $logstatus;
 
             try {
                 \mod_openbook\event\openbook_approval_changed::approval_changed(
