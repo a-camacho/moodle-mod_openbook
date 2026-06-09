@@ -25,7 +25,6 @@
  */
 
 namespace mod_openbook\event;
-use phpDocumentor\Reflection\Types\Object_;
 
 /**
  * A file was uploaded for this event

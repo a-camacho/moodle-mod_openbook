@@ -275,7 +275,6 @@ class base extends \html_table {
 
         $contextid = $this->openbook->get_context()->id;
         $filearea = 'attachment';
-        // User ID for regular instances, group id for assignments with teamsubmission!
         $itemid = $USER->id;
 
         $files = $this->fs->get_area_files($contextid, 'mod_openbook', $filearea, $itemid, 'timemodified', false);

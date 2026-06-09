@@ -70,10 +70,14 @@ class openbook_approval_changed extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "Approval for file with id '" . $this->data['other']['fileid']
-            . "' in openbook with id '" . $this->data['other']['openbook']
-            . "' has been changed to '" . $this->data['other']['approval']
-            . "' by the user with id '" . $this->data['other']['userid'] . "'.";
+        // Use null coalescing so historical log rows that were stored without every key
+        // (e.g. teacher-approval events that never recorded 'approval') still render
+        // instead of raising "Undefined array key" and breaking the whole log report.
+        $other = $this->data['other'] ?? [];
+        return "Approval for file with id '" . ($other['fileid'] ?? '')
+            . "' in openbook with id '" . ($other['openbook'] ?? '')
+            . "' has been changed to '" . ($other['approval'] ?? '')
+            . "' by the user with id '" . ($other['userid'] ?? '') . "'.";
     }
 
     /**

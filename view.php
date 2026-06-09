@@ -84,17 +84,20 @@ if ($savevisibility) {
     $openbook->update_files_teacherapproval($files);
     openbook::send_all_pending_notifications();
     redirect($url);
-} else if ($action == 'zip') {
-    $openbook->download_zip(true);
-} else if ($action == 'zipusers') {
-    $users = optional_param_array('selecteduser', false, PARAM_INT);
-    if (!$users) {
-        // No users selected.
-        header('Location: view.php?id=' . $id);
-        die();
+} else if ($action == 'zip' || $action == 'zipusers') {
+    require_capability('mod/openbook:approve', $context);
+    require_sesskey();
+
+    if ($action == 'zip') {
+        $openbook->download_zip(true);
+    } else {
+        $users = optional_param_array('selecteduser', false, PARAM_INT);
+        if (!$users) {
+            // No users selected.
+            redirect($url);
+        }
+        $openbook->download_zip(array_keys($users));
     }
-    $users = array_keys($users);
-    $openbook->download_zip($users);
 } else if ($action == 'grantextension') {
     require_capability('mod/openbook:grantextension', $context);
     require_sesskey();

@@ -75,8 +75,6 @@ class openbook {
     protected $mode;
     /** @var bool allfilespage */
     protected $allfilespage = false;
-    /** @var bool teamsubmission */
-    protected $teamsubmission = false;
     /** @var [] pendingnotifications */
     protected static $pendingnotifications = [];
 
@@ -1161,12 +1159,15 @@ class openbook {
         $haspermission = false;
 
         if ($filepermissions) {
-            if ($userid != 0) {
-                // Everyone is allowed to view their own files.
-                $haspermission = true;
-            }
+            $isowner = ($userid != 0 && (int)$filepermissions->userid === (int)$userid);
 
-            /* TODO: Define if user is not uploader, and files are personal, no permission */
+            if ($isowner) {
+                // Caller owns this file.
+                $haspermission = true;
+            } else if ($this->get_instance()->filesarepersonal == 1) {
+                // Non-owners can never see a personal file, regardless of approval state.
+                return false;
+            }
 
             $obtainteacherapproval = $this->get_instance()->obtainteacherapproval;
             $obtainstudentapproval = $this->get_instance()->obtainstudentapproval;
@@ -1278,47 +1279,6 @@ class openbook {
     }
 
     /**
-     * Gets the group members for the specified group. Or users without membership if groupid is 0!
-     *
-     * @param int $groupid
-     * @return stdClass[] Group member's user records.
-     */
-    public function get_submissionmembers($groupid) {
-        global $DB;
-        static $availabilityinfo = null;
-        if (is_null($availabilityinfo)) {
-            $modinfo = get_fast_modinfo($this->course->id);
-            $availabilityinfo = new \core_availability\info_module($modinfo->get_cm($this->coursemodule->id));
-        }
-
-        if (!empty($groupid)) {
-            $groupmembers = groups_get_members($groupid);
-        } else if (!$DB->get_field('assign', 'preventsubmissionnotingroup', ['id' => $this->get_instance()->importfrom])) {
-            // If groupid == 0, we get all users without group!
-            $groupmembers = [];
-            $assigncm = get_coursemodule_from_instance('assign', $this->instance->importfrom);
-            $context = context_module::instance($assigncm->id);
-            $users = get_enrolled_users($context, "mod/assign:submit", 0);
-            if (!empty($users)) {
-                foreach ($users as $user) {
-                    $ugrps = groups_get_user_groups($this->instance->course, $user->id);
-                    if (!count($ugrps[0])) {
-                        $groupmembers[$user->id] = $user;
-                    }
-                }
-            }
-        } else {
-            $groupmembers = [];
-        }
-
-        if ($this->get_instance()->availabilityrestriction) {
-            $groupmembers = $availabilityinfo->filter_user_list($groupmembers);
-        }
-
-        return $groupmembers;
-    }
-
-    /**
      * Download a single file, returns file content and terminated script.
      *
      * @param int $fileid ID of the submitted file in filespace
@@ -1331,24 +1291,38 @@ class openbook {
         $conditions['fileid'] = $fileid;
         $record = $DB->get_record('openbook_file', $conditions);
 
+        // The requested file id must be registered in this openbook instance.
+        if (!$record) {
+            throw new \moodle_exception('invalidfileid', 'mod_openbook');
+        }
+
+        // The stored file must actually live in this module's context and attachment area.
+        $fs = get_file_storage();
+        $file = $fs->get_file_by_id($fileid);
+        $invalid = !$file
+                || $file->is_directory()
+                || (int)$file->get_contextid() !== (int)$this->get_context()->id
+                || $file->get_component() !== 'mod_openbook'
+                || $file->get_filearea() !== 'attachment';
+        if ($invalid) {
+            throw new \moodle_exception('invalidfileid', 'mod_openbook');
+        }
+
         $allowed = false;
 
         if (has_capability('mod/openbook:approve', $this->get_context())) {
             // Teachers has to see the files to know if they can allow them.
             $allowed = true;
         } else if ($this->has_filepermission($fileid, $USER->id)) {
-            // File is publicly viewable or is owned by the user.
+            // File is owned by the caller or fully approved per the instance settings.
             $allowed = true;
         }
 
         if ($allowed) {
-            $fs = get_file_storage();
-            $file = $fs->get_file_by_id($fileid);
-            $itemid = $file->get_itemid();
             send_file($file, $file->get_filename(), null, 0, false, true, $file->get_mimetype(), false);
             die();
         } else {
-            throw new \moodle_exception('You are not allowed to see this file', 'mod_openbook');
+            throw new \moodle_exception('nopermissiontoshow', 'error');
         }
     }
 
@@ -1364,11 +1338,6 @@ class openbook {
         $cm = $this->get_coursemodule();
 
         $canapprove = has_capability('mod/openbook:approve', $this->get_context());
-        if ($this->get_instance()->importfrom == -1) {
-            $teamsubmission = false;
-        } else {
-            $teamsubmission = $this->teamsubmission;
-        }
 
         $conditions = [];
         $conditions['openbook'] = $this->get_instance()->id;
@@ -1383,11 +1352,7 @@ class openbook {
             $groupname = $DB->get_field('groups', 'name', ['id' => $currentgroup]) . '-';
         }
 
-        if (!$teamsubmission) {
-            $uploaders = $this->get_users($uploaders);
-        } else {
-            $uploaders = $this->get_groups(0, $uploaders);
-        }
+        $uploaders = $this->get_users($uploaders);
 
         $filename = str_replace(' ', '_', clean_filename($this->course->shortname . '-' .
                 $this->get_instance()->name . '-' . $groupname . $this->get_instance()->id . '.zip')); // Name of new zip file.
@@ -1397,24 +1362,15 @@ class openbook {
         $userfields['username'] = 'username';
         $userfields = implode(', ', $userfields);
 
-        // Get all files from each user/group.
+        // Get all files from each user.
         foreach ($uploaders as $uploader) {
             $conditions['userid'] = $uploader;
             $records = $DB->get_records('openbook_file', $conditions);
 
-            if (!$teamsubmission) {
-                // Get user firstname/lastname.
-                $auser = $DB->get_record('user', ['id' => $uploader], $userfields);
-                $itemname = fullname($auser);
-                $itemunique = $uploader;
-            } else {
-                if (empty($uploader)) {
-                    $itemname = get_string('defaultteam', 'assign');
-                } else {
-                    $itemname = $DB->get_field('groups', 'name', ['id' => $uploader]);
-                }
-                $itemunique = '';
-            }
+            // Get user firstname/lastname.
+            $auser = $DB->get_record('user', ['id' => $uploader], $userfields);
+            $itemname = fullname($auser);
+            $itemunique = $uploader;
 
             foreach ($records as $record) {
                 if ($canapprove || $this->has_filepermission($record->fileid, $USER->id)) {
@@ -1494,9 +1450,14 @@ class openbook {
         foreach ($files as $fileid => $newfileaction) {
             $x = $DB->get_record(
                 'openbook_file',
-                ['fileid' => $fileid],
+                ['fileid' => $fileid, 'openbook' => $this->instance->id],
                 $fields = "fileid,userid,teacherapproval,id,studentapproval,filename"
             );
+
+            // Silently skip file ids that do not belong to this openbook instance.
+            if (!$x) {
+                continue;
+            }
 
             $oldteacherapproval = $x->teacherapproval;
             $oldstudentapproval = $x->studentapproval;
@@ -1550,6 +1511,10 @@ class openbook {
                 $dataforlog->reluser = 0;
             }
             $dataforlog->fileid = $fileid;
+            // Record the new status so the log event description is complete (matches the
+            // student self-approval path in view.php); otherwise the log report later
+            // fails with "Undefined array key 'approval'".
+            $dataforlog->approval = $logstatus;
 
             try {
                 \mod_openbook\event\openbook_approval_changed::approval_changed(
@@ -1560,10 +1525,11 @@ class openbook {
                 throw new Exception("Coding exception while sending notification: " . $e->getMessage());
             }
 
+            $scope = ['fileid' => $fileid, 'openbook' => $this->instance->id];
             if ($teacherapprove || $teacherreject) {
-                $DB->set_field('openbook_file', 'teacherapproval', $newteacherapproval, ['fileid' => $fileid]);
+                $DB->set_field('openbook_file', 'teacherapproval', $newteacherapproval, $scope);
             } else { // Reset student approval.
-                $DB->set_field('openbook_file', 'studentapproval', 0, ['fileid' => $fileid]);
+                $DB->set_field('openbook_file', 'studentapproval', 0, $scope);
             }
 
             if ($this->instance->notifystatuschange != 0) {
