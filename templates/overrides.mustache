@@ -26,11 +26,19 @@
         "newoverrideurl": "https://example.com/mod/openbook/overrides_edit.php?add=1",
         "addoverridetitle": "Add new override",
         "usergroupcoltitle": "User / Group",
+        "identityheaders": [
+            { "colclass": "colemail", "header": "Email address" },
+            { "colclass": "colidnumber", "header": "ID number" }
+        ],
         "overridesempty": false,
         "overrides": [
             {
                 "userurl": "https://example.com/user/view.php?id=2",
                 "fullname": "Alice Dupont",
+                "identityvalues": [
+                    { "value": "alice@example.com" },
+                    { "value": "A12345" }
+                ],
                 "submissionoverride": "Submission deadline extended by 3 days",
                 "approvaloverride": "Requires approval from supervisor",
                 "editurl": "https://example.com/mod/openbook/overrides_edit.php?id=12",
@@ -39,6 +47,7 @@
             {
                 "userurl": "https://example.com/group/view.php?id=5",
                 "fullname": "Group A",
+                "identityvalues": [],
                 "submissionoverride": "Extended deadline",
                 "approvaloverride": "Auto-approved",
                 "editurl": "https://example.com/mod/openbook/overrides_edit.php?id=13",
@@ -53,6 +62,9 @@
         <thead>
             <tr>
                 <th>{{usergroupcoltitle}}</th>
+                {{#identityheaders}}
+                    <th class="{{colclass}}">{{header}}</th>
+                {{/identityheaders}}
                 <th>{{#str}}overrides,openbook{{/str}}</th>
                 <th>{{#str}}action{{/str}}</th>
             </tr>
@@ -67,6 +79,9 @@
                 {{#overrides}}
                     <tr>
                         <td>{{#userurl}}<a href="{{.}}" title="{{fullname}}">{{/userurl}}{{fullname}}{{#userurl}}</a>{{/userurl}}</td>
+                        {{#identityvalues}}
+                            <td>{{value}}</td>
+                        {{/identityvalues}}
                         <td><div class="">{{submissionoverride}}</div><div class="">{{approvaloverride}}</div>
                             <div class="">{{securewindowoverride}}</div></td>
                         <td><a href="{{editurl}}">{{#pix}}t/edit{{/pix}}</a><a href="{{deleteurl}}">{{#pix}}t/delete{{/pix}}</a></td>

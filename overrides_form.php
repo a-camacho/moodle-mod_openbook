@@ -56,12 +56,18 @@ class openbook_overrides_form extends moodleform {
         $mform->setType('groupid', PARAM_INT);
         $mform->setDefault('groupid', 0);
 
+        // Identity fields driven by the site's "showuseridentity" policy — same mechanic as mod_quiz overrides.
+        // for_identity() already enforces the policy and the viewer's moodle/site:viewuseridentity capability,
+        // so email (and any other configured field) only appears when the viewer is allowed to see it.
+        $userfieldsapi = \core_user\fields::for_identity($this->openbook->get_context())->with_name()->with_userpic();
+        $extrauserfields = $userfieldsapi->get_required_fields([\core_user\fields::PURPOSE_IDENTITY]);
+
         $usersclean = [];
         foreach ($users as $user) {
             if ($user->deleted == 1 || $user->suspended == 1) {
                 continue;
             }
-            $usersclean[$user->id] = fullname($user);
+            $usersclean[$user->id] = self::display_user_name($user, $extrauserfields);
         }
         $options = [
             'multiple' => false,
@@ -139,5 +145,41 @@ class openbook_overrides_form extends moodleform {
             );
         }
         $this->add_action_buttons(true);
+    }
+
+    /**
+     * Build a user's display label for the selection dropdown, appending the visible
+     * identity fields (e.g. email) in parentheses so the autocomplete can be searched by them.
+     *
+     * Mirrors mod_quiz's edit_override_form::display_user_name().
+     *
+     * @param stdClass $user a user record (with the standard identity columns loaded).
+     * @param array $extrauserfields identity fields from \core_user\fields::for_identity().
+     * @return string the full name, with any visible identity fields in parentheses.
+     */
+    private static function display_user_name(stdClass $user, array $extrauserfields): string {
+        global $CFG;
+
+        $username = fullname($user);
+        $namefields = [];
+        foreach ($extrauserfields as $field) {
+            if (strpos($field, 'profile_field_') === 0) {
+                // Custom profile field — load on demand (skipped entirely when none are configured).
+                if (!isset($user->profile)) {
+                    require_once($CFG->dirroot . '/user/profile/lib.php');
+                    profile_load_custom_fields($user);
+                }
+                $shortname = substr($field, strlen('profile_field_'));
+                if (isset($user->profile[$shortname]) && $user->profile[$shortname] !== '') {
+                    $namefields[] = s($user->profile[$shortname]);
+                }
+            } else if (isset($user->$field) && $user->$field !== '') {
+                $namefields[] = s($user->$field);
+            }
+        }
+        if ($namefields) {
+            $username .= ' (' . implode(', ', $namefields) . ')';
+        }
+        return $username;
     }
 }
