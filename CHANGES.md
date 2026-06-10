@@ -1,8 +1,18 @@
-moodle-theme_boost_union
-========================
+# moodle-mod_openbook
 
-Changes
--------
+## Changes
+
+### v5.2-r4
+
+* 2026-06-10 - Improvement: Show user identity fields on the overrides page and in the user-selection dropdown, resolves #89.
+* 2026-06-10 - Bugfix: Fix log report crash on openbook approval events (Undefined array key 'approval').
+
+### v5.2-r3
+
+* 2026-05-28 - Security: Hardening of file access control and download permission checks.
+* 2026-05-28 - Bugfix: Correct context id and clean up overrides in openbook_delete_instance.
+* 2026-05-28 - Bugfix: Privacy provider now exports the per-instance preferences actually stored.
+* 2026-05-28 - Improvement: Remove dead and unused legacy code, and fix copy-pasted file headers.
 
 ### v5.2-r2
 
